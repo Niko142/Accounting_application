@@ -1,4 +1,4 @@
-import './App.css';
+import './App.scss';
 import FormAuthorization from './components/FormAuthorization/FormAuthorization'
 import MainMenu from './components/MainMenu/MainMenu';
 import Storage from './components/Storage/Storage';

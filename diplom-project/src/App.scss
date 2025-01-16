@@ -1,3 +1,40 @@
+// @use './styles/forward' as f;
+@use './styles/form';
+
+@font-face {
+  src: url("./assets/fonts/Montserrat-Regular.woff2") format("woff2");
+  font: {
+    family: 'Montserrat';
+    weight: 400;
+    style: normal;
+    display: swap;
+  }
+}
+
+@font-face {
+  src: url("./assets/fonts/Montserrat-SemiBold.woff2") format("woff2");
+  font: {
+    family: 'Montserrat';
+    weight: 400;
+    style: normal;
+    display: swap;
+  }
+}
+
+@font-face {
+  src: url("./assets/fonts/Montserrat-Bold.woff2") format("woff2");
+  font: {
+    family: 'Montserrat';
+    weight: 400;
+    style: normal;
+    display: swap;
+  }
+}
+
+body {
+  font-family: 'Montserrat', sans-serif;
+}
+
 .App {
   text-align: center;
 }
