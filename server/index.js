@@ -2,27 +2,26 @@ const express = require('express');
 const mysql = require("mysql");
 const cors = require('cors')
 const app = express();
+const dotenv = require('dotenv')
+
+dotenv.config()
 
 app.use(express.json());
 app.use(cors());
 
 const db = mysql.createConnection({
-    host: "127.0.0.1",
-    user: "root",
-    password: "123",
-    database: "accounting",
+    host: process.env.HOST,
+    user: process.env.USER_NAME,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DATABASE,
 });
-
-app.listen(3001, ()=> {
-  console.log('Сервер запущен')
-})
 
 db.connect(function(err){
   if(err){
     console.log(err);
   }
   else{
-    console.log('Соединение установлено');
+    console.log('Соединение установлено успешно');
   }
 })
 
@@ -33,13 +32,13 @@ app.post('/login', (req, res)=>{
   db.query(
     "SELECT * FROM users WHERE username = ? AND password = ?", [username, password], (err, result) => {
       if(err) {
-        res.send({err: err});
+        res.send({message: "Не удалось войти в систему. Проверьте правильность написания логина или пароля", status: 400});
       }
       if(result.length > 0) {
-        res.send({message: "Успешная авторизация"});
+        res.send({message: "Успешная авторизация", status: 200});
       }
       else {
-        res.send({message: "Неправильный логин/пароль"});
+        res.send({message: "Не удалось войти в систему. Проверьте правильность логина или пароля", status: 400});
       }
     }
   );
@@ -1821,4 +1820,8 @@ app.post('/update-chancellery', (req, res) => {
       res.send({message: 'Успех'})
     }
   })
+})
+
+app.listen(process.env.PORT, ()=> {
+  console.log(`Сервер успешно запущен`)
 })
