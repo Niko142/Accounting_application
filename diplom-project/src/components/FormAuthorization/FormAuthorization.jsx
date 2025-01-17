@@ -1,10 +1,7 @@
-import "./FormAuthorization.css";
-import Button from "../Button/Button";
 import { useState } from "react";
 import Axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { CgEnter } from "react-icons/cg";
 
 export default function FormAuthorization() {
   const {
@@ -13,7 +10,7 @@ export default function FormAuthorization() {
     formState: { errors },
     resetField,
   } = useForm({ mode: "onSubmit" });
-  const [loginStatus, setLoginStatus] = useState("");
+  const [loginStatus, setLoginStatus] = useState();
   const navigate = useNavigate();
 
   const onSubmit = (data) => {
@@ -22,7 +19,8 @@ export default function FormAuthorization() {
       username: data.username.trim(),
       password: data.password.trim(),
     }).then((response) => {
-      console.log(response);
+      console.log("Статус: ", response.data.status);
+      console.log("Сообщение: ", response.data.message);
       if (response.data.message === "Успешная авторизация") {
         navigate("/main_menu");
       } else {
@@ -33,14 +31,13 @@ export default function FormAuthorization() {
   };
 
   return (
-    <form className="form main" onSubmit={handleSubmit(onSubmit)}>
-      <div className="sub-main">
-        <h2 className="form__title sign">
-            Авторизация
-        </h2>
+    <main className="main">
+      <form className="form" onSubmit={handleSubmit(onSubmit)}>
+        <h2 className="form__title">Авторизация</h2>
+        <p>Для того, чтобы вести учет, необходимо авторизироваться в системе</p>
         <input
           type="text"
-          className="form__input control"
+          className="form__input input-username"
           name="username"
           placeholder="Login"
           {...register("username", {
@@ -56,11 +53,11 @@ export default function FormAuthorization() {
           })}
         />
         {errors.username?.message && (
-          <span className="form_error error">{errors.username?.message}</span>
+          <span className="form__error">{errors.username?.message}</span>
         )}
         <input
           type="password"
-          className="form__input control"
+          className="form__input input-password"
           name="password"
           placeholder="Password"
           {...register("password", {
@@ -69,15 +66,13 @@ export default function FormAuthorization() {
           })}
         />
         {errors.password?.message && (
-          <span className="form__error error">{errors.password?.message}</span>
+          <span className="form__error">{errors.password?.message}</span>
         )}
-        <div className="autho">
-          <Button isActive type="submit">
-            Авторизироваться <CgEnter />
-          </Button>
-        </div>
-        <span style={{ color: "red" }} className="form__error">{loginStatus}</span>
-      </div>
-    </form>
+        <button className="form__submit">Авторизоваться</button>
+        <span className="form__error error-request">{loginStatus}</span>
+      </form>
+      <div className="main__box box-up"></div>
+      <div className="main__box box-down"></div>
+    </main>
   );
 }

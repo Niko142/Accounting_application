@@ -1,5 +1,4 @@
-// @use './styles/forward' as f;
-@use './styles/form';
+@use './components/FormAuthorization/FormAuthorization.scss';
 
 @font-face {
   src: url("./assets/fonts/Montserrat-Regular.woff2") format("woff2");
@@ -15,7 +14,7 @@
   src: url("./assets/fonts/Montserrat-SemiBold.woff2") format("woff2");
   font: {
     family: 'Montserrat';
-    weight: 400;
+    weight: 600;
     style: normal;
     display: swap;
   }
@@ -25,10 +24,14 @@
   src: url("./assets/fonts/Montserrat-Bold.woff2") format("woff2");
   font: {
     family: 'Montserrat';
-    weight: 400;
+    weight: 700;
     style: normal;
     display: swap;
   }
+}
+
+html {
+  font-size: 16px;
 }
 
 body {
@@ -38,6 +41,12 @@ body {
 .App {
   text-align: center;
 }
+
+p {
+  color: #32403B;
+}
+
+input {font-family: 'Montserrat';}
 
 .App-logo {
   height: 40vmin;
