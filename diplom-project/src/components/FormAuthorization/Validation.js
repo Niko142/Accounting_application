@@ -1,34 +1,34 @@
 export default function Validation(values) {
   let error = {}; //Пароль
 
-  if (values.password === "") {
-    error.password = "Пароль не должен быть пустым";
+  if (values.password === '') {
+    error.password = 'Пароль не должен быть пустым';
   } else {
-    error.password = "";
+    error.password = '';
   } //Логин
 
-  if (values.username === "") {
-    error.username = "Пользователь не должен быть пустым";
+  if (values.username === '') {
+    error.username = 'Пользователь не должен быть пустым';
   } else {
-    error.username = "";
+    error.username = '';
   } //Имя
 
-  if (values.name === "" || values.name === null) {
-    error.name = "Имя не должно быть пустым";
+  if (values.name === '' || values.name === null) {
+    error.name = 'Имя не должно быть пустым';
   } else {
-    error.name = "";
+    error.name = '';
   } //Фамилия
 
-  if (values.surname === "") {
-    error.surname = "Фамилия не должна быть пустой";
+  if (values.surname === '') {
+    error.surname = 'Фамилия не должна быть пустой';
   } else {
-    error.surname = "";
+    error.surname = '';
   } //Отчество
 
-  if (values.patronymic === "") {
-    error.patronymic = "Отчество не должно бьть пустым";
+  if (values.patronymic === '') {
+    error.patronymic = 'Отчество не должно бьть пустым';
   } else {
-    error.patronymic = "";
+    error.patronymic = '';
   } //Email
 
   function isValid(email) {
@@ -36,116 +36,116 @@ export default function Validation(values) {
   }
 
   if (!isValid(values.email)) {
-    error.email = "Неправильный формат email";
+    error.email = 'Неправильный формат email';
   } else {
-    error.email = "";
+    error.email = '';
   }
 
-  if (values.email === "") {
-    error.email = "Email не должен быть пустым";
+  if (values.email === '') {
+    error.email = 'Email не должен быть пустым';
   } //Наименование модели
 
-  if (values.model === "") {
-    error.model = "Наименование модели не должно быть пустым";
+  if (values.model === '') {
+    error.model = 'Наименование модели не должно быть пустым';
   } else {
-    error.model = "";
+    error.model = '';
   } //Цена
 
   function isNumber(price) {
     return /^\d+$/.test(price);
   }
 
-  if (values.price === "") {
-    error.price = "Значение цены не должно быть пустым";
+  if (values.price === '') {
+    error.price = 'Значение цены не должно быть пустым';
   } else if (!isNumber(values.price)) {
-    error.price = "Цена должна содержать только целочисленные символы";
+    error.price = 'Цена должна содержать только целочисленные символы';
   } else {
-    error.price = "";
+    error.price = '';
   } //Разрешение
 
   function isResolution(resolution) {
     return /(\d{3,4})x(\d{3,4})/.test(resolution);
   }
 
-  if (values.resolution === "") {
-    error.resolution = "Разрешение камеры не должно быть пустым";
+  if (values.resolution === '') {
+    error.resolution = 'Разрешение камеры не должно быть пустым';
   } else if (!isResolution(values.resolution)) {
-    error.resolution = "Неправильный формат ввода значения";
+    error.resolution = 'Неправильный формат ввода значения';
   } else {
-    error.resolution = "";
+    error.resolution = '';
   } //Угол обзора
 
-  if (values.angle === "") {
-    error.angle = "Угол обзора не должно быть пустым";
+  if (values.angle === '') {
+    error.angle = 'Угол обзора не должно быть пустым';
   } else if (!isNumber(values.angle)) {
-    error.angle = "Угол должен содержать только целочисленные символы";
+    error.angle = 'Угол должен содержать только целочисленные символы';
   } else {
-    error.angle = "";
+    error.angle = '';
   } //Разрешение монитора
 
   function isRate(value) {
     return /^\d+\sГЦ$/.test(value);
   }
 
-  if (values.rate === "") {
-    error.rate = "Разрешение экрана не должно быть пустым";
+  if (values.rate === '') {
+    error.rate = 'Разрешение экрана не должно быть пустым';
   } else if (!isRate(values.rate)) {
-    error.rate = "Неправильный формат ввода значения";
+    error.rate = 'Неправильный формат ввода значения';
   } else {
-    error.rate = "";
+    error.rate = '';
   } //Диагональ
 
   function isDiagonal(value) {
     return /^(\d{2}(\.\d{0,2})?|\.?\d{1,2})$/.test(value);
   }
 
-  if (values.diagonal === "") {
-    error.diagonal = "Значение диагонали не должно быть пустым";
+  if (values.diagonal === '') {
+    error.diagonal = 'Значение диагонали не должно быть пустым';
   } else if (!isDiagonal(values.diagonal)) {
-    error.diagonal = "Неверный формат ввода";
+    error.diagonal = 'Неверный формат ввода';
   } else {
-    error.diagonal = "";
+    error.diagonal = '';
   } //Скорость печати
 
-  if (values.speed === "") {
-    error.speed = "Значение скорости печати не должно быть пустым";
+  if (values.speed === '') {
+    error.speed = 'Значение скорости печати не должно быть пустым';
   } else if (!isNumber(values.speed)) {
     error.speed =
-      "Скорость печати должна содержать только целочисленные символы";
+      'Скорость печати должна содержать только целочисленные символы';
   } else {
-    error.speed = "";
+    error.speed = '';
   }
 
   function isVolume(value) {
     return /^\d+\sГБ$/.test(value);
   } //ОЗУ
 
-  if (values.memory === "") {
-    error.memory = "Поле ОЗУ не должно быть пустым";
+  if (values.memory === '') {
+    error.memory = 'Поле ОЗУ не должно быть пустым';
   } else if (!isVolume(values.memory)) {
-    error.memory = "Неправильный формат ввода значения";
+    error.memory = 'Неправильный формат ввода значения';
   } else {
-    error.memory = "";
+    error.memory = '';
   } //Объем жесткого диска
 
-  if (values.volume === "") {
-    error.volume = "Значение объема не должен быть пустым";
+  if (values.volume === '') {
+    error.volume = 'Значение объема не должен быть пустым';
   } else if (!isVolume(values.volume)) {
-    error.volume = "Неправильный формат ввода значения";
+    error.volume = 'Неправильный формат ввода значения';
   } else {
-    error.volume = "";
+    error.volume = '';
   }
 
-  if (values.videocard === "") {
+  if (values.videocard === '') {
     error.videocard = "Поле 'Видеокарта' не должно быть пустым";
   } else {
-    error.videocard = "";
+    error.videocard = '';
   }
 
-  if (values.processor === "") {
+  if (values.processor === '') {
     error.processor = "Поле 'Процессор' не должно быть пустым";
   } else {
-    error.processor = "";
+    error.processor = '';
   }
 
   return error;

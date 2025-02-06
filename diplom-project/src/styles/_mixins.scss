@@ -1,0 +1,7 @@
+@mixin headerCenter() {
+    @media screen and (max-width: 1275px) {
+        .header__navbar ul {
+            justify-content: center;
+        }
+    }
+}

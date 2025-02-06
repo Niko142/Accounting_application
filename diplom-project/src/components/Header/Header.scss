@@ -1,0 +1,121 @@
+@use 'styles/variables' as v;
+@use 'styles/mixins' as m;
+
+.header {
+  padding: 10px;
+  border-bottom: 1px solid v.$black;
+
+  & nav {
+    display: flex;
+    column-gap: 20px;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__logo {
+    display: flex;
+    align-items: center;
+
+    & span {
+      font-weight: 700;
+      font-size: 24px;
+      line-height: 1.2;
+      color: v.$btn-bg;
+    }
+  }
+
+  &__navbar {
+    align-self: stretch;
+    background-color: v.$btn-bg;
+    display: flex;
+    align-items: center;
+
+    & ul {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+
+      & a {
+        font-weight: 700;
+
+        &:hover,
+        &:focus-visible,
+        &:active {
+          background-color: v.$white;
+          color: v.$btn-bg;
+        }
+      }
+
+      & :is(li, a) {
+        padding: 10px;
+        color: v.$white;
+      }
+    }
+  }
+  @include m.headerCenter();
+}
+
+header {
+  overflow: hidden;
+  border-bottom: 1px solid #ccc;
+  margin-bottom: 2rem;
+}
+
+#top-header {
+  text-align: center;
+  height: 60px;
+}
+#logo {
+  float: left;
+  padding: none;
+  margin: none;
+  height: 60px;
+  width: 20%;
+}
+
+#logo img {
+  width: 40%;
+  float: left;
+  padding: 5px 0px;
+}
+#menu {
+  float: right;
+  width: 70%;
+  height: 100%;
+  margin-right: 10px;
+}
+
+#menu ul {
+  text-align: center;
+  float: right;
+  margin: none;
+  background: #0074d9;
+}
+
+#menu li {
+  display: inline-block;
+  padding: none;
+  margin: none;
+}
+
+#menu li a,
+#menu li span {
+  display: inline-block;
+  padding: 0em 1.5em;
+  text-decoration: none;
+  font-weight: 600;
+  text-transform: uppercase;
+  line-height: 60px;
+}
+
+#menu li a {
+  color: #fff;
+}
+
+#menu li:hover a,
+#menu li span {
+  background: #fff;
+  color: #0074d9;
+  border-left: 1px solid #0074d9;
+  text-decoration: none;
+}

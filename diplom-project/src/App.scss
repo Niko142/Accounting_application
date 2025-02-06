@@ -1,41 +1,9 @@
-@use './components/FormAuthorization/FormAuthorization.scss';
-
-@font-face {
-  src: url("./assets/fonts/Montserrat-Regular.woff2") format("woff2");
-  font: {
-    family: 'Montserrat';
-    weight: 400;
-    style: normal;
-    display: swap;
-  }
-}
-
-@font-face {
-  src: url("./assets/fonts/Montserrat-SemiBold.woff2") format("woff2");
-  font: {
-    family: 'Montserrat';
-    weight: 600;
-    style: normal;
-    display: swap;
-  }
-}
-
-@font-face {
-  src: url("./assets/fonts/Montserrat-Bold.woff2") format("woff2");
-  font: {
-    family: 'Montserrat';
-    weight: 700;
-    style: normal;
-    display: swap;
-  }
-}
+@use 'components/FormAuthorization/FormAuthorization.scss';
+@use 'components/MainMenu/MainMenu.scss';
+@use 'components/Header/Header.scss';
 
 html {
   font-size: 16px;
-}
-
-body {
-  font-family: 'Montserrat', sans-serif;
 }
 
 .App {
@@ -43,10 +11,8 @@ body {
 }
 
 p {
-  color: #32403B;
+  color: #32403b;
 }
-
-input {font-family: 'Montserrat';}
 
 .App-logo {
   height: 40vmin;
@@ -91,7 +57,7 @@ input {font-family: 'Montserrat';}
   margin-top: -29px;
 }
 
-.content-table{
+.content-table {
   border-collapse: collapse;
   margin: 25px 0;
   font-size: 1.2rem;
@@ -100,7 +66,7 @@ input {font-family: 'Montserrat';}
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
 }
 
-.content-table thead tr{
+.content-table thead tr {
   background-color: #009879;
   color: #ffff;
   font-weight: bold;
