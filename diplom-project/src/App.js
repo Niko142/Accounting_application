@@ -1,24 +1,24 @@
 import { React } from 'react';
-import './App.scss';
-import FormAuthorization from './components/FormAuthorization/FormAuthorization';
-import MainMenu from './components/MainMenu/MainMenu';
-import Storage from './components/Storage/Storage';
-import Employee from './components/Employee/Employee';
-import Movement from './components/Movement/Movement';
-import DocumentReport from './components/DocumentReport/DocumentReport';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import AddEmployee from './components/Employee/AddEmployee';
-import AddStorage from './components/Storage/AddStorage';
-import SelectEmployee from './components/Employee/SelectEmployee';
-import Component from './components/Storage/Computer/Component';
-import AddComponents from './components/Storage/Computer/AddComponents';
-import PinningEmployee from './components/Employee/PinningEmployee';
-import PinningCabinet from './components/Movement/PinningCabinet';
-import PinningForm from './components/Movement/PinningForm';
-import SelectUlilization from './components/MainMenu/SelectUtilization';
-import Repair from './components/Movement/Repair';
-import SelectChange from './components/Storage/SelectChange';
-import OfficeMenu from './components/Chancellery/OfficeMenu';
+import 'App.scss';
+import FormAuthorization from 'components/FormAuthorization/FormAuthorization';
+import MainMenu from 'components/MainMenu/MainMenu';
+import Storage from 'components/Storage/Storage';
+import Employee from 'components/Employee/Employee';
+import Movement from 'components/Movement/Movement';
+import DocumentReport from 'components/DocumentReport/DocumentReport';
+import AddEmployee from 'components/Employee/AddEmployee';
+import AddStorage from 'components/Storage/AddStorage';
+import SelectEmployee from 'components/Employee/SelectEmployee';
+import Component from 'components/Storage/Computer/Component';
+import AddComponents from 'components/Storage/Computer/AddComponents';
+import PinningEmployee from 'components/Employee/PinningEmployee';
+import PinningCabinet from 'components/Movement/PinningCabinet';
+import PinningForm from 'components/Movement/PinningForm';
+import SelectUlilization from 'components/MainMenu/SelectUtilization';
+import Repair from 'components/Movement/Repair';
+import SelectChange from 'components/Storage/SelectChange';
+import OfficeMenu from 'components/Chancellery/Chancellery';
 
 function App() {
   return (
