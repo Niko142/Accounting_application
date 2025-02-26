@@ -1,10 +1,28 @@
 import { React } from 'react';
-import './Button.css';
 
-export default function Button({ children, isActive, ...props }) {
+const Button = ({
+  children,
+  isActive,
+  isDelete = false,
+  isEdit = false,
+  ...props
+}) => {
   return (
-    <button {...props} className={isActive ? 'button active' : 'button'}>
+    <button
+      {...props}
+      className={
+        isActive
+          ? 'btn btn-active'
+          : isEdit
+            ? 'btn btn-edit'
+            : isDelete
+              ? 'btn btn-delete'
+              : 'btn'
+      }
+    >
       {children}
     </button>
   );
-}
+};
+
+export default Button;

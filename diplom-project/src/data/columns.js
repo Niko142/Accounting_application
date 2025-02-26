@@ -17,20 +17,29 @@ export const chancelleryColumns = (onEdit, onDelete) => [
     Header: 'Действия',
     accessor: 'actions',
     Cell: ({ row }) => (
-      <>
+      <div
+        style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          justifyContent: 'center',
+          gap: '5px',
+        }}
+      >
         <Button
+          isEdit
           variant="outline"
           onClick={() => onEdit(row.original.id_chancellery)}
         >
           Изменить
         </Button>
         <Button
+          isDelete
           variant="destructive"
           onClick={() => onDelete(row.original.id_chancellery)}
         >
           Удалить
         </Button>
-      </>
+      </div>
     ),
   },
 ];

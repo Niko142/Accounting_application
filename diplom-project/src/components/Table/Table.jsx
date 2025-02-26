@@ -12,7 +12,7 @@ const DataTable = ({ head, mockData }) => {
     });
 
   return (
-    <table {...getTableProps()} className="">
+    <table {...getTableProps()} className="table">
       <thead>
         {headerGroups.map((headerGroup) => (
           <tr key={headerGroup.id} {...headerGroup.getHeaderGroupProps()}>

@@ -1,0 +1,37 @@
+@use 'assets/styles/variables' as v;
+
+.btn {
+  box-sizing: border-box;
+  padding: 0.8rem 1rem;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  outline: 0;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+  font-weight: bold;
+
+  &.btn-active {
+    background: v.$btn-active;
+    color: v.$white;
+  }
+
+  &.btn-edit {
+    background-color: v.$btn-edit;
+    color: v.$white;
+  }
+
+  &.btn-delete {
+    background-color: v.$btn-delete;
+    color: v.$white;
+  }
+
+  &:hover {
+    opacity: 0.8;
+  }
+  &:focus-visible {
+    outline: 2px solid green;
+    outline-offset: 3px;
+  }
+}
