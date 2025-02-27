@@ -4,6 +4,8 @@
 @use 'components/Chancellery/Chancellery.scss';
 @use 'components/Table/Table.scss';
 @use 'components/Button/Button.scss';
+@use 'components/Modal/Modal.scss';
+@use 'assets/styles/variables' as v;
 
 html {
   font-size: 16px;
@@ -14,14 +16,18 @@ html {
 }
 
 p {
-  color: #32403b;
+  color: v.$text;
+}
+
+textarea {
+  resize: none;
 }
 
 .err {
   display: flex;
   margin-left: 1.5rem;
   justify-content: left;
-  color: red;
+  color: v.$btn-delete;
   font-size: 14px;
   margin-top: -29px;
 }
@@ -56,4 +62,50 @@ p {
 
 .content-table tbody tr:last-of-type {
   border-bottom: 2px solid #009879;
+}
+
+.main__input {
+  width: 100%;
+  outline: 0;
+  border: 2px solid #aaa;
+  border-radius: 5px;
+  padding: 8px;
+  font: {
+    family: 'Montserrat';
+    size: 1rem;
+    weight: 400;
+  }
+  box-sizing: border-box;
+  transition: 0.3s;
+
+  // &:not(:first-of-type) {
+  //   margin-top: 2rem;
+  // }
+
+  &:focus {
+    border-color: v.$blue;
+    box-shadow: 0 0 8px 0 v.$blue;
+  }
+}
+
+// Потом убрать и заменить
+#form-input {
+  width: 100%;
+  outline: 0;
+  border: 2px solid #aaa;
+  border-radius: 5px;
+  padding: 8px;
+  font: {
+    family: 'Montserrat';
+    size: 1rem;
+    weight: 400;
+  }
+  box-sizing: border-box;
+  transition: 0.3s;
+  margin-bottom: 2rem;
+}
+
+#form-input:focus {
+  border-color: v.$blue;
+  box-shadow: 0 0 8px 0 v.$blue;
 }

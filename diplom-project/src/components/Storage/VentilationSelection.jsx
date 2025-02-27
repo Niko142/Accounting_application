@@ -1,6 +1,5 @@
 import { React, useState } from 'react';
 import Button from 'components/Button/Button';
-import './Furniture.css';
 import Axios from 'axios';
 import Success from './Success';
 import Validation from 'components/FormAuthorization/Validation';
