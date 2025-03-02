@@ -1,23 +1,24 @@
-import { React, useEffect, useState } from 'react';
+import { React, useState } from 'react';
 import Header from 'components/Header/Header';
 import Button from 'components/Button/Button';
-import { ToastContainer, toast } from 'react-toastify';
-import {
-  fetchData,
-  selectChancellery,
-  deleteChancellery,
-  addChancellery,
-  editAmounts,
-} from 'services/chancellery';
+import { ToastContainer } from 'react-toastify';
 import { chancelleryColumns } from 'data/columns';
 import DataTable from 'components/Table/Table';
 import CustomModal from 'components/Modal/Modal';
 import AddProductForm from './UI/AddProductForm';
 import EditProductForm from './UI/EditProductForm';
+import { useChancellery } from 'context/ChancelleryContext';
 
-// Убрать потом window.reload
+export default function Chancellery() {
+  const {
+    products,
+    currentGroup,
+    handleSelect,
+    handleAmountChange,
+    handleDelete,
+    handleAddGroup,
+  } = useChancellery();
 
-export default function OfficeMenu() {
   const [product, setProduct] = useState({
     type: '...',
     name: '',
@@ -25,46 +26,13 @@ export default function OfficeMenu() {
     price: '',
     amounts: '',
   });
-  const [currentGroup, setCurrentGroup] = useState({
-    name: '',
-    id: '',
-    amounts: '',
-  });
 
-  const [result, setResult] = useState([]);
   const [openAddModal, setOpenAddModal] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
 
-  useEffect(() => {
-    const abortController = new AbortController();
-    fetchData(abortController, setResult);
-    return () => abortController.abort();
-  }, []);
-
-  const handleSelect = (id) => {
+  const selectCategory = (id) => {
     setOpenEditModal(true);
-    selectChancellery(id, setCurrentGroup);
-  };
-
-  const handleDelete = (id) => {
-    deleteChancellery(id);
-  };
-
-  const handleAddGroup = () => {
-    addChancellery(
-      {
-        type: product.type,
-        name: product.name,
-        unit: product.unit,
-        price: +product.price,
-        amounts: +product.amounts,
-      },
-      toast,
-    );
-  };
-
-  const handleAmountChange = (updatedGroup) => {
-    setCurrentGroup(updatedGroup); // Обновление состояния currentGroup
+    handleSelect(id);
   };
 
   return (
@@ -74,19 +42,29 @@ export default function OfficeMenu() {
         isOpen={openAddModal}
         onClose={() => setOpenAddModal(false)}
         title={'Добавление новой товарной группы'}
-        onComplete={handleAddGroup}
+        onComplete={() => {
+          handleAddGroup({
+            type: product.type,
+            name: product.name,
+            unit: product.unit,
+            price: +product.price,
+            amounts: +product.amounts,
+          });
+          setOpenAddModal(false);
+        }}
       >
         <AddProductForm state={product} setState={setProduct} />
-        <ToastContainer />
       </CustomModal>
       <CustomModal
         isOpen={openEditModal}
         onClose={() => setOpenEditModal(false)}
         title={'Изменение количества товаров'}
-        onComplete={() => editAmounts(currentGroup, toast)}
+        onComplete={() => {
+          handleAmountChange(currentGroup);
+          setOpenEditModal(false);
+        }}
       >
-        <EditProductForm state={currentGroup} onChange={handleAmountChange} />
-        <ToastContainer />
+        <EditProductForm />
       </CustomModal>
       <section className="chancellery">
         <div className="chancellery__block">
@@ -96,10 +74,11 @@ export default function OfficeMenu() {
             </Button>
           </div>
           <DataTable
-            head={chancelleryColumns(handleSelect, handleDelete)}
-            mockData={result}
+            head={chancelleryColumns(selectCategory, handleDelete)}
+            mockData={products}
           />
         </div>
+        <ToastContainer />
       </section>
     </>
   );

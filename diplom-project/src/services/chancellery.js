@@ -1,13 +1,15 @@
 import Axios from 'axios';
 
-export async function fetchData(control, setState) {
+export async function fetchData(abortController, setState) {
   try {
     const res = await Axios.get('http://localhost:3001/chancellery', {
-      signal: control.signal,
+      signal: abortController.signal,
     });
     setState(res.data);
   } catch (err) {
-    console.log(err);
+    if (err.name !== 'AbortError') {
+      console.error('Ошибка при загрузке данных:', err);
+    }
   }
 }
 
@@ -26,51 +28,40 @@ export const selectChancellery = async (id, setState) => {
     } else {
       console.warn('Запрашиваемый товар не найден');
     }
-    console.log(res);
   } catch (error) {
-    console.error('Ошибка при получении данных:', error);
+    throw new Error('Не удалось выбрать категорию');
   }
 };
 
 export const deleteChancellery = async (id) => {
   try {
-    const res = await Axios.delete(
-      `http://localhost:3001/delete-chancellery/${id}`,
-    );
-    console.log(res);
-    window.location.reload();
+    await Axios.delete(`http://localhost:3001/delete-chancellery/${id}`);
   } catch (error) {
-    console.error('Ошибка при удалении:', error);
+    throw new Error('Ошибка при удалении');
   }
 };
 
-export const addChancellery = async (req, alert) => {
+export const addChancellery = async (req) => {
   try {
     const res = await Axios.post('http://localhost:3001/add-chancellery', req);
-    if (res.data.message === 'Успешное добавление') {
-      window.location.reload();
-    } else {
-      alert.error('Ошибка при добавлении товарной группы');
+    if (res.data.message !== 'Успешное добавление') {
+      throw new Error('Ошибка при добавлении товарной группы');
     }
   } catch (error) {
-    console.error('Ошибка запроса:', error);
-    alert.error('Ошибка при добавлении товарной группы');
+    throw new Error('Ошибка при добавлении товарной группы');
   }
 };
 
-export const editAmounts = async (req, alert) => {
+export const editAmounts = async (req) => {
   try {
     const res = await Axios.post(
       'http://localhost:3001/update-chancellery',
       req,
     );
-    if (res.data.message === 'Успех') {
-      window.location.reload();
-    } else {
-      alert.error('Ошибка при изменении количества товаров');
+    if (res.data.message !== 'Успех') {
+      throw new Error('Ошибка при изменении количества товаров в категории');
     }
   } catch (error) {
-    console.error('Ошибка при изменении количества:', error);
-    alert.error('Ошибка при выполнении запроса');
+    throw new Error('Ошибка при выполнении запроса');
   }
 };

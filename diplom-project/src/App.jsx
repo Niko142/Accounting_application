@@ -18,7 +18,8 @@ import PinningForm from 'components/Movement/PinningForm';
 import SelectUlilization from 'components/MainMenu/SelectUtilization';
 import Repair from 'components/Movement/Repair';
 import SelectChange from 'components/Storage/SelectChange';
-import OfficeMenu from 'components/Chancellery/Chancellery';
+import Chancellery from 'components/Chancellery/Chancellery';
+import ChancelleryProvider from 'context/ChancelleryContext';
 
 function App() {
   return (
@@ -30,7 +31,14 @@ function App() {
         <Route path="/employee" element={<Employee />} />
         <Route path="/movement" element={<Movement />} />
         <Route path="/report" element={<DocumentReport />} />
-        <Route path="office" element={<OfficeMenu />} />
+        <Route
+          path="office"
+          element={
+            <ChancelleryProvider>
+              <Chancellery />
+            </ChancelleryProvider>
+          }
+        />
         <Route path="/add_employee" element={<AddEmployee />} />
         <Route path="/add_storage" element={<AddStorage />} />
         <Route path="/select_employee" element={<SelectEmployee />} />
