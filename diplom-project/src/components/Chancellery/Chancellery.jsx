@@ -19,14 +19,6 @@ export default function Chancellery() {
     handleAddGroup,
   } = useChancellery();
 
-  const [product, setProduct] = useState({
-    type: '...',
-    name: '',
-    unit: '',
-    price: '',
-    amounts: '',
-  });
-
   const [openAddModal, setOpenAddModal] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
 
@@ -42,18 +34,13 @@ export default function Chancellery() {
         isOpen={openAddModal}
         onClose={() => setOpenAddModal(false)}
         title={'Добавление новой товарной группы'}
-        onComplete={() => {
-          handleAddGroup({
-            type: product.type,
-            name: product.name,
-            unit: product.unit,
-            price: +product.price,
-            amounts: +product.amounts,
-          });
-          setOpenAddModal(false);
-        }}
       >
-        <AddProductForm state={product} setState={setProduct} />
+        <AddProductForm
+          onSubmit={(productData) => {
+            handleAddGroup(productData);
+            setOpenAddModal(false);
+          }}
+        />
       </CustomModal>
       <CustomModal
         isOpen={openEditModal}

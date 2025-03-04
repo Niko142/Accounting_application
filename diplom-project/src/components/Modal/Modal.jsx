@@ -20,13 +20,15 @@ const CustomModal = ({ isOpen, onClose, title, children, onComplete }) => {
         </button>
       </div>
       {children}
-      <Button
-        style={{ marginTop: '10px', alignSelf: 'end' }}
-        isActive
-        onClick={onComplete}
-      >
-        Далее
-      </Button>
+      {onComplete && (
+        <Button
+          style={{ marginTop: '10px', alignSelf: 'end' }}
+          isActive
+          onClick={onComplete}
+        >
+          Далее
+        </Button>
+      )}
     </Modal>
   );
 };

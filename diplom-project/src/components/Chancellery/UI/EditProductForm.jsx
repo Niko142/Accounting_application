@@ -1,21 +1,23 @@
 import { useChancellery } from 'context/ChancelleryContext';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
+import { useForm, useWatch } from 'react-hook-form';
 
 const EditProductForm = () => {
   const { currentGroup, setCurrentGroup } = useChancellery();
-  const [amount, setAmount] = useState(currentGroup.amounts);
+  const { register, control, setValue } = useForm({
+    defaultValues: {
+      amounts: currentGroup.amounts || '',
+    },
+  });
+  const amounts = useWatch({ control, name: 'amounts' });
 
   useEffect(() => {
-    setAmount(currentGroup.amounts);
-  }, [currentGroup.amounts]);
+    setValue('amounts', currentGroup.amounts);
+  }, [currentGroup, setValue]);
 
-  const handleAmountChange = (e) => {
-    const value = e.target.value;
-    setAmount(value);
-    if (setCurrentGroup) {
-      setCurrentGroup({ ...currentGroup, amounts: value });
-    }
-  };
+  useEffect(() => {
+    setCurrentGroup((prev) => ({ ...prev, amounts }));
+  }, [amounts, setCurrentGroup]);
 
   return (
     <form action="">
@@ -23,10 +25,9 @@ const EditProductForm = () => {
       <label htmlFor="amounts"></label>
       <input
         type="number"
-        value={amount}
         id="amounts"
         className="main__input"
-        onChange={handleAmountChange}
+        {...register('amounts')}
       />
     </form>
   );

@@ -1,24 +1,34 @@
 import React from 'react';
 import { product_groups } from 'data';
+import { useForm } from 'react-hook-form';
+import Button from 'components/Button/Button';
 
-const AddProductForm = ({ state, setState }) => {
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setState((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+const AddProductForm = ({ onSubmit }) => {
+  const { register, handleSubmit } = useForm({
+    defaultValues: {
+      type: '...',
+      name: '',
+      unit: '...',
+      price: '',
+      amounts: '',
+    },
+    mode: 'onSubmit',
+  });
+
+  const hadleDataSubmit = (data) => {
+    onSubmit(data);
   };
 
   return (
-    <form action="">
+    <form onSubmit={handleSubmit(hadleDataSubmit)}>
       <label htmlFor="type">Товарная группа:</label>
       <select
         className="main__input"
         name="type"
         id="type"
-        value={state.type}
-        onChange={handleChange}
+        {...register('type', {
+          validate: (value) => value !== '...' || 'Выберите категорию товара',
+        })}
       >
         <option value={'...'}>...</option>
         {product_groups.map((option, i) => {
@@ -34,16 +44,19 @@ const AddProductForm = ({ state, setState }) => {
         className="main__input"
         name="name"
         id="name"
-        value={state.name}
-        onChange={handleChange}
+        placeholder="Описание"
+        {...register('name', {
+          required: 'Поле обязательно для заполнения',
+        })}
       ></textarea>
       <label htmlFor="unit">Единица измерения:</label>
       <select
         className="main__input"
         name="unit"
         id="unit"
-        value={state.unit}
-        onChange={handleChange}
+        {...register('unit', {
+          validate: (value) => value !== '...' || 'Выберите единицу измерения',
+        })}
       >
         <option>...</option>
         <option>шт.</option>
@@ -56,8 +69,21 @@ const AddProductForm = ({ state, setState }) => {
         className="main__input"
         name="price"
         id="price"
-        value={state.price}
-        onChange={handleChange}
+        placeholder="до 1000 рублей"
+        {...register('price', {
+          required: true,
+          validate: (value) => {
+            const regex = /^\d{1,3}(\.\d{1,2})?$/;
+            if (!regex.test(value)) {
+              return 'Цена должна быть в формате до 999.99';
+            }
+            const numericValue = parseFloat(value);
+            if (numericValue > 999.99) {
+              return 'Цена не может быть больше 999.99';
+            }
+            return true;
+          },
+        })}
       />
       <label htmlFor="amount">Количество:</label>
       <input
@@ -65,9 +91,18 @@ const AddProductForm = ({ state, setState }) => {
         className="main__input"
         name="amounts"
         id="amount"
-        value={state.amounts}
-        onChange={handleChange}
+        placeholder="Макс: 3000 единиц"
+        {...register('amounts', {
+          required: 'Поле обязательно для заполнения',
+          validate: (amount) =>
+            (amount > 0 && amount < 3_000) ||
+            'Количество превышает допустимое значение',
+          valueAsNumber: true,
+        })}
       />
+      <Button isActive style={{ marginTop: '10px' }}>
+        Добавить
+      </Button>
     </form>
   );
 };
