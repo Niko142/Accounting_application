@@ -1,7 +1,7 @@
 import Axios from 'axios';
 import { React, useEffect, useState } from 'react';
 import SELECT from 'react-select';
-import { reason } from 'data';
+import { reason } from 'data/data';
 import Button from 'components/Button/Button';
 import { toast, ToastContainer } from 'react-toastify';
 

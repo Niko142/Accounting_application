@@ -1,5 +1,5 @@
 import React from 'react';
-import { product_groups } from 'data';
+import { product_groups } from 'data/data';
 import { useForm } from 'react-hook-form';
 import Button from 'components/Button/Button';
 

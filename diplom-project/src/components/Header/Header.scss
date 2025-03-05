@@ -4,6 +4,7 @@
 .header {
   padding: 10px;
   border-bottom: 1px solid v.$black;
+  margin-bottom: 2rem;
 
   & nav {
     display: flex;
@@ -52,70 +53,33 @@
       }
     }
   }
+
   @include m.headerCenter();
-}
 
-header {
-  overflow: hidden;
-  border-bottom: 1px solid #ccc;
-  margin-bottom: 2rem;
-}
+  .topbar {
+    display: flex;
+    align-items: center;
+    padding-inline: 10px;
+    gap: 20px;
 
-#top-header {
-  text-align: center;
-  height: 60px;
-}
-#logo {
-  float: left;
-  padding: none;
-  margin: none;
-  height: 60px;
-  width: 20%;
-}
+    &__user {
+      font-weight: 600;
+    }
 
-#logo img {
-  width: 40%;
-  float: left;
-  padding: 5px 0px;
-}
-#menu {
-  float: right;
-  width: 70%;
-  height: 100%;
-  margin-right: 10px;
-}
+    &__logout {
+      box-sizing: border-box;
+      background-color: transparent;
+      border: 2px solid v.$white;
+      color: v.$white;
+      font-size: 1rem;
+      font-weight: 700;
+      padding: 8px;
+      cursor: pointer;
 
-#menu ul {
-  text-align: center;
-  float: right;
-  margin: none;
-  background: #0074d9;
-}
-
-#menu li {
-  display: inline-block;
-  padding: none;
-  margin: none;
-}
-
-#menu li a,
-#menu li span {
-  display: inline-block;
-  padding: 0em 1.5em;
-  text-decoration: none;
-  font-weight: 600;
-  text-transform: uppercase;
-  line-height: 60px;
-}
-
-#menu li a {
-  color: #fff;
-}
-
-#menu li:hover a,
-#menu li span {
-  background: #fff;
-  color: #0074d9;
-  border-left: 1px solid #0074d9;
-  text-decoration: none;
+      &:hover {
+        background-color: v.$white;
+        color: v.$btn-bg;
+      }
+    }
+  }
 }

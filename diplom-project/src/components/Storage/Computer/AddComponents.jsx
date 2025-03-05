@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import Button from 'components/Button/Button';
 import Header from 'components/Header/Header';
-import { components } from 'data';
+import { components } from 'data/data';
 import { React, useEffect, useState } from 'react';
 import './AddComponent.css';
 import { toast, ToastContainer } from 'react-toastify';

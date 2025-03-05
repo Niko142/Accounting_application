@@ -1,6 +1,6 @@
 import Header from 'components/Header/Header';
 import Select from 'react-select';
-import { category, type } from 'data';
+import { category, type } from 'data/data';
 import { React, useEffect, useState } from 'react';
 import Axios from 'axios';
 import Button from 'components/Button/Button';

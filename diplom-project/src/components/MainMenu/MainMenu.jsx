@@ -16,7 +16,7 @@ import {
   scanner_column,
   screen_column,
   ventilation_column,
-} from 'data';
+} from 'data/data';
 
 export default function MainMenu() {
   const navigate = useNavigate('');

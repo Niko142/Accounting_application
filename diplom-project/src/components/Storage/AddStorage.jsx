@@ -4,7 +4,7 @@ import TypeSelection from 'components/MainMenu/TypeSelection';
 import { React, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowsRotate } from '@fortawesome/free-solid-svg-icons';
-import { categories } from 'data';
+import { categories } from 'data/data';
 import FurnitureSelection from './FurnitureSelection';
 import './AddStorage.css';
 import VentilationSelection from './VentilationSelection';

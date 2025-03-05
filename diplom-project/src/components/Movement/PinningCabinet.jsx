@@ -1,7 +1,7 @@
 import { React, useEffect, useState } from 'react';
 import Button from 'components/Button/Button';
 import Header from 'components/Header/Header';
-import { category, type, reason } from 'data';
+import { category, type, reason } from 'data/data';
 import Select from 'react-select';
 import Axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';

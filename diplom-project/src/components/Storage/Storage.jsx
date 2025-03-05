@@ -8,7 +8,7 @@ import { faXmark, faMicrochip } from '@fortawesome/free-solid-svg-icons';
 import SelectFurniture from './SelectStorage/SelectFurniture';
 import SelectVentilation from './SelectStorage/SelectVentilation';
 import SelectComputer from './SelectStorage/SelectComputer';
-import { categories } from 'data';
+import { categories } from 'data/data';
 import SelectLaptop from './SelectStorage/SelectLaptop';
 import SelectScreen from './SelectStorage/SelectScreen';
 import SelectScanner from './SelectStorage/SelectScanner';

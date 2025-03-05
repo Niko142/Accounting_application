@@ -1,38 +1,30 @@
 import { React, useState } from 'react';
-import Axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
+import { useAuth } from 'context/FormAuthorization';
 
 const FormAuthorization = () => {
+  const { login } = useAuth();
   const {
     register,
     handleSubmit,
     formState: { errors },
     resetField,
   } = useForm({ mode: 'onSubmit' });
+
   const [loginStatus, setLoginStatus] = useState();
+
   const navigate = useNavigate();
 
-  const onSubmit = (data) => {
-    console.log(data);
-    Axios.post('http://localhost:3001/login', {
-      username: data.username.trim(),
-      password: data.password.trim(),
-    })
-      .then((response) => {
-        console.log('Статус: ', response.data.status);
-        console.log('Сообщение: ', response.data.message);
-        if (response.data.message === 'Успешная авторизация') {
-          navigate('/main_menu');
-        } else {
-          setLoginStatus(response.data.message);
-        }
-        resetField('password');
-      })
-      .catch((err) => {
-        console.log('Ошибка отправки запроса: ', err);
-        setLoginStatus('Сервер не отвечает, попробуйте авторизироваться позже');
-      });
+  const onSubmit = async (data) => {
+    const result = await login(data.username, data.password);
+
+    if (result.success) {
+      navigate('/main_menu');
+    } else {
+      setLoginStatus(result.message);
+      resetField('password');
+    }
   };
 
   return (

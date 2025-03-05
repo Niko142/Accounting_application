@@ -1,7 +1,7 @@
 import Axios from 'axios';
 import { React, useEffect, useState } from 'react';
 import DataTable from 'react-data-table-component';
-import { change_column } from 'data';
+import { change_column } from 'data/data';
 import Header from 'components/Header/Header';
 
 export default function SelectChange() {

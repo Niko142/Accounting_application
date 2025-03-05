@@ -1,7 +1,16 @@
 import { React } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from 'context/FormAuthorization';
 
 export const Header = () => {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
+
   return (
     <header className="header">
       <nav>
@@ -40,11 +49,15 @@ export const Header = () => {
                 Канцелярия
               </Link>
             </li>
-            <li>
-              <Link className="link" to="/">
-                Выход
-              </Link>
-            </li>
+            {/* Блок с выводом авторизированного пользователя + кнопка 'Выход'*/}
+            <div className="topbar">
+              <span className="topbar__user" style={{ color: '#444' }}>
+                User: {user.username}
+              </span>
+              <button className="topbar__logout" onClick={handleLogout}>
+                Выйти
+              </button>
+            </div>
           </ul>
         </div>
       </nav>
