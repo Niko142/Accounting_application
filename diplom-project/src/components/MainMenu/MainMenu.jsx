@@ -1,10 +1,7 @@
-// import "./MainMenu.css";
 import Button from 'components/Button/Button';
 import Header from 'components/Header/Header';
-import TypeSelection from './TypeSelection';
+import TypeSelection from '../UI/TypeSelection';
 import { React, useEffect, useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowsRotate } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
 import Axios from 'axios';
 import MainTable from './MainTable';
@@ -17,6 +14,7 @@ import {
   screen_column,
   ventilation_column,
 } from 'data/data';
+import ButtonContainer from 'components/UI/ButtonContainer';
 
 export default function MainMenu() {
   const navigate = useNavigate('');
@@ -52,15 +50,15 @@ export default function MainMenu() {
   return (
     <>
       <Header />
-      <Button id="image-button" onClick={() => window.location.reload()}>
-        <FontAwesomeIcon icon={faArrowsRotate} /> Обновить
-      </Button>
-      <Button isActive onClick={() => navigate('/utilization')}>
-        Записи об утилизации
-      </Button>
-      <Button isActive onClick={() => navigate('/repair')}>
-        Объекты в ремонте
-      </Button>
+      <ButtonContainer>
+        <Button isActive onClick={() => navigate('/utilization')}>
+          Записи об утилизации
+        </Button>
+        <Button isActive onClick={() => navigate('/repair')}>
+          Объекты в ремонте
+        </Button>
+      </ButtonContainer>
+
       <TypeSelection active={type} onChange={(type) => setType(type)} />
       <section style={{ display: 'flex', justifyContent: 'center' }}>
         <div
@@ -78,7 +76,7 @@ export default function MainMenu() {
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
               >
-                <option value={''}>...</option>
+                <option value={''}>. . .</option>
                 <option value={'Компьютер'}>Компьютер</option>
                 <option value={'Ноутбук'}>Ноутбук</option>
                 <option value={'Монитор'}>Монитор</option>
@@ -86,41 +84,27 @@ export default function MainMenu() {
                 <option value={'Камера'}>Камера</option>
               </select>
               {category === 'Компьютер' && (
-                <>
-                  <MainTable column={computer_column} data={computer} />
-                </>
+                <MainTable column={computer_column} data={computer} />
               )}
               {category === 'Ноутбук' && (
-                <>
-                  <MainTable column={laptop_column} data={laptop} />
-                </>
+                <MainTable column={laptop_column} data={laptop} />
               )}
               {category === 'Монитор' && (
-                <>
-                  <MainTable column={screen_column} data={screen} />
-                </>
+                <MainTable column={screen_column} data={screen} />
               )}
               {category === 'МФУ' && (
-                <>
-                  <MainTable column={scanner_column} data={scanner} />
-                </>
+                <MainTable column={scanner_column} data={scanner} />
               )}
               {category === 'Камера' && (
-                <>
-                  <MainTable column={camera_column} data={camera} />
-                </>
+                <MainTable column={camera_column} data={camera} />
               )}
             </>
           )}
           {type === 'furniture' && (
-            <>
-              <MainTable data={furniture} column={furniture_column} />
-            </>
+            <MainTable data={furniture} column={furniture_column} />
           )}
           {type === 'ventilation' && (
-            <>
-              <MainTable data={ventilation} column={ventilation_column} />
-            </>
+            <MainTable data={ventilation} column={ventilation_column} />
           )}
         </div>
       </section>

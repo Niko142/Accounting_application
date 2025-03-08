@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import Button from 'components/Button/Button';
 import Header from 'components/Header/Header';
-import TypeSelection from 'components/MainMenu/TypeSelection';
+import TypeSelection from 'components/UI/TypeSelection';
 import { React, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark, faMicrochip } from '@fortawesome/free-solid-svg-icons';
