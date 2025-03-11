@@ -1,9 +1,10 @@
+import { React, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import Button from 'components/Button/Button';
 import Header from 'components/Header/Header';
 import TypeSelection from '../UI/TypeSelection';
-import { React, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import Axios from 'axios';
 import MainTable from './MainTable';
 import {
   camera_column,
@@ -15,99 +16,116 @@ import {
   ventilation_column,
 } from 'data/data';
 import ButtonContainer from 'components/UI/ButtonContainer';
+import TableContainer from 'components/UI/TableContainer';
+import { fetchData } from 'services/mainMenu';
 
 export default function MainMenu() {
   const navigate = useNavigate('');
   const [type, setType] = useState('');
   const [category, setCategory] = useState('');
-  const [ventilation, setVentilation] = useState([]);
-  const [furniture, setFurniture] = useState([]);
-  const [computer, setComputer] = useState([]);
-  const [laptop, setLaptop] = useState([]);
-  const [screen, setScreen] = useState([]);
-  const [scanner, setScanner] = useState([]);
-  const [camera, setCamera] = useState([]);
+  const [data, setData] = useState({
+    ventilation: [],
+    furniture: [],
+    computer: [],
+    laptop: [],
+    screen: [],
+    scanner: [],
+    camera: [],
+  });
+  const [loading, setLoading] = useState(false);
+  const loadData = async (endpoint, key) => {
+    const abortController = new AbortController();
+    setLoading(true);
+    try {
+      const result = await fetchData(endpoint, abortController);
+      setData((prev) => ({ ...prev, [key]: result }));
+    } catch (err) {
+      console.error(`Ошибка при загрузке данных (${endpoint}):`, err);
+    } finally {
+      setLoading(false);
+    }
+    return () => abortController.abort();
+  };
 
   useEffect(() => {
-    const FetchData = async () => {
-      const ven = await Axios.get('http://localhost:3001/main_ventilation');
-      setVentilation(ven.data);
-      const fur = await Axios.get('http://localhost:3001/main_furniture');
-      setFurniture(fur.data);
-      const com = await Axios.get('http://localhost:3001/main_computer');
-      setComputer(com.data);
-      const lap = await Axios.get('http://localhost:3001/main_laptop');
-      setLaptop(lap.data);
-      const scr = await Axios.get('http://localhost:3001/main_screen');
-      setScreen(scr.data);
-      const scan = await Axios.get('http://localhost:3001/main_scanner');
-      setScanner(scan.data);
-      const cam = await Axios.get('http://localhost:3001/main_camera');
-      setCamera(cam.data);
-    };
-    FetchData();
-  }, []);
+    if (type === 'furniture' && data.furniture.length === 0) {
+      loadData('main_furniture', 'furniture');
+    } else if (type === 'ventilation' && data.ventilation.length === 0) {
+      loadData('main_ventilation', 'ventilation');
+    }
+  }, [type, data]);
+
+  useEffect(() => {
+    if (category === 'Компьютер' && data.computer.length === 0) {
+      loadData('main_computer', 'computer');
+    } else if (category === 'Ноутбук' && data.laptop.length === 0) {
+      loadData('main_laptop', 'laptop');
+    } else if (category === 'Монитор' && data.screen.length === 0) {
+      loadData('main_screen', 'screen');
+    } else if (category === 'МФУ' && data.scanner.length === 0) {
+      loadData('main_scanner', 'scanner');
+    } else if (category === 'Камера' && data.camera.length === 0) {
+      loadData('main_camera', 'camera');
+    }
+  }, [category, data]);
+
+  const categoryOptions = [
+    { value: 'Компьютер', column: computer_column, data: data.computer },
+    { value: 'Ноутбук', column: laptop_column, data: data.laptop },
+    { value: 'Монитор', column: screen_column, data: data.screen },
+    { value: 'МФУ', column: scanner_column, data: data.scanner },
+    { value: 'Камера', column: camera_column, data: data.camera },
+  ];
+
   return (
     <>
       <Header />
       <ButtonContainer>
         <Button isActive onClick={() => navigate('/utilization')}>
-          Записи об утилизации
-        </Button>
-        <Button isActive onClick={() => navigate('/repair')}>
-          Объекты в ремонте
+          Записи об утилизации <FontAwesomeIcon size="lg" icon={faTrash} />
         </Button>
       </ButtonContainer>
-
       <TypeSelection active={type} onChange={(type) => setType(type)} />
-      <section style={{ display: 'flex', justifyContent: 'center' }}>
-        <div
-          style={{
-            border: '1px solid #ccc',
-            width: '85%',
-            height: '500px',
-            overflow: 'auto',
-          }}
-        >
-          {type === 'technic' && (
-            <>
-              <select
-                id="form-input"
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-              >
-                <option value={''}>. . .</option>
-                <option value={'Компьютер'}>Компьютер</option>
-                <option value={'Ноутбук'}>Ноутбук</option>
-                <option value={'Монитор'}>Монитор</option>
-                <option value={'МФУ'}>МФУ</option>
-                <option value={'Камера'}>Камера</option>
-              </select>
-              {category === 'Компьютер' && (
-                <MainTable column={computer_column} data={computer} />
-              )}
-              {category === 'Ноутбук' && (
-                <MainTable column={laptop_column} data={laptop} />
-              )}
-              {category === 'Монитор' && (
-                <MainTable column={screen_column} data={screen} />
-              )}
-              {category === 'МФУ' && (
-                <MainTable column={scanner_column} data={scanner} />
-              )}
-              {category === 'Камера' && (
-                <MainTable column={camera_column} data={camera} />
-              )}
-            </>
-          )}
-          {type === 'furniture' && (
-            <MainTable data={furniture} column={furniture_column} />
-          )}
-          {type === 'ventilation' && (
-            <MainTable data={ventilation} column={ventilation_column} />
-          )}
-        </div>
-      </section>
+      <TableContainer>
+        {loading ? (
+          <p>Загрузка данных...</p>
+        ) : (
+          <>
+            {type === 'technic' && (
+              <>
+                <select
+                  id="form-input"
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                >
+                  <option value={''}>. . .</option>
+                  {categoryOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.value}
+                    </option>
+                  ))}
+                </select>
+                {categoryOptions.map(
+                  (option) =>
+                    category === option.value && (
+                      <MainTable
+                        key={option.value}
+                        column={option.column}
+                        data={option.data}
+                      />
+                    ),
+                )}
+              </>
+            )}
+            {type === 'furniture' && (
+              <MainTable data={data.furniture} column={furniture_column} />
+            )}
+            {type === 'ventilation' && (
+              <MainTable data={data.ventilation} column={ventilation_column} />
+            )}
+          </>
+        )}
+      </TableContainer>
     </>
   );
 }

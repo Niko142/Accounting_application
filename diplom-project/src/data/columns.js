@@ -43,3 +43,16 @@ export const chancelleryColumns = (onEdit, onDelete) => [
     ),
   },
 ];
+
+export const ventilationAccColumns = () => [
+  { Header: 'ID', accessor: 'ventilation_id' },
+  { Header: 'Модель', accessor: 'model' },
+  { Header: 'Цена', accessor: 'price', Cell: ({ value }) => `${value} руб.` },
+  { Header: 'Расположение', accessor: 'location' },
+  {
+    Header: 'Материальное лицо',
+    accessor: 'initials',
+    Cell: ({ row }) => `${row.surname} ${row.name} ${row.patronymic}`,
+  },
+  { Header: 'Статус', accessor: 'status' },
+];

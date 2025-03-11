@@ -1,5 +1,8 @@
-import Button from 'components/Button/Button';
 import { React } from 'react';
+import Button from 'components/Button/Button';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCouch, faComputer } from '@fortawesome/free-solid-svg-icons';
+
 export default function TypeSelection({ active, onChange }) {
   return (
     <div className="type__container">
@@ -7,19 +10,19 @@ export default function TypeSelection({ active, onChange }) {
         isActive={active === 'technic'}
         onClick={() => onChange('technic')}
       >
-        Оргтехника
+        Оргтехника <FontAwesomeIcon size="lg" icon={faComputer} />
       </Button>
       <Button
         isActive={active === 'furniture'}
         onClick={() => onChange('furniture')}
       >
-        Мебель
+        Мебель <FontAwesomeIcon size="lg" icon={faCouch} />
       </Button>
       <Button
         isActive={active === 'ventilation'}
         onClick={() => onChange('ventilation')}
       >
-        Система вентиляции
+        Системы вентиляции
       </Button>
     </div>
   );

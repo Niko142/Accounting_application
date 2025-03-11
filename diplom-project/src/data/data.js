@@ -55,6 +55,15 @@ export const reason = [
   { value: 'Утилизация', label: 'Утилизация' },
 ];
 
+export const categoryOptions = (data) => [
+  { value: 'Компьютер', column: computer_column, data: data.computer },
+  { value: 'Ноутбук', column: laptop_column, data: data.laptop },
+  { value: 'Монитор', column: screen_column, data: data.screen },
+  { value: 'МФУ', column: scanner_column, data: data.scanner },
+  { value: 'Камера', column: camera_column, data: data.camera },
+];
+
+// Эти потом можно убрать
 export const ventilation_column = [
   {
     name: 'Номер',

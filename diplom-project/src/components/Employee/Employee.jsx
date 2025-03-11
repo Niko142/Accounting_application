@@ -6,6 +6,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { React, useState, useEffect } from 'react';
 import Axios from 'axios';
 import DataTable from 'react-data-table-component';
+import ButtonContainer from 'components/UI/ButtonContainer';
+import TableContainer from 'components/UI/TableContainer';
 
 export default function Employee() {
   const navigate = useNavigate('');
@@ -28,7 +30,7 @@ export default function Employee() {
 
   const employeeForm = [
     {
-      name: 'Номер записи',
+      name: 'ID',
       selector: (row) => row.id_pinning,
       sortable: true,
       grow: 0.3,
@@ -73,43 +75,30 @@ export default function Employee() {
   return (
     <>
       <Header />
-      <Button
-        isActive
-        style={{ marginLeft: '1rem' }}
-        onClick={() => navigate('/add_employee')}
-      >
-        <FontAwesomeIcon icon={faUser} /> Назначить материальное лицо
-      </Button>
-      <Button
-        isActive
-        style={{ marginLeft: '1rem' }}
-        onClick={() => navigate('/select_employee')}
-      >
-        <FontAwesomeIcon icon={faUser} /> Информация о материальных лицах
-      </Button>
-      <Button
-        isActive
-        style={{ marginLeft: '1rem' }}
-        onClick={() => navigate('/pinning_employee')}
-      >
-        Закрепление за лицом материальной единицы
-      </Button>
-
-      <div
-        style={{ display: 'flex', justifyContent: 'center', marginTop: '2rem' }}
-      >
-        <div className="sec" style={{ display: 'block', textAlign: 'center' }}>
-          <h2>История закрепления материальных средств за сотрудниками:</h2>
-          <DataTable
-            columns={employeeForm}
-            data={pinning}
-            pagination
-            fixedHeader
-            highlightOnHover
-            customStyles={custom}
-          ></DataTable>
-        </div>
-      </div>
+      <ButtonContainer>
+        <Button isActive onClick={() => navigate('/add_employee')}>
+          <FontAwesomeIcon icon={faUser} /> Назначить материальное лицо
+        </Button>
+        <Button isActive onClick={() => navigate('/select_employee')}>
+          <FontAwesomeIcon icon={faUser} /> Информация о материальных лицах
+        </Button>
+        <Button isActive onClick={() => navigate('/pinning_employee')}>
+          Закрепление за лицом материальной единицы
+        </Button>
+      </ButtonContainer>
+      <TableContainer>
+        <h2 className="employee__header">
+          История закрепления материальных средств за сотрудниками:
+        </h2>
+        <DataTable
+          columns={employeeForm}
+          data={pinning}
+          pagination
+          fixedHeader
+          highlightOnHover
+          customStyles={custom}
+        ></DataTable>
+      </TableContainer>
     </>
   );
 }

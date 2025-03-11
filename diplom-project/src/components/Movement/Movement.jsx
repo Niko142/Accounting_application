@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faScrewdriverWrench } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
 import UnitMovement from './UnitMovement';
+import ButtonContainer from 'components/UI/ButtonContainer';
 
 export default function Movement() {
   const navigate = useNavigate('');
@@ -13,27 +14,29 @@ export default function Movement() {
   return (
     <>
       <Header />
-      <Button id="image-button" onClick={() => setActive(true)}>
-        Кабинеты
-      </Button>
-      {active && (
-        <CabinetSection active={active} setActive={setActive}>
-          Описание имеющихся кабинетов на предприятии:
-        </CabinetSection>
-      )}
-      <Button isActive onClick={() => navigate('/history_pinning')}>
-        История перемещений
-      </Button>
-      <Button isActive onClick={() => navigate('/pinning_cabinet')}>
-        Закрепить технику за кабинетом
-      </Button>
-      <Button isActive onClick={() => navigate('/repair')}>
-        <FontAwesomeIcon
-          style={{ marginRight: '5px' }}
-          icon={faScrewdriverWrench}
-        />
-        Вернуть с ремонта
-      </Button>
+      <ButtonContainer>
+        <Button isActive onClick={() => setActive(true)}>
+          Кабинеты
+        </Button>
+        {active && (
+          <CabinetSection active={active} setActive={setActive}>
+            Описание имеющихся кабинетов на предприятии:
+          </CabinetSection>
+        )}
+        <Button isActive onClick={() => navigate('/history_pinning')}>
+          История перемещений
+        </Button>
+        <Button isActive onClick={() => navigate('/pinning_cabinet')}>
+          Закрепить технику за кабинетом
+        </Button>
+        <Button isActive onClick={() => navigate('/repair')}>
+          <FontAwesomeIcon
+            style={{ marginRight: '5px' }}
+            icon={faScrewdriverWrench}
+          />
+          Вернуть с ремонта
+        </Button>
+      </ButtonContainer>
       <section id="sec">
         <UnitMovement></UnitMovement>
       </section>
