@@ -5,19 +5,15 @@ import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import Button from 'components/Button/Button';
 import Header from 'components/Header/Header';
 import TypeSelection from '../UI/TypeSelection';
-import MainTable from './MainTable';
 import {
-  camera_column,
-  computer_column,
-  furniture_column,
-  laptop_column,
-  scanner_column,
-  screen_column,
-  ventilation_column,
-} from 'data/data';
+  ventilationColumns,
+  furnitureColumns,
+  categoryOptions,
+} from 'data/columns';
 import ButtonContainer from 'components/UI/ButtonContainer';
 import TableContainer from 'components/UI/TableContainer';
 import { fetchData } from 'services/mainMenu';
+import DataTable from 'components/Table/Table';
 
 export default function MainMenu() {
   const navigate = useNavigate('');
@@ -69,14 +65,6 @@ export default function MainMenu() {
     }
   }, [category, data]);
 
-  const categoryOptions = [
-    { value: 'Компьютер', column: computer_column, data: data.computer },
-    { value: 'Ноутбук', column: laptop_column, data: data.laptop },
-    { value: 'Монитор', column: screen_column, data: data.screen },
-    { value: 'МФУ', column: scanner_column, data: data.scanner },
-    { value: 'Камера', column: camera_column, data: data.camera },
-  ];
-
   return (
     <>
       <Header />
@@ -99,29 +87,32 @@ export default function MainMenu() {
                   onChange={(e) => setCategory(e.target.value)}
                 >
                   <option value={''}>. . .</option>
-                  {categoryOptions.map((option) => (
+                  {categoryOptions(data).map((option) => (
                     <option key={option.value} value={option.value}>
                       {option.value}
                     </option>
                   ))}
                 </select>
-                {categoryOptions.map(
+                {categoryOptions(data).map(
                   (option) =>
                     category === option.value && (
-                      <MainTable
+                      <DataTable
                         key={option.value}
-                        column={option.column}
-                        data={option.data}
+                        head={option.column}
+                        mockData={option.data}
                       />
                     ),
                 )}
               </>
             )}
             {type === 'furniture' && (
-              <MainTable data={data.furniture} column={furniture_column} />
+              <DataTable head={furnitureColumns} mockData={data.furniture} />
             )}
             {type === 'ventilation' && (
-              <MainTable data={data.ventilation} column={ventilation_column} />
+              <DataTable
+                head={ventilationColumns}
+                mockData={data.ventilation}
+              />
             )}
           </>
         )}

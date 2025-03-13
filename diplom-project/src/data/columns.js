@@ -44,7 +44,9 @@ export const chancelleryColumns = (onEdit, onDelete) => [
   },
 ];
 
-export const ventilationAccColumns = () => [
+// КОЛОНКИ для блока "УЧЕТ"
+
+export const ventilationColumns = [
   { Header: 'ID', accessor: 'ventilation_id' },
   { Header: 'Модель', accessor: 'model' },
   { Header: 'Цена', accessor: 'price', Cell: ({ value }) => `${value} руб.` },
@@ -52,7 +54,229 @@ export const ventilationAccColumns = () => [
   {
     Header: 'Материальное лицо',
     accessor: 'initials',
-    Cell: ({ row }) => `${row.surname} ${row.name} ${row.patronymic}`,
+    Cell: ({ row }) => {
+      const { surname, name, patronymic } = row.original;
+      return `${surname} ${name} ${patronymic}`.trim();
+    },
   },
   { Header: 'Статус', accessor: 'status' },
+];
+
+export const furnitureColumns = [
+  { Header: 'ID', accessor: 'furniture_id' },
+  {
+    name: 'Наименование',
+    accessor: 'mark',
+    Cell: ({ row }) => {
+      const { name, model } = row.original;
+      return `${name} ${model}`.trim();
+    },
+  },
+  {
+    Header: 'Цена',
+    accessor: 'price',
+    Cell: ({ value }) => `${value} руб.`,
+  },
+  { Header: 'Расположение', accessor: 'location' },
+  {
+    Header: 'Материальное лицо',
+    accessor: 'material_person',
+    Cell: ({ row }) => {
+      const { surname, names, patronymic } = row.original;
+      return `${surname} ${names} ${patronymic}`.trim();
+    },
+  },
+  { Header: 'Статус', accessor: 'status' },
+];
+
+export const categoryOptions = (data) => [
+  { value: 'Компьютер', column: computerColumns, data: data.computer },
+  { value: 'Ноутбук', column: laptopColumns, data: data.laptop },
+  { value: 'Монитор', column: screenColumns, data: data.screen },
+  { value: 'МФУ', column: scannerColumns, data: data.scanner },
+  { value: 'Камера', column: cameraColumns, data: data.camera },
+];
+
+export const computerColumns = [
+  {
+    Header: 'ID',
+    accessor: 'id_computer',
+  },
+  { Header: 'Модель', accessor: 'name' },
+  { Header: 'Видеокарта', accessor: 'videocards' },
+  {
+    Header: 'Процессор',
+    accessor: 'processors',
+  },
+  {
+    Header: 'Плата',
+    accessor: 'mothercards',
+  },
+  { Header: 'Опер. память', accessor: 'memories' },
+  { Header: 'Диск', accessor: 'disks' },
+  {
+    Header: 'Расположение',
+    accessor: 'location',
+  },
+  {
+    Header: 'Материальное лицо',
+    accessor: 'material_person',
+    Cell: ({ row }) => {
+      const { surname, names, patronymic } = row.original;
+      return `${surname} ${names} ${patronymic}`.trim();
+    },
+  },
+  {
+    Header: 'Статус',
+    accessor: 'status',
+  },
+];
+
+export const laptopColumns = [
+  {
+    Header: 'ID',
+    accessor: 'laptop_id',
+  },
+  { Header: 'Модель', accessor: 'model' },
+  {
+    Header: 'Система',
+    accessor: 'systems',
+  },
+  {
+    Header: 'Видеокарта',
+    accessor: 'videocard',
+  },
+  {
+    Header: 'Процессор',
+    accessor: 'processor',
+  },
+  { name: 'Память', accessor: 'memory' },
+  { name: 'Объем', accessor: 'volume' },
+  {
+    Header: 'Цена',
+    accessor: 'price',
+    Cell: ({ value }) => `${value} руб.`,
+  },
+  {
+    Header: 'Расположение',
+    accessor: 'location',
+  },
+  {
+    Header: 'Материальное лицо',
+    accessor: 'material_person',
+    Cell: ({ row }) => {
+      const { surname, name, patronymic } = row.original;
+      return `${surname} ${name} ${patronymic}`.trim();
+    },
+  },
+  {
+    Header: 'Статус',
+    accessor: 'status',
+  },
+];
+
+export const screenColumns = [
+  {
+    Header: 'ID',
+    accessor: 'screen_id',
+  },
+  { Header: 'Модель', accessor: 'model' },
+  {
+    Header: 'Диагональ',
+    accessor: 'diagonal',
+  },
+  { Header: 'Частота', accessor: 'rate' },
+  {
+    Header: 'Тип матрицы',
+    accessor: 'type',
+  },
+  {
+    Header: 'Цена',
+    accessor: 'price',
+    Cell: ({ value }) => `${value} руб.`,
+  },
+  {
+    Header: 'Расположение',
+    accessor: 'location',
+  },
+  {
+    Header: 'Материальное лицо',
+    accessor: 'material_person',
+    Cell: ({ row }) => {
+      const { surname, name, patronymic } = row.original;
+      return `${surname} ${name} ${patronymic}`.trim();
+    },
+  },
+  {
+    Header: 'Статус',
+    accessor: 'status',
+  },
+];
+
+export const scannerColumns = [
+  { Header: 'ID', accessor: 'scanner_id' },
+  { Header: 'Модель', accessor: 'nam' },
+  { Header: 'Цвет печати', accessor: 'color' },
+  { Header: 'Скорость печати', accessor: 'speed' },
+  { Header: 'Цена', accessor: 'price', Cell: ({ value }) => `${value} руб.` },
+  { Header: 'Расположение', accessor: 'location' },
+  {
+    Header: 'Материальное лицо',
+    accessor: 'material_person',
+    Cell: ({ row }) => {
+      const { surname, name, patronymic } = row.original;
+      return `${surname} ${name} ${patronymic}`.trim();
+    },
+  },
+  { Header: 'Статус', accessor: 'status' },
+];
+
+export const cameraColumns = [
+  { Header: 'ID', accessor: 'camera_id' },
+  { Header: 'Модель', accessor: 'model' },
+  { Header: 'Разрешение', accessor: 'resolution' },
+  { Header: 'Угол обзора', accessor: 'angle' },
+  { Header: 'Цена', accessor: 'price', Cell: ({ value }) => `${value} руб.` },
+  { Header: 'Расположение', accessor: 'location' },
+  {
+    Header: 'Материальное лицо',
+    accessor: 'material_person',
+    Cell: ({ row }) => {
+      const { surname, name, patronymic } = row.original;
+      return `${surname} ${name} ${patronymic}`.trim();
+    },
+  },
+  { Header: 'Статус', accessor: 'status' },
+];
+
+export const utilizationColumns = [
+  {
+    Header: 'Номер записи',
+    accessor: 'id_utilization',
+  },
+  {
+    // Доправить форматирование для даты
+    Header: 'Дата утилизации',
+    accessor: 'date',
+    Cell: ({ value }) => {
+      return value;
+    },
+  },
+  {
+    Header: 'Категория',
+    accessor: 'category',
+  },
+  { Header: 'Тип', accessor: 'type' },
+  {
+    Header: 'Инвентарный номер',
+    accessor: 'number',
+  },
+  {
+    Header: 'Наименование средства',
+    accessor: 'model',
+  },
+  {
+    Header: 'Причина утилизации',
+    accessor: 'reason',
+  },
 ];
