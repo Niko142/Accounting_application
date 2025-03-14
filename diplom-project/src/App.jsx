@@ -15,11 +15,11 @@ import AddComponents from 'components/Storage/Computer/AddComponents';
 import PinningEmployee from 'components/Employee/PinningEmployee';
 import PinningCabinet from 'components/Movement/PinningCabinet';
 import PinningForm from 'components/Movement/PinningForm';
-import SelectUlilization from 'components/MainMenu/SelectUtilization';
 import Repair from 'components/Movement/Repair';
 import SelectChange from 'components/Storage/SelectChange';
 import Chancellery from 'components/Chancellery/Chancellery';
 import ChancelleryProvider from 'context/ChancelleryContext';
+import GetUtilizationItems from 'components/MainMenu/Utilization/GetUtilizationItems';
 
 function App() {
   return (
@@ -47,7 +47,7 @@ function App() {
         <Route path="/pinning_employee" element={<PinningEmployee />} />
         <Route path="/pinning_cabinet" element={<PinningCabinet />} />
         <Route path="history_pinning" element={<PinningForm />} />
-        <Route path="/utilization" element={<SelectUlilization />} />
+        <Route path="/utilization" element={<GetUtilizationItems />} />
         <Route path="/repair" element={<Repair />} />
         <Route path="change" element={<SelectChange />} />
       </Routes>

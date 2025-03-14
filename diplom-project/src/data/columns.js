@@ -1,5 +1,7 @@
 import React from 'react';
 import Button from 'components/Button/Button';
+import moment from 'moment';
+import 'moment/locale/ru';
 
 export const chancelleryColumns = (onEdit, onDelete) => [
   { Header: 'ID', accessor: 'id_chancellery' },
@@ -259,7 +261,7 @@ export const utilizationColumns = [
     Header: 'Дата утилизации',
     accessor: 'date',
     Cell: ({ value }) => {
-      return value;
+      return moment(value).format('LLL');
     },
   },
   {

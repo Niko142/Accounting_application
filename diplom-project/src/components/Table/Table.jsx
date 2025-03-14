@@ -77,7 +77,7 @@ const DataTable = ({ head, mockData }) => {
         >
           Следующая
         </button>
-        <span>
+        <span className="pagination__currentPage">
           Страница{' '}
           <strong>
             {pageIndex + 1} из {pageOptions.length}
