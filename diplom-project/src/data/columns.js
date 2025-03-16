@@ -282,3 +282,45 @@ export const utilizationColumns = [
     accessor: 'reason',
   },
 ];
+
+export const pinningEmployeeColumns = [
+  {
+    Header: 'ID',
+    accessor: 'id_pinning',
+  },
+  {
+    Header: 'Категория',
+    accessor: 'category',
+  },
+  { Header: 'Тип', accessor: 'type' },
+  {
+    Header: 'Наименование',
+    accessor: 'unit',
+  },
+  {
+    Header: 'Сотрудник',
+    accessor: 'materialPerson',
+    Cell: ({ row }) => {
+      const { surname, name, patronymic } = row.original;
+      return `${surname} ${name} ${patronymic}`.trim();
+    },
+  },
+  {
+    Header: 'Дата закрепления',
+    accessor: 'date',
+    Cell: ({ value }) => {
+      return moment(value).format('LLL');
+    },
+  },
+];
+
+// переименовать
+export const employeeColumns = () => [
+  { Header: 'ID', accessor: 'employee_id' },
+  { Header: 'Имя', accessor: 'name' },
+  { Header: 'Фамилия', accessor: 'surname' },
+  { Header: 'Отчество', accessor: 'patronymic' },
+  { Header: 'Email', accessor: 'email' },
+  { Header: 'Номер', accessor: 'phone' },
+  { Header: 'Действия', accessor: 'actions' },
+];

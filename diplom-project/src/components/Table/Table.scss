@@ -52,6 +52,7 @@
     padding: 6px;
     border: none;
     cursor: pointer;
+    user-select: none; // Запретить выделять текст у кнопки
     background-color: v.$btn-bg;
     color: v.$white;
     font-size: 0.9rem;

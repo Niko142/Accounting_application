@@ -7,7 +7,6 @@ import Storage from 'components/Storage/Storage';
 import Employee from 'components/Employee/Employee';
 import Movement from 'components/Movement/Movement';
 import DocumentReport from 'components/DocumentReport/DocumentReport';
-import AddEmployee from 'components/Employee/AddEmployee';
 import AddStorage from 'components/Storage/AddStorage';
 import SelectEmployee from 'components/Employee/SelectEmployee';
 import Component from 'components/Storage/Computer/Component';
@@ -20,6 +19,7 @@ import SelectChange from 'components/Storage/SelectChange';
 import Chancellery from 'components/Chancellery/Chancellery';
 import ChancelleryProvider from 'context/ChancelleryContext';
 import GetUtilizationItems from 'components/MainMenu/Utilization/GetUtilizationItems';
+import EmployeeProvider from 'context/EmployeeContext';
 
 function App() {
   return (
@@ -28,7 +28,6 @@ function App() {
         <Route path="/" element={<FormAuthorization />} />
         <Route path="/main_menu" element={<MainMenu />} />
         <Route path="/account" element={<Storage />} />
-        <Route path="/employee" element={<Employee />} />
         <Route path="/movement" element={<Movement />} />
         <Route path="/report" element={<DocumentReport />} />
         <Route
@@ -39,12 +38,33 @@ function App() {
             </ChancelleryProvider>
           }
         />
-        <Route path="/add_employee" element={<AddEmployee />} />
+        <Route
+          path="/select_employee"
+          element={
+            <EmployeeProvider>
+              <SelectEmployee />{' '}
+            </EmployeeProvider>
+          }
+        />
+        <Route
+          path="/pinning_employee"
+          element={
+            <EmployeeProvider>
+              <PinningEmployee />
+            </EmployeeProvider>
+          }
+        />
+        <Route
+          path="/employee"
+          element={
+            <EmployeeProvider>
+              <Employee />
+            </EmployeeProvider>
+          }
+        />
         <Route path="/add_storage" element={<AddStorage />} />
-        <Route path="/select_employee" element={<SelectEmployee />} />
         <Route path="/components" element={<Component />} />
         <Route path="/add_components" element={<AddComponents />} />
-        <Route path="/pinning_employee" element={<PinningEmployee />} />
         <Route path="/pinning_cabinet" element={<PinningCabinet />} />
         <Route path="history_pinning" element={<PinningForm />} />
         <Route path="/utilization" element={<GetUtilizationItems />} />
