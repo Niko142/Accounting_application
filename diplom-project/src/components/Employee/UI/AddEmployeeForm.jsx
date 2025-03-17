@@ -12,11 +12,12 @@ export default function AddEmployeeForm({ onSubmit }) {
 
   const hadleDataSubmit = (data) => {
     onSubmit(data);
+    console.log(data);
   };
 
   return (
     <form className="section_employee" onSubmit={handleSubmit(hadleDataSubmit)}>
-      <label htmlFor="name">Имя</label>
+      <label htmlFor="name">Имя:</label>
       <input
         type="text"
         className="main__input"
@@ -34,7 +35,7 @@ export default function AddEmployeeForm({ onSubmit }) {
         <span className="form__error">{errors.name?.message}</span>
       )}
       <label htmlFor="surname" className="add">
-        Фамилия
+        Фамилия:
       </label>
       <input
         type="text"
@@ -53,7 +54,7 @@ export default function AddEmployeeForm({ onSubmit }) {
         <span className="form__error">{errors.surname?.message}</span>
       )}
       <label htmlFor="patronymic" className="add">
-        Отчество
+        Отчество:
       </label>
       <input
         type="text"
@@ -72,7 +73,7 @@ export default function AddEmployeeForm({ onSubmit }) {
         <span className="form__error">{errors.patronymic?.message}</span>
       )}
       <label htmlFor="email" className="add">
-        Email
+        Email:
       </label>
       <input
         type="email"
@@ -82,7 +83,7 @@ export default function AddEmployeeForm({ onSubmit }) {
         {...register('email', {
           required: 'Поле обязательно для заполнения',
           pattern: {
-            value: /\[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/i,
+            value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/i,
             message: 'Некорректный формат ввода',
           },
         })}
@@ -91,13 +92,14 @@ export default function AddEmployeeForm({ onSubmit }) {
         <span className="form__error">{errors.email?.message}</span>
       )}
       <label htmlFor="phone" className="add">
-        Номер телефона
+        Номер телефона:
       </label>
       <input
         type="tel"
         className="main__input"
         id="phone"
         name="phone"
+        placeholder="Формат: +7 или 8"
         {...register('phone', {
           required: 'Поле обязательно для заполнения',
           pattern: {
@@ -109,7 +111,7 @@ export default function AddEmployeeForm({ onSubmit }) {
       {errors.phone?.message && (
         <span className="form__error">{errors.phone?.message}</span>
       )}
-      <Button isActive style={{ marginTop: '10px', display: 'block' }}>
+      <Button isActive style={{ marginTop: '15px', display: 'block' }}>
         Добавить
       </Button>
     </form>

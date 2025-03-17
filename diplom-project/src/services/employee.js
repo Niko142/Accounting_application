@@ -31,7 +31,7 @@ export async function fetchEmployee(abortController) {
 
 export const addEmployee = async (req) => {
   try {
-    const res = await Axios.post('http://localhost:3001/add-chancellery', req);
+    const res = await Axios.post('http://localhost:3001/add-employee', req);
     if (res.data.message !== 'Успешное добавление') {
       throw new Error('Ошибка при добавлении нового сотрудника');
     }

@@ -1,16 +1,28 @@
 import { useNavigate } from 'react-router-dom';
 import Header from 'components/Header/Header';
-import { React } from 'react';
+import { React, useMemo, useCallback } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import TableContainer from 'components/UI/TableContainer';
 import DataTable from 'components/Table/Table';
 import { employeeColumns } from 'data/columns';
 import { useEmployee } from 'context/EmployeeContext';
+import { ToastContainer } from 'react-toastify';
 
 export default function SelectEmployee() {
-  const { employee } = useEmployee();
+  const { employees, handleDeleteEmployee } = useEmployee();
   const navigate = useNavigate();
+
+  const handleMove = useCallback(() => {
+    navigate('/employee/pinning');
+  }, [navigate]);
+
+  const memoizedColumns = useMemo(
+    () => employeeColumns(handleMove, handleDeleteEmployee),
+    [handleMove, handleDeleteEmployee],
+  );
+
+  const memoizedData = useMemo(() => employees || [], [employees]);
 
   return (
     <>
@@ -24,24 +36,9 @@ export default function SelectEmployee() {
         <h2 className="employee__header header-center">
           Информация о сотрудниках:
         </h2>
-        <DataTable head={employeeColumns()} mockData={employee} />
+        <DataTable head={memoizedColumns} mockData={memoizedData} />
       </TableContainer>
-      {/* Добавить блоки действий */}
-      {/* <FontAwesomeIcon
-        style={{ cursor: 'pointer', color: '#1560BD' }}
-        onClick={() => {
-          navigate('/pinning_employee');
-        }}
-        icon={faUserLock}
-      />
-      <FontAwesomeIcon
-        style={{ cursor: 'pointer', color: 'red' }}
-        icon={faUserSlash}
-        onClick={() => {
-          DeleteEmployee(employee.employee_id);
-          window.location.reload();
-        }}
-      /> */}
+      <ToastContainer />
     </>
   );
 }

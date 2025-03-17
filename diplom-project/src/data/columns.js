@@ -1,19 +1,37 @@
-import React from 'react';
+import { React } from 'react';
 import Button from 'components/Button/Button';
 import moment from 'moment';
 import 'moment/locale/ru';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faLock, faDeleteLeft } from '@fortawesome/free-solid-svg-icons';
+
+function getPriceColumn() {
+  return ({ value }) => `${value} руб.`;
+}
+
+function getPersonColumn() {
+  return ({ row }) => {
+    const { surname, name, patronymic } = row.original;
+    return `${surname} ${name} ${patronymic}`.trim();
+  };
+}
+
+function getDateColumn() {
+  return ({ value }) =>
+    moment(value).isValid() ? moment(value).format('LLL') : '...';
+}
 
 export const chancelleryColumns = (onEdit, onDelete) => [
   { Header: 'ID', accessor: 'id_chancellery' },
   { Header: 'Группа', accessor: 'type' },
   { Header: 'Наименование', accessor: 'name' },
   { Header: 'Ед.изм', accessor: 'unit' },
-  { Header: 'Цена', accessor: 'price', Cell: ({ value }) => `${value} руб.` },
+  { Header: 'Цена', accessor: 'price', Cell: getPriceColumn() },
   { Header: 'Кол-во', accessor: 'amounts' },
   {
     Header: 'Сумма',
     accessor: 'itog_price',
-    Cell: ({ value }) => `${value} руб.`,
+    Cell: getPriceColumn(),
   },
   {
     Header: 'Действия',
@@ -51,15 +69,12 @@ export const chancelleryColumns = (onEdit, onDelete) => [
 export const ventilationColumns = [
   { Header: 'ID', accessor: 'ventilation_id' },
   { Header: 'Модель', accessor: 'model' },
-  { Header: 'Цена', accessor: 'price', Cell: ({ value }) => `${value} руб.` },
+  { Header: 'Цена', accessor: 'price', Cell: getPriceColumn() },
   { Header: 'Расположение', accessor: 'location' },
   {
     Header: 'Материальное лицо',
     accessor: 'initials',
-    Cell: ({ row }) => {
-      const { surname, name, patronymic } = row.original;
-      return `${surname} ${name} ${patronymic}`.trim();
-    },
+    Cell: getPersonColumn(),
   },
   { Header: 'Статус', accessor: 'status' },
 ];
@@ -77,7 +92,7 @@ export const furnitureColumns = [
   {
     Header: 'Цена',
     accessor: 'price',
-    Cell: ({ value }) => `${value} руб.`,
+    Cell: getPriceColumn(),
   },
   { Header: 'Расположение', accessor: 'location' },
   {
@@ -157,7 +172,7 @@ export const laptopColumns = [
   {
     Header: 'Цена',
     accessor: 'price',
-    Cell: ({ value }) => `${value} руб.`,
+    Cell: getPriceColumn(),
   },
   {
     Header: 'Расположение',
@@ -166,10 +181,7 @@ export const laptopColumns = [
   {
     Header: 'Материальное лицо',
     accessor: 'material_person',
-    Cell: ({ row }) => {
-      const { surname, name, patronymic } = row.original;
-      return `${surname} ${name} ${patronymic}`.trim();
-    },
+    Cell: getPersonColumn(),
   },
   {
     Header: 'Статус',
@@ -195,7 +207,7 @@ export const screenColumns = [
   {
     Header: 'Цена',
     accessor: 'price',
-    Cell: ({ value }) => `${value} руб.`,
+    Cell: getPriceColumn(),
   },
   {
     Header: 'Расположение',
@@ -204,10 +216,7 @@ export const screenColumns = [
   {
     Header: 'Материальное лицо',
     accessor: 'material_person',
-    Cell: ({ row }) => {
-      const { surname, name, patronymic } = row.original;
-      return `${surname} ${name} ${patronymic}`.trim();
-    },
+    Cell: getPersonColumn(),
   },
   {
     Header: 'Статус',
@@ -220,15 +229,12 @@ export const scannerColumns = [
   { Header: 'Модель', accessor: 'nam' },
   { Header: 'Цвет печати', accessor: 'color' },
   { Header: 'Скорость печати', accessor: 'speed' },
-  { Header: 'Цена', accessor: 'price', Cell: ({ value }) => `${value} руб.` },
+  { Header: 'Цена', accessor: 'price', Cell: getPriceColumn() },
   { Header: 'Расположение', accessor: 'location' },
   {
     Header: 'Материальное лицо',
     accessor: 'material_person',
-    Cell: ({ row }) => {
-      const { surname, name, patronymic } = row.original;
-      return `${surname} ${name} ${patronymic}`.trim();
-    },
+    Cell: getPersonColumn(),
   },
   { Header: 'Статус', accessor: 'status' },
 ];
@@ -238,15 +244,12 @@ export const cameraColumns = [
   { Header: 'Модель', accessor: 'model' },
   { Header: 'Разрешение', accessor: 'resolution' },
   { Header: 'Угол обзора', accessor: 'angle' },
-  { Header: 'Цена', accessor: 'price', Cell: ({ value }) => `${value} руб.` },
+  { Header: 'Цена', accessor: 'price', Cell: getPriceColumn() },
   { Header: 'Расположение', accessor: 'location' },
   {
     Header: 'Материальное лицо',
     accessor: 'material_person',
-    Cell: ({ row }) => {
-      const { surname, name, patronymic } = row.original;
-      return `${surname} ${name} ${patronymic}`.trim();
-    },
+    Cell: getPersonColumn(),
   },
   { Header: 'Статус', accessor: 'status' },
 ];
@@ -257,12 +260,10 @@ export const utilizationColumns = [
     accessor: 'id_utilization',
   },
   {
-    // Доправить форматирование для даты
     Header: 'Дата утилизации',
     accessor: 'date',
-    Cell: ({ value }) => {
-      return moment(value).format('LLL');
-    },
+    Cell: ({ value }) =>
+      moment(value).isValid() ? moment(value).format('LLL') : '...',
   },
   {
     Header: 'Категория',
@@ -283,6 +284,8 @@ export const utilizationColumns = [
   },
 ];
 
+// Блок "Материально-ответственные лица"
+
 export const pinningEmployeeColumns = [
   {
     Header: 'ID',
@@ -300,27 +303,45 @@ export const pinningEmployeeColumns = [
   {
     Header: 'Сотрудник',
     accessor: 'materialPerson',
-    Cell: ({ row }) => {
-      const { surname, name, patronymic } = row.original;
-      return `${surname} ${name} ${patronymic}`.trim();
-    },
+    Cell: getPersonColumn(),
   },
   {
     Header: 'Дата закрепления',
     accessor: 'date',
-    Cell: ({ value }) => {
-      return moment(value).format('LLL');
-    },
+    Cell: getDateColumn(),
   },
 ];
 
 // переименовать
-export const employeeColumns = () => [
+export const employeeColumns = (onMove, onDelete) => [
   { Header: 'ID', accessor: 'employee_id' },
   { Header: 'Имя', accessor: 'name' },
   { Header: 'Фамилия', accessor: 'surname' },
   { Header: 'Отчество', accessor: 'patronymic' },
   { Header: 'Email', accessor: 'email' },
   { Header: 'Номер', accessor: 'phone' },
-  { Header: 'Действия', accessor: 'actions' },
+  {
+    Header: 'Действия',
+    Cell: ({ row }) => (
+      <div
+        style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          justifyContent: 'center',
+          gap: '5px',
+        }}
+      >
+        <Button isMove variant="outline" onClick={() => onMove()}>
+          Закрепить <FontAwesomeIcon size="lg" icon={faLock} />
+        </Button>
+        <Button
+          isDelete
+          variant="destructive"
+          onClick={() => onDelete(row.original.employee_id)}
+        >
+          Удалить <FontAwesomeIcon size="lg" icon={faDeleteLeft} />
+        </Button>
+      </div>
+    ),
+  },
 ];

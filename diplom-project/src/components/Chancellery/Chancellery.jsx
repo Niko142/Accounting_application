@@ -1,4 +1,4 @@
-import { React, useState } from 'react';
+import { React, useState, useMemo, useCallback } from 'react';
 import Header from 'components/Header/Header';
 import Button from 'components/Button/Button';
 import { ToastContainer } from 'react-toastify';
@@ -22,10 +22,20 @@ export default function Chancellery() {
   const [openAddModal, setOpenAddModal] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
 
-  const selectCategory = (id) => {
-    setOpenEditModal(true);
-    handleSelect(id);
-  };
+  const selectCategory = useCallback(
+    (id) => {
+      setOpenEditModal(true);
+      handleSelect(id);
+    },
+    [handleSelect],
+  );
+
+  const memoizedColumns = useMemo(
+    () => chancelleryColumns(selectCategory, handleDelete),
+    [selectCategory, handleDelete],
+  );
+
+  const memoizedData = useMemo(() => products || [], [products]);
 
   return (
     <>
@@ -60,10 +70,7 @@ export default function Chancellery() {
               Добавить категорию
             </Button>
           </div>
-          <DataTable
-            head={chancelleryColumns(selectCategory, handleDelete)}
-            mockData={products}
-          />
+          <DataTable head={memoizedColumns} mockData={memoizedData} />
         </div>
         <ToastContainer />
       </section>

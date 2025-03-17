@@ -23,6 +23,11 @@
     color: v.$white;
   }
 
+  &.btn-move {
+    background-color: v.$blue;
+    color: v.$white;
+  }
+
   &.btn-delete {
     background-color: v.$btn-delete;
     color: v.$white;

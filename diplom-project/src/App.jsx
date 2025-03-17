@@ -19,7 +19,7 @@ import SelectChange from 'components/Storage/SelectChange';
 import Chancellery from 'components/Chancellery/Chancellery';
 import ChancelleryProvider from 'context/ChancelleryContext';
 import GetUtilizationItems from 'components/MainMenu/Utilization/GetUtilizationItems';
-import EmployeeProvider from 'context/EmployeeContext';
+import EmployeeLayout from 'layouts/EmployeeLayout';
 
 function App() {
   return (
@@ -38,30 +38,11 @@ function App() {
             </ChancelleryProvider>
           }
         />
-        <Route
-          path="/select_employee"
-          element={
-            <EmployeeProvider>
-              <SelectEmployee />{' '}
-            </EmployeeProvider>
-          }
-        />
-        <Route
-          path="/pinning_employee"
-          element={
-            <EmployeeProvider>
-              <PinningEmployee />
-            </EmployeeProvider>
-          }
-        />
-        <Route
-          path="/employee"
-          element={
-            <EmployeeProvider>
-              <Employee />
-            </EmployeeProvider>
-          }
-        />
+        <Route path="/employee" element={<EmployeeLayout />}>
+          <Route index element={<Employee />} />
+          <Route path="select" element={<SelectEmployee />} />
+          <Route path="pinning" element={<PinningEmployee />} />
+        </Route>
         <Route path="/add_storage" element={<AddStorage />} />
         <Route path="/components" element={<Component />} />
         <Route path="/add_components" element={<AddComponents />} />

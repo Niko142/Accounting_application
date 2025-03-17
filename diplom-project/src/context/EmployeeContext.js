@@ -6,71 +6,101 @@ import {
   useMemo,
   useEffect,
   useState,
+  useRef,
 } from 'react';
-import { fetchEmployee, getPinningEmployee } from 'services/employee';
+import {
+  fetchEmployee,
+  getPinningEmployee,
+  addEmployee,
+  deleteEmployee,
+} from 'services/employee';
 import { toast } from 'react-toastify';
 
 const EmployeeContext = createContext();
 export const useEmployee = () => useContext(EmployeeContext);
 
 function EmployeeProvider({ children }) {
-  const [employee, setEmployee] = useState([]); // Список сотрудников
+  const abortControllerRef = useRef(null);
+  const [employees, setEmployees] = useState([]); // Список сотрудников
   const [pinning, setPinning] = useState([]); // Данные о закрепленном объекте за сотрудниками
 
-  // Получение списка материально-ответственных лиц
-  const fetchEmployees = useCallback(async (controller) => {
+  // Получение списка материально-ответственных лиц и истории закрепления
+  const updateEmployees = useCallback(async () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    abortControllerRef.current = new AbortController();
+    const { signal } = abortControllerRef.current;
+
     try {
-      const data = await fetchEmployee(controller);
-      setEmployee(Array.isArray(data) ? data : []);
-    } catch (err) {
-      if (err.name !== 'AbortError') {
-        console.error('Ошибка при загрузке списка сотрудников:', err);
+      // Для параллельной загрузки
+      const [employeesData, pinningHistory] = await Promise.all([
+        fetchEmployee({ signal }),
+        getPinningEmployee({ signal }),
+      ]);
+
+      setEmployees(Array.isArray(employeesData) ? employeesData : []);
+      setPinning(Array.isArray(pinningHistory) ? pinningHistory : []);
+    } catch (error) {
+      if (error.name !== 'AbortError') {
+        console.error('Ошибка при загрузке данных:', error);
+        toast.error('Не удалось загрузить данные');
       }
     }
   }, []);
 
-  // Получение истории закрепления объектов за сотрудниками
-  const pinningHistory = useCallback(async (controller) => {
-    try {
-      const data = await getPinningEmployee(controller);
-      setPinning(Array.isArray(data) ? data : []);
-    } catch (err) {
-      if (err.name !== 'AbortError') {
-        console.error('Ошибка при загрузке истории закрепления:', err);
+  // Функция для добавления нового сотрудника
+  const handleAddEmployee = useCallback(
+    async (newEmployee) => {
+      try {
+        await addEmployee(newEmployee);
+        await updateEmployees();
+        toast.success('Сотрудник успешно добавлен');
+      } catch (error) {
+        toast.error(error?.message || 'Ошибка при добавлении сотрудника');
       }
-    }
-  }, []);
+    },
+    [updateEmployees],
+  );
 
-  const addEmployee = useCallback(async () => {
-    try {
-      await fetchEmployees();
-    } catch (err) {
-      toast.error(err?.message || 'Ошибка при добавлении нового сотрудника');
-    }
-  }, [fetchEmployees]);
+  // Функция для удаления сотрудника
+  const handleDeleteEmployee = useCallback(
+    async (id) => {
+      try {
+        await deleteEmployee(id);
+        await updateEmployees();
+        toast.success('Сотрудник успешно удален');
+      } catch (error) {
+        toast.error(error?.message || 'Ошибка при удалении сотрудника');
+      }
+    },
+    [updateEmployees],
+  );
 
   useEffect(() => {
-    const employeeController = new AbortController();
-    const pinningController = new AbortController();
-
-    fetchEmployees(employeeController);
-    pinningHistory(pinningController);
-
+    updateEmployees();
     return () => {
-      employeeController.abort();
-      pinningController.abort();
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
     };
-  }, [fetchEmployees, pinningHistory]);
+  }, [updateEmployees]);
 
   const contextValue = useMemo(
     () => ({
-      employee,
+      employees,
       pinning,
-      fetchEmployees,
-      pinningHistory,
-      addEmployee,
+      updateEmployees,
+      handleAddEmployee,
+      handleDeleteEmployee,
     }),
-    [employee, pinning, fetchEmployees, pinningHistory, addEmployee],
+    [
+      employees,
+      pinning,
+      updateEmployees,
+      handleAddEmployee,
+      handleDeleteEmployee,
+    ],
   );
 
   return (

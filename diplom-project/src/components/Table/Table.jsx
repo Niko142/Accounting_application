@@ -1,9 +1,10 @@
 import React, { useMemo } from 'react';
-import { useSortBy, useTable, usePagination } from 'react-table';
+// useSortBy приводил к ошибке max depth в некоторых случаях
+import { useTable, usePagination } from 'react-table';
 
 const DataTable = ({ head, mockData }) => {
-  const columns = useMemo(() => [...head], [head]);
-  const data = useMemo(() => [...mockData], [mockData]);
+  const columns = useMemo(() => head, [head]);
+  const data = useMemo(() => mockData, [mockData]);
 
   const {
     getTableProps,
@@ -24,9 +25,9 @@ const DataTable = ({ head, mockData }) => {
       data,
       initialState: { pageIndex: 0, pageSize: 5 }, // Стандартное отображение начала для пагинации
     },
-    useSortBy,
     usePagination,
   );
+
   return (
     <>
       <table {...getTableProps()} className="table">
@@ -34,10 +35,7 @@ const DataTable = ({ head, mockData }) => {
           {headerGroups.map((headerGroup) => (
             <tr key={headerGroup.id} {...headerGroup.getHeaderGroupProps()}>
               {headerGroup.headers.map((column) => (
-                <th
-                  key={column.id}
-                  {...column.getHeaderProps(column.getSortByToggleProps())}
-                >
+                <th key={column.id} {...column.getHeaderProps()}>
                   {column.render('Header')}
                 </th>
               ))}
@@ -49,13 +47,11 @@ const DataTable = ({ head, mockData }) => {
             prepareRow(row);
             return (
               <tr key={row.id} {...row.getRowProps()}>
-                {row.cells.map((cell) => {
-                  return (
-                    <td key={cell.id} {...cell.getCellProps()}>
-                      {cell.render('Cell')}
-                    </td>
-                  );
-                })}
+                {row.cells.map((cell) => (
+                  <td key={cell.column.id} {...cell.getCellProps()}>
+                    {cell.render('Cell')}
+                  </td>
+                ))}
               </tr>
             );
           })}
@@ -86,9 +82,7 @@ const DataTable = ({ head, mockData }) => {
         <select
           className="pagination__select"
           value={pageSize}
-          onChange={(e) => {
-            setPageSize(Number(e.target.value));
-          }}
+          onChange={(e) => setPageSize(Number(e.target.value))}
         >
           {[5, 10, 20, 30].map((size) => (
             <option key={size} value={size}>
@@ -101,4 +95,4 @@ const DataTable = ({ head, mockData }) => {
   );
 };
 
-export default DataTable;
+export default React.memo(DataTable);

@@ -3,6 +3,7 @@ import { React } from 'react';
 const Button = ({
   children,
   isActive,
+  isMove = false,
   isDelete = false,
   isEdit = false,
   ...props
@@ -15,9 +16,11 @@ const Button = ({
           ? 'btn btn-active'
           : isEdit
             ? 'btn btn-edit'
-            : isDelete
-              ? 'btn btn-delete'
-              : 'btn'
+            : isMove
+              ? 'btn btn-move'
+              : isDelete
+                ? 'btn btn-delete'
+                : 'btn'
       }
     >
       {children}
