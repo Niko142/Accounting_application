@@ -4,3 +4,19 @@
     text-align: center;
   }
 }
+
+
+.pinning {
+  &__title {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    & .navigate-back {
+      margin-bottom: 0;
+    }
+  }
+  &__line {
+    margin-top: 1rem;
+    margin-bottom: 2rem;
+  }
+}

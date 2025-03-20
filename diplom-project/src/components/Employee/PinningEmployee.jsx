@@ -1,12 +1,16 @@
 import Header from 'components/Header/Header';
 import Select from 'react-select';
 import { category, type } from 'data/data';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { React, useEffect, useState } from 'react';
 import Axios from 'axios';
 import Button from 'components/Button/Button';
 import { toast, ToastContainer } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import TableContainer from 'components/UI/TableContainer';
 
+// Убрать все это
 export default function PinningEmployee() {
   const navigate = useNavigate('');
   const [id, setId] = useState({
@@ -409,6 +413,16 @@ export default function PinningEmployee() {
     FetchVentilation();
   }, []);
 
+  // Сброс состояния (пока не до конца, потому что все состояния надо убирать)
+  function resetField() {
+    setId({});
+    setSelected(null);
+    setData(null);
+    setTypes('-');
+    setEmployees(null);
+    setValid(false);
+  }
+
   const FormSubmit = (event) => {
     event.preventDefault();
   };
@@ -416,17 +430,19 @@ export default function PinningEmployee() {
   return (
     <>
       <Header />
-      <section style={{ display: 'flex', justifyContent: 'center' }}>
-        <form
-          style={{ border: '2px solid #000', width: '65%', height: '500px' }}
-          onSubmit={FormSubmit}
-        >
-          <h3 style={{ marginLeft: '1rem', width: '350px' }}>
-            Назначение материального лица
-          </h3>
-          <hr style={{ marginTop: '30px', marginBottom: '2rem' }} />
-
-          <div
+      <TableContainer Lg>
+        <form className="pinning__form" onSubmit={FormSubmit}>
+          <div className="pinning__title">
+            <h3>Закрепление материального лица за конкретным объектом</h3>
+            <FontAwesomeIcon
+              className="navigate-back"
+              icon={faArrowLeft}
+              onClick={() => navigate(-1)}
+            />
+          </div>
+          <hr className="pinning__line" />
+          {/* grid */}
+          <article
             style={{
               width: '500px',
               height: '250px',
@@ -434,20 +450,17 @@ export default function PinningEmployee() {
               float: 'left',
             }}
           >
-            <label htmlFor="date" className="add">
-              Дата назначения:
-            </label>
+            <label htmlFor="date">Дата назначения:</label>
             <input
               type="datetime-local"
-              id="form-input"
+              className="main__input"
+              id="date"
               onChange={(e) => {
                 setData(e.target.value);
                 console.log(data);
               }}
             />
-            <label htmlFor="category">
-              Выберите категорию материальной единицы
-            </label>
+            <label htmlFor="category">Выберите категорию объекта:</label>
             <section className="pinning">
               <Select
                 isClearable
@@ -472,14 +485,11 @@ export default function PinningEmployee() {
                 </>
               )}
             </section>
-            <Button isActive onClick={() => navigate('/employee')}>
-              Назад
-            </Button>
-            <Button isActive onClick={() => window.location.reload()}>
+            <Button isActive onClick={() => resetField()}>
               Сбросить все
             </Button>
-          </div>
-
+          </article>
+          {/* Избыточный код, исправить */}
           {types === 'Компьютер' && (
             <div className="pinning_form">
               <section className="pinning">
@@ -709,7 +719,7 @@ export default function PinningEmployee() {
           {selected === 'Система вентиляции' && (
             <div className="pinning_form">
               <section className="pinning">
-                <label htmlFor="ventilation" className="add">
+                <label htmlFor="ventilation">
                   Выберите систему из имеющегося списка:
                 </label>
                 <Select
@@ -721,7 +731,7 @@ export default function PinningEmployee() {
                   placeholder="Система вентиляции..."
                 />
               </section>
-              <label htmlFor="employee" className="add">
+              <label htmlFor="employee">
                 Выберите сотрудника, которому будет присвоена система:
               </label>
               <Select
@@ -744,7 +754,7 @@ export default function PinningEmployee() {
             </div>
           )}
         </form>
-      </section>
+      </TableContainer>
     </>
   );
 }

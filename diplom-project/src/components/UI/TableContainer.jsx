@@ -1,9 +1,13 @@
 import { React } from 'react';
 
-const TableContainer = ({ children }) => {
+const TableContainer = ({ Lg, children }) => {
   return (
     <section style={{ display: 'flex', justifyContent: 'center' }}>
-      <div className="table__container">{children}</div>
+      <div
+        className={Lg ? 'table__container container-lg' : 'table__container'}
+      >
+        {children}
+      </div>
     </section>
   );
 };
