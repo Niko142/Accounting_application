@@ -19,4 +19,15 @@
     margin-top: 1rem;
     margin-bottom: 2rem;
   }
+  &__container {
+    display: grid;
+    column-gap: 30px;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: auto;
+
+    & article label:not(:first-child) {
+      display: block;
+      margin-top: 2rem;
+    }
+  }
 }

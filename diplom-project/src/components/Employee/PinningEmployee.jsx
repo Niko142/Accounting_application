@@ -9,10 +9,12 @@ import Button from 'components/Button/Button';
 import { toast, ToastContainer } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import TableContainer from 'components/UI/TableContainer';
+import EmployeeSelect from './UI/EmployeeSelect';
+import ObjectSelect from './UI/ObjectSelect';
 
-// Убрать все это
+// Убрать излишние state (их очень много)
 export default function PinningEmployee() {
-  const navigate = useNavigate('');
+  const navigate = useNavigate();
   const [id, setId] = useState({
     computer: null,
     laptop: null,
@@ -49,7 +51,7 @@ export default function PinningEmployee() {
     } else {
       setValid(true);
     }
-  }, [data, employee, valid]);
+  }, [data, employee]);
 
   const pinningFurniture = () => {
     Axios.post('http://localhost:3001/pinning-employee', {
@@ -415,7 +417,15 @@ export default function PinningEmployee() {
 
   // Сброс состояния (пока не до конца, потому что все состояния надо убирать)
   function resetField() {
-    setId({});
+    setId({
+      computer: null,
+      laptop: null,
+      screen: null,
+      scanner: null,
+      camera: null,
+      furniture: null,
+      ventilation: null,
+    });
     setSelected(null);
     setData(null);
     setTypes('-');
@@ -425,6 +435,54 @@ export default function PinningEmployee() {
 
   const FormSubmit = (event) => {
     event.preventDefault();
+  };
+
+  const equipmentTypes = {
+    Компьютер: {
+      id: 'computer',
+      options: selectComputer,
+      setFunction: setComputers,
+      pinningFunction: pinningComputer,
+    },
+    Ноутбук: {
+      id: 'laptop',
+      options: selectLaptop,
+      setFunction: setLaptops,
+      pinningFunction: pinningLaptop,
+    },
+    Монитор: {
+      id: 'screen',
+      options: selectScreen,
+      setFunction: setScreens,
+      pinningFunction: pinningScreen,
+    },
+    МФУ: {
+      id: 'scanner',
+      options: selectScanner,
+      setFunction: setScanners,
+      pinningFunction: pinningScanner,
+    },
+    Камера: {
+      id: 'camera',
+      options: selectCamera,
+      setFunction: setCameras,
+      pinningFunction: pinningCamera,
+    },
+  };
+
+  const selectedTypes = {
+    Мебель: {
+      id: 'furniture',
+      options: selectFurniture,
+      setFunction: setFurnitures,
+      pinningFunction: pinningFurniture,
+    },
+    'Система вентиляции': {
+      id: 'ventilation',
+      options: selectVentilation,
+      setFunction: setVentilations,
+      pinningFunction: pinningVentilation,
+    },
   };
 
   return (
@@ -440,319 +498,86 @@ export default function PinningEmployee() {
               onClick={() => navigate(-1)}
             />
           </div>
+
           <hr className="pinning__line" />
-          {/* grid */}
-          <article
-            style={{
-              width: '500px',
-              height: '250px',
-              padding: '10px',
-              float: 'left',
-            }}
-          >
-            <label htmlFor="date">Дата назначения:</label>
-            <input
-              type="datetime-local"
-              className="main__input"
-              id="date"
-              onChange={(e) => {
-                setData(e.target.value);
-                console.log(data);
-              }}
-            />
-            <label htmlFor="category">Выберите категорию объекта:</label>
-            <section className="pinning">
+
+          <div className="pinning__container">
+            <article>
+              <label htmlFor="date">Дата назначения:</label>
+              <input
+                type="datetime-local"
+                className="main__input"
+                id="date"
+                onChange={(e) => {
+                  setData(e.target.value);
+                }}
+              />
+              <label htmlFor="category">Категория:</label>
               <Select
                 isClearable
-                placeholder=""
+                placeholder="Выберите категорию объекта"
                 options={category}
-                onChange={(e) => (!e ? setSelected('') : setSelected(e.value))}
+                onChange={(e) => (e ? setSelected(e.value) : setSelected(''))}
               />
-            </section>
-            <section className="pinning">
               {selected === 'Оргтехника' && (
                 <>
-                  {' '}
-                  <label htmlFor="type" className="add">
-                    Выберите тип техники:
-                  </label>
+                  <label htmlFor="type">Тип:</label>
                   <Select
                     isClearable
-                    placeholder=""
+                    placeholder="Выберите тип оргтехники"
                     options={type}
-                    onChange={(e) => (!e ? setTypes('') : setTypes(e.value))}
+                    onChange={(e) => (e ? setTypes(e.value) : setTypes(''))}
                   />
                 </>
               )}
-            </section>
-            <Button isActive onClick={() => resetField()}>
-              Сбросить все
-            </Button>
-          </article>
-          {/* Избыточный код, исправить */}
-          {types === 'Компьютер' && (
-            <div className="pinning_form">
-              <section className="pinning">
-                <label htmlFor="computer" className="add">
-                  Выберите необходимый компьютер:
-                </label>
-                <Select
-                  options={selectComputer}
-                  onChange={(e) => {
-                    setComputers(e.value);
-                    setId({ computer: +e.key });
-                  }}
-                  placeholder="Компьютер"
+              <Button isActive onClick={() => resetField()}>
+                Сбросить все
+              </Button>
+            </article>
+            {equipmentTypes[types] && (
+              <article>
+                <ObjectSelect
+                  label={`${types}`}
+                  options={equipmentTypes[types].options}
+                  setState={equipmentTypes[types].setFunction}
+                  setId={setId}
                 />
-              </section>
-              <label htmlFor="employee" className="add">
-                Выберите сотрудника, которому будет присвоен компьютер:
-              </label>
-              <Select
-                options={selectedEmployee}
-                onChange={(e) => setEmployees(+e.value)}
-                placeholder="Сотрудник..."
-              />
-              <section
-                style={{ position: 'relative', top: '10rem', right: '10rem' }}
-              >
+                <EmployeeSelect
+                  options={selectedEmployee}
+                  setState={setEmployees}
+                />
                 <Button
                   disabled={!valid}
                   isActive={valid}
-                  onClick={pinningComputer}
+                  onClick={equipmentTypes[types].pinningFunction}
                 >
                   Закрепить
                 </Button>
-                <ToastContainer />
-              </section>
-            </div>
-          )}
-          {types === 'Ноутбук' && (
-            <div className="pinning_form">
-              <section className="pinning">
-                <label htmlFor="computer" className="add">
-                  Выберите необходимый ноутбук:
-                </label>
-                <Select
-                  options={selectLaptop}
-                  onChange={(e) => {
-                    setLaptops(e.value);
-                    setId({ laptop: +e.key });
-                  }}
-                  placeholder="Ноутбук"
+              </article>
+            )}
+            {selectedTypes[selected] && (
+              <article>
+                <ObjectSelect
+                  label={`${selected}`}
+                  options={selectedTypes[selected].options}
+                  setState={selectedTypes[selected].setFunction}
+                  setId={setId}
                 />
-              </section>
-              <label htmlFor="employee" className="add">
-                Выберите сотрудника, которому будет присвоен ноутбук:
-              </label>
-              <Select
-                options={selectedEmployee}
-                onChange={(e) => setEmployees(+e.value)}
-                placeholder="Сотрудник..."
-              />
-              <section
-                style={{ position: 'relative', top: '10rem', right: '10rem' }}
-              >
+                <EmployeeSelect
+                  options={selectedEmployee}
+                  setState={setEmployees}
+                />
                 <Button
                   disabled={!valid}
                   isActive={valid}
-                  onClick={pinningLaptop}
+                  onClick={selectedTypes[selected].pinningFunction}
                 >
                   Закрепить
                 </Button>
-                <ToastContainer />
-              </section>
-            </div>
-          )}
-
-          {types === 'Монитор' && (
-            <div className="pinning_form">
-              <section className="pinning">
-                <label htmlFor="computer" className="add">
-                  Выберите необходимый монитор:
-                </label>
-                <Select
-                  options={selectScreen}
-                  onChange={(e) => {
-                    setScreens(e.value);
-                    setId({ screen: +e.key });
-                  }}
-                  placeholder="Монитор"
-                />
-              </section>
-              <label htmlFor="employee" className="add">
-                Выберите сотрудника, которому будет присвоен монитор:
-              </label>
-              <Select
-                options={selectedEmployee}
-                onChange={(e) => setEmployees(+e.value)}
-                placeholder="Сотрудник..."
-              />
-              <section
-                style={{ position: 'relative', top: '10rem', right: '10rem' }}
-              >
-                <Button
-                  disabled={!valid}
-                  isActive={valid}
-                  onClick={pinningScreen}
-                >
-                  Закрепить
-                </Button>
-                <ToastContainer />
-              </section>
-            </div>
-          )}
-
-          {types === 'МФУ' && (
-            <div className="pinning_form">
-              <section className="pinning">
-                <label htmlFor="scanner" className="add">
-                  Выберите необходимый МФУ:
-                </label>
-                <Select
-                  options={selectScanner}
-                  onChange={(e) => {
-                    setScanners(e.value);
-                    setId({ scanner: +e.key });
-                  }}
-                  placeholder="МФУ"
-                />
-              </section>
-              <label htmlFor="employee" className="add">
-                Выберите сотрудника, которому будет присвоен МФУ:
-              </label>
-              <Select
-                options={selectedEmployee}
-                onChange={(e) => setEmployees(+e.value)}
-                placeholder="Сотрудник..."
-              />
-              <section
-                style={{ position: 'relative', top: '10rem', right: '10rem' }}
-              >
-                <Button
-                  disabled={!valid}
-                  isActive={valid}
-                  onClick={pinningScanner}
-                >
-                  Закрепить
-                </Button>
-                <ToastContainer />
-              </section>
-            </div>
-          )}
-
-          {types === 'Камера' && (
-            <div className="pinning_form">
-              <section className="pinning">
-                <label htmlFor="camera" className="add">
-                  Выберите необходимую камеру:
-                </label>
-                <Select
-                  options={selectCamera}
-                  onChange={(e) => {
-                    setCameras(e.value);
-                    setId({ camera: +e.key });
-                  }}
-                  placeholder="Камера"
-                />
-              </section>
-              <label htmlFor="employee" className="add">
-                Выберите сотрудника, которому будет присвоена камера:
-              </label>
-              <Select
-                options={selectedEmployee}
-                onChange={(e) => setEmployees(+e.value)}
-                placeholder="Сотрудник..."
-              />
-              <section
-                style={{ position: 'relative', top: '10rem', right: '10rem' }}
-              >
-                <Button
-                  disabled={!valid}
-                  isActive={valid}
-                  onClick={pinningCamera}
-                >
-                  Закрепить
-                </Button>
-                <ToastContainer />
-              </section>
-            </div>
-          )}
-
-          {selected === 'Мебель' && (
-            <div className="pinning_form">
-              <section className="pinning">
-                <label htmlFor="furniture" className="add">
-                  Выберите необходимую мебель из имеющегося списка:
-                </label>
-                <Select
-                  options={selectFurniture}
-                  onChange={(e) => {
-                    setFurnitures(e.value);
-                    setId({ furniture: +e.key });
-                  }}
-                  placeholder="Мебель"
-                />
-              </section>
-              <label htmlFor="employee" className="add">
-                Выберите сотрудника, которому будет присвоена мебель:
-              </label>
-              <Select
-                options={selectedEmployee}
-                onChange={(e) => setEmployees(+e.value)}
-                placeholder="Сотрудник..."
-              />
-              <section
-                style={{ position: 'relative', top: '10rem', right: '10rem' }}
-              >
-                <Button
-                  disabled={!valid}
-                  isActive={valid}
-                  onClick={pinningFurniture}
-                >
-                  Закрепить
-                </Button>
-                <ToastContainer />
-              </section>
-            </div>
-          )}
-          {selected === 'Система вентиляции' && (
-            <div className="pinning_form">
-              <section className="pinning">
-                <label htmlFor="ventilation">
-                  Выберите систему из имеющегося списка:
-                </label>
-                <Select
-                  options={selectVentilation}
-                  onChange={(e) => {
-                    setVentilations(e.value);
-                    setId({ ventilation: +e.key });
-                  }}
-                  placeholder="Система вентиляции..."
-                />
-              </section>
-              <label htmlFor="employee">
-                Выберите сотрудника, которому будет присвоена система:
-              </label>
-              <Select
-                options={selectedEmployee}
-                onChange={(e) => setEmployees(+e.value)}
-                placeholder="Сотрудник..."
-              />
-              <section
-                style={{ position: 'relative', top: '10rem', right: '10rem' }}
-              >
-                <Button
-                  disabled={!valid}
-                  isActive={valid}
-                  onClick={pinningVentilation}
-                >
-                  Закрепить
-                </Button>
-                <ToastContainer />
-              </section>
-            </div>
-          )}
+              </article>
+            )}
+          </div>
+          <ToastContainer />
         </form>
       </TableContainer>
     </>
