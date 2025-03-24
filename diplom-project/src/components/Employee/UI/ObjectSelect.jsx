@@ -4,8 +4,9 @@ import Select from 'react-select';
 const ObjectSelect = ({ label, options, setState, setId }) => {
   return (
     <>
-      <label htmlFor={setId}>{label}:</label>
+      <label htmlFor={'setId'}>{label}:</label>
       <Select
+        classNamePrefix="pinning-select"
         options={options}
         onChange={(e) => {
           setState(e ? e.value : '');

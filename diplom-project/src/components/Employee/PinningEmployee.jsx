@@ -43,6 +43,7 @@ export default function PinningEmployee() {
   const [scanner, setScanners] = useState(null);
   const [selectCamera, setCamera] = useState(['']);
   const [camera, setCameras] = useState(null);
+
   const [valid, setValid] = useState(false);
 
   useEffect(() => {
@@ -415,24 +416,6 @@ export default function PinningEmployee() {
     FetchVentilation();
   }, []);
 
-  // Сброс состояния (пока не до конца, потому что все состояния надо убирать)
-  function resetField() {
-    setId({
-      computer: null,
-      laptop: null,
-      screen: null,
-      scanner: null,
-      camera: null,
-      furniture: null,
-      ventilation: null,
-    });
-    setSelected(null);
-    setData(null);
-    setTypes('-');
-    setEmployees(null);
-    setValid(false);
-  }
-
   const FormSubmit = (event) => {
     event.preventDefault();
   };
@@ -514,6 +497,7 @@ export default function PinningEmployee() {
               />
               <label htmlFor="category">Категория:</label>
               <Select
+                classNamePrefix="pinning-select"
                 isClearable
                 placeholder="Выберите категорию объекта"
                 options={category}
@@ -523,6 +507,7 @@ export default function PinningEmployee() {
                 <>
                   <label htmlFor="type">Тип:</label>
                   <Select
+                    classNamePrefix="pinning-select"
                     isClearable
                     placeholder="Выберите тип оргтехники"
                     options={type}
@@ -530,9 +515,6 @@ export default function PinningEmployee() {
                   />
                 </>
               )}
-              <Button isActive onClick={() => resetField()}>
-                Сбросить все
-              </Button>
             </article>
             {equipmentTypes[types] && (
               <article>
@@ -547,11 +529,12 @@ export default function PinningEmployee() {
                   setState={setEmployees}
                 />
                 <Button
+                  id="pinning__btn"
                   disabled={!valid}
                   isActive={valid}
                   onClick={equipmentTypes[types].pinningFunction}
                 >
-                  Закрепить
+                  Закрепить объект
                 </Button>
               </article>
             )}
@@ -568,11 +551,12 @@ export default function PinningEmployee() {
                   setState={setEmployees}
                 />
                 <Button
+                  id="pinning__btn"
                   disabled={!valid}
                   isActive={valid}
                   onClick={selectedTypes[selected].pinningFunction}
                 >
-                  Закрепить
+                  Закрепить объект
                 </Button>
               </article>
             )}

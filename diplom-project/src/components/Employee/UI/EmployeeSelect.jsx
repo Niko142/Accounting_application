@@ -8,6 +8,7 @@ const EmployeeSelect = ({ options, setState }) => {
         Выберите сотрудника, который будет закреплен за объектом:
       </label>
       <Select
+        classNamePrefix="pinning-select"
         options={options}
         onChange={(e) => setState(e ? +e.value : '')}
         placeholder="Сотрудник..."

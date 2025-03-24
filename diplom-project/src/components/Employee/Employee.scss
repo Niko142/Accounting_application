@@ -1,10 +1,11 @@
+@use 'assets/styles/variables' as v;
+
 .employee__header {
   margin-bottom: 15px;
   &.header-center {
     text-align: center;
   }
 }
-
 
 .pinning {
   &__title {
@@ -25,9 +26,43 @@
     grid-template-columns: repeat(2, 1fr);
     grid-template-rows: auto;
 
+    & #pinning__btn {
+      margin-top: 2rem;
+    }
+
     & article label:not(:first-child) {
       display: block;
       margin-top: 2rem;
     }
+  }
+}
+
+// SELECT
+.pinning-select {
+  &__control {
+    border: 2px solid v.$border-input !important;
+    font-size: 1rem !important;
+    min-height: 41px !important;
+    max-height: 41px !important;
+    align-items: center !important;
+
+    &--is-focused {
+      border-color: dodgerblue !important;
+      box-shadow: 0 0 8px 0 dodgerblue !important;
+    }
+  }
+
+  &__value-container {
+    font-size: 1rem;
+    padding: 0 8px !important;
+  }
+
+  &__indicators {
+    height: 41px !important;
+  }
+
+  &__dropdown-indicator,
+  &__clear-indicator {
+    padding: 8px !important;
   }
 }

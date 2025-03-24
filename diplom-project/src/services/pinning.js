@@ -2,7 +2,7 @@ import Axios from 'axios';
 
 const API_URL = 'http://localhost:3001';
 
-export async function getEmployees(abortController) {
+export async function fetchEmployees(abortController) {
   try {
     const res = await Axios.get(`${API_URL}/select_employee`, {
       signal: abortController.signal,
@@ -16,7 +16,7 @@ export async function getEmployees(abortController) {
   }
 }
 
-export async function getItemsByType(itemType, abortController) {
+export async function fetchItem(itemType, abortController) {
   const endpoints = {
     computer: `${API_URL}/computer`,
     laptop: `${API_URL}/select_laptop`,
@@ -42,7 +42,7 @@ export async function getItemsByType(itemType, abortController) {
   }
 }
 
-export async function pinEmployeeToItem(formData) {
+export async function pinningEmployee(formData) {
   try {
     const res = await Axios.post(`${API_URL}/pinning-employee`, formData);
     return res.data.message === 'Успешное добавление';
@@ -52,7 +52,7 @@ export async function pinEmployeeToItem(formData) {
   }
 }
 
-export async function updatePinnedItem(itemType, formData) {
+export async function updateItem(itemType, formData) {
   try {
     const res = await Axios.post(`${API_URL}/update_${itemType}`, formData);
     return res.data.message === 'Успешное добавление';
