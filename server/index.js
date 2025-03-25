@@ -717,11 +717,10 @@ app.get("/not_sklad_cabinet", (req, res) => {
 app.post("/update_ventilation", (req, res) => {
   const employee = req.body.employee;
   const id = req.body.id;
-  const model = req.body.model;
   db.query(
-    "UPDATE ventilation_description SET employee = ? WHERE ventilation_id = ? AND model = ?",
-    [employee, id, model],
-    (err, result) => {
+    "UPDATE ventilation_description SET employee = ? WHERE ventilation_id = ?",
+    [employee, id],
+    (err) => {
       if (err) {
         res.send({ err: err });
       } else {
@@ -737,7 +736,7 @@ app.post("/update_furniture", (req, res) => {
   db.query(
     "UPDATE furniture_description SET employee = ? WHERE furniture_id = ?",
     [employee, id],
-    (err, result) => {
+    (err) => {
       if (err) {
         res.send({ err: err });
       } else {
@@ -750,11 +749,10 @@ app.post("/update_furniture", (req, res) => {
 app.post("/update_computer", (req, res) => {
   const employee = req.body.employee;
   const id = req.body.id;
-  const name = req.body.name;
   db.query(
-    "UPDATE computer SET employee = ? WHERE id_computer = ? AND name = ?",
-    [employee, id, name],
-    (err, result) => {
+    "UPDATE computer SET employee = ? WHERE id_computer = ?",
+    [employee, id],
+    (err) => {
       if (err) {
         res.send({ err: err });
       } else {
@@ -767,11 +765,10 @@ app.post("/update_computer", (req, res) => {
 app.post("/update_laptop", (req, res) => {
   const employee = req.body.employee;
   const id = req.body.id;
-  const model = req.body.model;
   db.query(
-    "UPDATE laptop_description SET employee = ? WHERE laptop_id = ? AND model = ?",
-    [employee, id, model],
-    (err, result) => {
+    "UPDATE laptop_description SET employee = ? WHERE laptop_id = ?",
+    [employee, id],
+    (err) => {
       if (err) {
         res.send({ err: err });
       } else {
@@ -784,11 +781,10 @@ app.post("/update_laptop", (req, res) => {
 app.post("/update_screen", (req, res) => {
   const employee = req.body.employee;
   const id = req.body.id;
-  const model = req.body.model;
   db.query(
-    "UPDATE screen_description SET employee = ? WHERE screen_id = ? AND model = ?",
-    [employee, id, model],
-    (err, result) => {
+    "UPDATE screen_description SET employee = ? WHERE screen_id = ?",
+    [employee, id],
+    (err) => {
       if (err) {
         res.send({ err: err });
       } else {
@@ -801,11 +797,10 @@ app.post("/update_screen", (req, res) => {
 app.post("/update_scanner", (req, res) => {
   const employee = req.body.employee;
   const id = req.body.id;
-  const nam = req.body.nam;
   db.query(
-    "UPDATE scanner_description SET employee = ? WHERE scanner_id = ? AND nam = ?",
-    [employee, id, nam],
-    (err, result) => {
+    "UPDATE scanner_description SET employee = ? WHERE scanner_id = ?",
+    [employee, id],
+    (err) => {
       if (err) {
         res.send({ err: err });
       } else {
@@ -818,11 +813,10 @@ app.post("/update_scanner", (req, res) => {
 app.post("/update_camera", (req, res) => {
   const employee = req.body.employee;
   const id = req.body.id;
-  const model = req.body.model;
   db.query(
-    "UPDATE camera_description SET employee = ? WHERE camera_id = ? AND model = ?",
-    [employee, id, model],
-    (err, result) => {
+    "UPDATE camera_description SET employee = ? WHERE camera_id = ?",
+    [employee, id],
+    (err) => {
       if (err) {
         res.send({ err: err });
       } else {

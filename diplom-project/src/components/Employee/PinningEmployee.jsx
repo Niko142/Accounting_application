@@ -12,459 +12,212 @@ import TableContainer from 'components/UI/TableContainer';
 import EmployeeSelect from './UI/EmployeeSelect';
 import ObjectSelect from './UI/ObjectSelect';
 
-// Убрать излишние state (их очень много)
 export default function PinningEmployee() {
   const navigate = useNavigate();
   const [id, setId] = useState({
-    computer: null,
-    laptop: null,
-    screen: null,
-    scanner: null,
-    camera: null,
+    computers: null,
+    laptops: null,
+    screens: null,
+    scanners: null,
+    cameras: null,
     furniture: null,
     ventilation: null,
   });
+  const [items, setItems] = useState({
+    employees: [],
+    computers: [],
+    laptops: [],
+    screens: [],
+    scanners: [],
+    cameras: [],
+    furniture: [],
+    ventilation: [],
+  });
+
   const [selected, setSelected] = useState(null);
   const [data, setData] = useState(null);
   const [types, setTypes] = useState('-');
-  const [selectedEmployee, setEmployee] = useState(['']);
   const [employee, setEmployees] = useState(null);
-  const [selectFurniture, setFurniture] = useState(['']);
-  const [furniture, setFurnitures] = useState(null);
-  const [selectVentilation, setVentilation] = useState(['']);
-  const [ventilation, setVentilations] = useState(null);
-  const [selectComputer, setComputer] = useState(['']);
-  const [computer, setComputers] = useState(null);
-  const [selectLaptop, setLaptop] = useState(['']);
-  const [laptop, setLaptops] = useState(null);
-  const [selectScreen, setScreen] = useState(['']);
-  const [screen, setScreens] = useState(null);
-  const [selectScanner, setScanner] = useState(['']);
-  const [scanner, setScanners] = useState(null);
-  const [selectCamera, setCamera] = useState(['']);
-  const [camera, setCameras] = useState(null);
-
   const [valid, setValid] = useState(false);
 
   useEffect(() => {
-    if (data === null || employee === '') {
-      setValid(false);
-    } else {
-      setValid(true);
-    }
+    setValid(data !== null && employee !== null);
   }, [data, employee]);
 
-  const pinningFurniture = () => {
+  const pinningItem = (endpoint, itemsKey) => {
+    if (!id[itemsKey]) {
+      toast.error('Ошибка: объект не выбран!');
+      return;
+    }
+
+    const selectedObject = items[itemsKey]?.find(
+      (obj) =>
+        obj.key === id[itemsKey] ||
+        obj[`${itemsKey.slice(0, -1)}_id`] === id[itemsKey],
+    );
+
     Axios.post('http://localhost:3001/pinning-employee', {
       date: data,
       category: selected,
       type: types,
-      unit: furniture,
-      employee: employee,
-    }).then((response) => {
-      console.log(response);
-      if (response.data.message === 'Успешное добавление') {
-        console.log(response);
-        toast.success('Успешное закрепление мебели');
-      } else {
-        toast.error('Возникла ошибка при закреплении');
-      }
-    });
-    Axios.post('http://localhost:3001/update_furniture', {
-      employee: employee,
-      id: id.furniture,
-    }).then((response) => {
-      if (response.data.message === 'Успешное добавление') {
-        console.log(response);
-        toast.success(
-          'Успешное закрепление вентиляционной системы за сотрудником',
-        );
-      } else {
-        toast.error('Возникла ошибка при закреплении');
-      }
-    });
-  };
-
-  const pinningVentilation = () => {
-    Axios.post('http://localhost:3001/pinning-employee', {
-      date: data,
-      category: selected,
-      type: types,
-      unit: ventilation,
-      employee: employee,
-    }).then((response) => {
-      console.log(response);
-      if (response.data.message === 'Успешное добавление') {
-        console.log(response);
-        toast.success('Запись успешно создана');
-      } else {
-        toast.error('Возникла ошибка при добавлении записи');
-      }
-    });
-    Axios.post('http://localhost:3001/update_ventilation', {
-      employee: employee,
-      id: id.ventilation,
-      model: ventilation,
-    }).then((response) => {
-      if (response.data.message === 'Успешное добавление') {
-        console.log(response);
-        toast.success(
-          'Успешное закрепление вентиляционной системы за сотрудником',
-        );
-      } else {
-        toast.error('Возникла ошибка при закреплении');
-      }
-    });
-  };
-
-  const pinningComputer = () => {
-    Axios.post('http://localhost:3001/pinning-employee', {
-      date: data,
-      category: selected,
-      type: types,
-      unit: computer,
-      employee: employee,
-    }).then((response) => {
-      console.log(response);
-      if (response.data.message === 'Успешное добавление') {
-        console.log(response);
-        toast.success('Запись успешно создана');
-      } else {
-        toast.error('Возникла ошибка при создании записи');
-      }
-    });
-    Axios.post('http://localhost:3001/update_computer', {
-      employee: employee,
-      id: id.computer,
-      name: computer,
-    }).then((response) => {
-      if (response.data.message === 'Успешное добавление') {
-        console.log(response);
-        toast.success('Успешное закрепление компьютера за сотрудником');
-      } else {
-        toast.error('Возникла ошибка при закреплении');
-      }
-    });
-  };
-
-  const pinningLaptop = () => {
-    Axios.post('http://localhost:3001/pinning-employee', {
-      date: data,
-      category: selected,
-      type: types,
-      unit: laptop,
-      employee: employee,
-    }).then((response) => {
-      console.log(response);
-      if (response.data.message === 'Успешное добавление') {
-        console.log(response);
-        toast.success('Запись успешно создана');
-      } else {
-        toast.error('Возникла ошибка при создании записи');
-      }
-    });
-    Axios.post('http://localhost:3001/update_laptop', {
-      employee: employee,
-      id: id.laptop,
-      model: laptop,
-    }).then((response) => {
-      if (response.data.message === 'Успешное добавление') {
-        console.log(response);
-        toast.success('Успешное закрепление ноутбука за сотрудником');
-      } else {
-        toast.error('Возникла ошибка при закреплении');
-      }
-    });
-  };
-
-  const pinningScreen = () => {
-    Axios.post('http://localhost:3001/pinning-employee', {
-      date: data,
-      category: selected,
-      type: types,
-      unit: screen,
-      employee: employee,
-    }).then((response) => {
-      console.log(response);
-      if (response.data.message === 'Успешное добавление') {
-        console.log(response);
-        toast.success('Запись успешно создана');
-      } else {
-        toast.error('Возникла ошибка при создании записи');
-      }
-    });
-    Axios.post('http://localhost:3001/update_screen', {
-      employee: employee,
-      id: id.screen,
-      model: screen,
-    }).then((response) => {
-      if (response.data.message === 'Успешное добавление') {
-        console.log(response);
-        toast.success('Успешное закрепление монитора за сотрудником');
-      } else {
-        toast.error('Возникла ошибка при закреплении');
-      }
-    });
-  };
-  const pinningScanner = () => {
-    Axios.post('http://localhost:3001/pinning-employee', {
-      date: data,
-      category: selected,
-      type: types,
-      unit: scanner,
-      employee: employee,
-    }).then((response) => {
-      console.log(response);
-      if (response.data.message === 'Успешное добавление') {
-        console.log(response);
-        toast.success('Запись успешно создана');
-      } else {
-        toast.error('Возникла ошибка при создании записи');
-      }
-    });
-    Axios.post('http://localhost:3001/update_scanner', {
-      employee: employee,
-      id: id.scanner,
-      nam: scanner,
-    }).then((response) => {
-      if (response.data.message === 'Успешное добавление') {
-        console.log(response);
-        toast.success('Успешное закрепление МФУ за сотрудником');
-      } else {
-        toast.error('Возникла ошибка при закреплении');
-      }
-    });
-  };
-
-  const pinningCamera = () => {
-    Axios.post('http://localhost:3001/pinning-employee', {
-      date: data,
-      category: selected,
-      type: types,
-      unit: camera,
-      employee: employee,
-    }).then((response) => {
-      console.log(response);
-      if (response.data.message === 'Успешное добавление') {
-        console.log(response);
-        toast.success('Запись успешно создана');
-      } else {
-        toast.error('Возникла ошибка при создании записи');
-      }
-    });
-    Axios.post('http://localhost:3001/update_camera', {
-      employee: employee,
-      id: id.camera,
-      model: camera,
-    }).then((response) => {
-      if (response.data.message === 'Успешное добавление') {
-        console.log(response);
-        toast.success('Успешное закрепление камеры за сотрудником');
-      } else {
-        toast.error('Возникла ошибка при закреплении');
-      }
-    });
-  };
-
-  useEffect(() => {
-    const FetchEmployee = async () => {
-      const arr = [];
-      await Axios.get('http://localhost:3001/select_employee').then((res) => {
-        let result = res.data;
-        result.map((employee) => {
-          return arr.push({
-            value: employee.employee_id,
-            label:
-              employee.surname +
-              ' ' +
-              employee.name +
-              ' ' +
-              employee.patronymic,
-          });
-        });
-        setEmployee(arr);
+      unit: selectedObject.label,
+      employee: employee.key,
+    })
+      .then((res) => {
+        res.data.message === 'Успешное добавление'
+          ? toast.success('Успешное закрепление')
+          : toast.error('Ошибка при закреплении объекта');
+      })
+      .catch((error) => {
+        console.error('Ошибка при закреплении:', error);
+        toast.error('Ошибка сервера при закреплении');
       });
-    };
-    FetchEmployee();
-  }, []);
 
-  useEffect(() => {
-    const FetchComputer = async () => {
-      const arr = [];
-      await Axios.get('http://localhost:3001/computer').then((res) => {
-        let result = res.data;
-        result.map((computer) => {
-          return arr.push({
-            value: computer.name,
-            label: computer.name,
-            key: computer.id_computer,
-          });
-        });
-        setComputer(arr);
+    Axios.post(`http://localhost:3001/${endpoint}`, {
+      employee: employee.key,
+      id: id[itemsKey],
+    })
+      .then((response) => {
+        response.data.message === 'Успешное добавление'
+          ? toast.success('Объект закреплён за сотрудником')
+          : toast.error('Ошибка при обновлении объекта');
+      })
+      .catch((error) => {
+        console.error('Ошибка при обновлении объекта:', error);
+        toast.error('Ошибка сервера при обновлении объекта');
       });
-    };
-    FetchComputer();
-  }, []);
-
-  useEffect(() => {
-    const FetchLaptop = async () => {
-      const arr = [];
-      await Axios.get('http://localhost:3001/select_laptop').then((res) => {
-        let result = res.data;
-        result.map((laptop) => {
-          return arr.push({
-            value: laptop.model,
-            label: laptop.model,
-            key: laptop.laptop_id,
-          });
-        });
-        setLaptop(arr);
-      });
-    };
-    FetchLaptop();
-  }, []);
-
-  useEffect(() => {
-    const FetchScreen = async () => {
-      const arr = [];
-      await Axios.get('http://localhost:3001/select_screen').then((res) => {
-        let result = res.data;
-        result.map((screen) => {
-          return arr.push({
-            value: screen.model,
-            label: screen.model,
-            key: screen.screen_id,
-          });
-        });
-        setScreen(arr);
-      });
-    };
-    FetchScreen();
-  }, []);
-
-  useEffect(() => {
-    const FetchScanner = async () => {
-      const arr = [];
-      await Axios.get('http://localhost:3001/select_scanner').then((res) => {
-        let result = res.data;
-        result.map((scanner) => {
-          return arr.push({
-            value: scanner.nam,
-            label: scanner.nam,
-            key: scanner.scanner_id,
-          });
-        });
-        setScanner(arr);
-      });
-    };
-    FetchScanner();
-  }, []);
-
-  useEffect(() => {
-    const FetchCamera = async () => {
-      const arr = [];
-      await Axios.get('http://localhost:3001/select_camera').then((res) => {
-        let result = res.data;
-        result.map((camera) => {
-          return arr.push({
-            value: camera.model,
-            label: camera.model,
-            key: camera.camera_id,
-          });
-        });
-        setCamera(arr);
-      });
-    };
-    FetchCamera();
-  }, []);
-
-  useEffect(() => {
-    const FetchFurniture = async () => {
-      const arr = [];
-      await Axios.get('http://localhost:3001/select_furniture').then((res) => {
-        let result = res.data;
-        result.map((furniture) => {
-          return arr.push({
-            value: furniture.name + ' ' + furniture.model,
-            label: furniture.name + ' ' + furniture.model,
-            key: furniture.furniture_id,
-          });
-        });
-        setFurniture(arr);
-      });
-    };
-    FetchFurniture();
-  }, []);
-
-  useEffect(() => {
-    const FetchVentilation = async () => {
-      const arr = [];
-      await Axios.get('http://localhost:3001/select_ventilation').then(
-        (res) => {
-          let result = res.data;
-          result.map((ventilation) => {
-            return arr.push({
-              value: ventilation.model,
-              label: ventilation.model,
-              key: ventilation.ventilation_id,
-            });
-          });
-          setVentilation(arr);
-        },
-      );
-    };
-    FetchVentilation();
-  }, []);
-
-  const FormSubmit = (event) => {
-    event.preventDefault();
   };
+
+  const fetchItems = async (endpoint, key, valueKey = 'model', idKey) => {
+    try {
+      const res = await Axios.get(`http://localhost:3001/${endpoint}`);
+      const arr = res.data.map((item) => ({
+        value: item[valueKey],
+        label: item[valueKey],
+        key: item[idKey],
+        [`${idKey}`]: item[idKey],
+      }));
+      setItems((prev) => ({ ...prev, [key]: arr }));
+    } catch (error) {
+      console.error(`Ошибка загрузки ${key}:`, error);
+      toast.error(`Не удалось загрузить ${key}`);
+    }
+  };
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        await Promise.all([
+          fetchItems('select_employee', 'employees', 'surname', 'employee_id'),
+          fetchItems('computer', 'computers', 'name', 'id_computer'),
+          fetchItems('select_laptop', 'laptops', 'model', 'laptop_id'),
+          fetchItems('select_screen', 'screens', 'model', 'screen_id'),
+          fetchItems('select_scanner', 'scanners', 'nam', 'scanner_id'),
+          fetchItems('select_camera', 'cameras', 'model', 'camera_id'),
+          fetchItems('select_furniture', 'furniture', 'name', 'furniture_id'),
+          fetchItems(
+            'select_ventilation',
+            'ventilation',
+            'model',
+            'ventilation_id',
+          ),
+        ]);
+      } catch (error) {
+        console.error('Ошибка загрузки данных:', error);
+        toast.error('Не удалось загрузить данные');
+      }
+    };
+    loadData();
+  }, []);
 
   const equipmentTypes = {
     Компьютер: {
-      id: 'computer',
-      options: selectComputer,
-      setFunction: setComputers,
-      pinningFunction: pinningComputer,
+      id: 'computers',
+      options: items.computers,
+      setFunction: (e) =>
+        setId({
+          computers: e.key,
+          laptops: null,
+          screens: null,
+          scanners: null,
+          cameras: null,
+        }),
+      pinningFunction: () => pinningItem('update_computer', 'computers'),
     },
     Ноутбук: {
-      id: 'laptop',
-      options: selectLaptop,
-      setFunction: setLaptops,
-      pinningFunction: pinningLaptop,
+      id: 'laptops',
+      options: items.laptops,
+      setFunction: (e) =>
+        setId({
+          laptops: e.key,
+          computers: null,
+          screens: null,
+          scanners: null,
+          cameras: null,
+        }),
+      pinningFunction: () => pinningItem('update_laptop', 'laptops'),
     },
     Монитор: {
-      id: 'screen',
-      options: selectScreen,
-      setFunction: setScreens,
-      pinningFunction: pinningScreen,
+      id: 'screens',
+      options: items.screens,
+      setFunction: (e) =>
+        setId({
+          screens: e.key,
+          computers: null,
+          laptops: null,
+          scanners: null,
+          cameras: null,
+        }),
+      pinningFunction: () => pinningItem('update_screen', 'screens'),
     },
     МФУ: {
-      id: 'scanner',
-      options: selectScanner,
-      setFunction: setScanners,
-      pinningFunction: pinningScanner,
+      id: 'scanners',
+      options: items.scanners,
+      setFunction: (e) =>
+        setId({
+          scanners: e.key,
+          computers: null,
+          laptops: null,
+          screens: null,
+          cameras: null,
+        }),
+      pinningFunction: () => pinningItem('update_scanner', 'scanners'),
     },
     Камера: {
-      id: 'camera',
-      options: selectCamera,
-      setFunction: setCameras,
-      pinningFunction: pinningCamera,
+      id: 'cameras',
+      options: items.cameras,
+      setFunction: (e) =>
+        setId({
+          cameras: e.key,
+          computers: null,
+          laptops: null,
+          screens: null,
+          scanners: null,
+        }),
+      pinningFunction: () => pinningItem('update_camera', 'cameras'),
     },
   };
 
   const selectedTypes = {
     Мебель: {
       id: 'furniture',
-      options: selectFurniture,
-      setFunction: setFurnitures,
-      pinningFunction: pinningFurniture,
+      options: items.furniture,
+      setFunction: (e) =>
+        setId({
+          furniture: e.key,
+          ventilation: null,
+        }),
+      pinningFunction: () => pinningItem('update_furniture', 'furniture'),
     },
     'Система вентиляции': {
       id: 'ventilation',
-      options: selectVentilation,
-      setFunction: setVentilations,
-      pinningFunction: pinningVentilation,
+      options: items.ventilation,
+      setFunction: (e) =>
+        setId({
+          ventilation: e.key,
+          furniture: null,
+        }),
+      pinningFunction: () => pinningItem('update_ventilation', 'ventilation'),
     },
   };
 
@@ -472,7 +225,7 @@ export default function PinningEmployee() {
     <>
       <Header />
       <TableContainer Lg>
-        <form className="pinning__form" onSubmit={FormSubmit}>
+        <form className="pinning__form" onSubmit={(e) => e.preventDefault()}>
           <div className="pinning__title">
             <h3>Закрепление материального лица за конкретным объектом</h3>
             <FontAwesomeIcon
@@ -491,9 +244,7 @@ export default function PinningEmployee() {
                 type="datetime-local"
                 className="main__input"
                 id="date"
-                onChange={(e) => {
-                  setData(e.target.value);
-                }}
+                onChange={(e) => setData(e.target.value)}
               />
               <label htmlFor="category">Категория:</label>
               <Select
@@ -501,7 +252,7 @@ export default function PinningEmployee() {
                 isClearable
                 placeholder="Выберите категорию объекта"
                 options={category}
-                onChange={(e) => (e ? setSelected(e.value) : setSelected(''))}
+                onChange={(e) => setSelected(e?.value || '')}
               />
               {selected === 'Оргтехника' && (
                 <>
@@ -511,21 +262,21 @@ export default function PinningEmployee() {
                     isClearable
                     placeholder="Выберите тип оргтехники"
                     options={type}
-                    onChange={(e) => (e ? setTypes(e.value) : setTypes(''))}
+                    onChange={(e) => setTypes(e?.value || '')}
                   />
                 </>
               )}
             </article>
+            {/* Все что касается категории оргтехники */}
             {equipmentTypes[types] && (
               <article>
                 <ObjectSelect
                   label={`${types}`}
                   options={equipmentTypes[types].options}
                   setState={equipmentTypes[types].setFunction}
-                  setId={setId}
                 />
                 <EmployeeSelect
-                  options={selectedEmployee}
+                  options={items.employees}
                   setState={setEmployees}
                 />
                 <Button
@@ -538,16 +289,16 @@ export default function PinningEmployee() {
                 </Button>
               </article>
             )}
+            {/* Касаемо категории мебели и систем вентиляции */}
             {selectedTypes[selected] && (
               <article>
                 <ObjectSelect
                   label={`${selected}`}
                   options={selectedTypes[selected].options}
                   setState={selectedTypes[selected].setFunction}
-                  setId={setId}
                 />
                 <EmployeeSelect
-                  options={selectedEmployee}
+                  options={items.employees}
                   setState={setEmployees}
                 />
                 <Button

@@ -10,7 +10,7 @@ const EmployeeSelect = ({ options, setState }) => {
       <Select
         classNamePrefix="pinning-select"
         options={options}
-        onChange={(e) => setState(e ? +e.value : '')}
+        onChange={setState}
         placeholder="Сотрудник..."
       />
     </>
