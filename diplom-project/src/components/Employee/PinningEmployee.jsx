@@ -4,15 +4,17 @@ import { category, type } from 'data/data';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { React, useEffect, useState } from 'react';
-import Axios from 'axios';
 import Button from 'components/Button/Button';
 import { toast, ToastContainer } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import TableContainer from 'components/UI/TableContainer';
 import EmployeeSelect from './UI/EmployeeSelect';
 import ObjectSelect from './UI/ObjectSelect';
+import { fetchItems, pinningItem } from 'services/pinning';
+import { useEmployee } from 'context/EmployeeContext';
 
 export default function PinningEmployee() {
+  const { employees } = useEmployee();
   const navigate = useNavigate();
   const [id, setId] = useState({
     computers: null,
@@ -24,7 +26,6 @@ export default function PinningEmployee() {
     ventilation: null,
   });
   const [items, setItems] = useState({
-    employees: [],
     computers: [],
     laptops: [],
     screens: [],
@@ -44,90 +45,95 @@ export default function PinningEmployee() {
     setValid(data !== null && employee !== null);
   }, [data, employee]);
 
-  const pinningItem = (endpoint, itemsKey) => {
-    if (!id[itemsKey]) {
-      toast.error('Ошибка: объект не выбран!');
-      return;
-    }
-
-    const selectedObject = items[itemsKey]?.find(
-      (obj) =>
-        obj.key === id[itemsKey] ||
-        obj[`${itemsKey.slice(0, -1)}_id`] === id[itemsKey],
-    );
-
-    Axios.post('http://localhost:3001/pinning-employee', {
-      date: data,
-      category: selected,
-      type: types,
-      unit: selectedObject.label,
-      employee: employee.key,
-    })
-      .then((res) => {
-        res.data.message === 'Успешное добавление'
-          ? toast.success('Успешное закрепление')
-          : toast.error('Ошибка при закреплении объекта');
-      })
-      .catch((error) => {
-        console.error('Ошибка при закреплении:', error);
-        toast.error('Ошибка сервера при закреплении');
-      });
-
-    Axios.post(`http://localhost:3001/${endpoint}`, {
-      employee: employee.key,
-      id: id[itemsKey],
-    })
-      .then((response) => {
-        response.data.message === 'Успешное добавление'
-          ? toast.success('Объект закреплён за сотрудником')
-          : toast.error('Ошибка при обновлении объекта');
-      })
-      .catch((error) => {
-        console.error('Ошибка при обновлении объекта:', error);
-        toast.error('Ошибка сервера при обновлении объекта');
-      });
-  };
-
-  const fetchItems = async (endpoint, key, valueKey = 'model', idKey) => {
+  const handlePinningItem = async (endpoint, itemsKey) => {
     try {
-      const res = await Axios.get(`http://localhost:3001/${endpoint}`);
-      const arr = res.data.map((item) => ({
-        value: item[valueKey],
-        label: item[valueKey],
-        key: item[idKey],
-        [`${idKey}`]: item[idKey],
-      }));
-      setItems((prev) => ({ ...prev, [key]: arr }));
+      await pinningItem({
+        endpoint,
+        itemsKey,
+        idState: id,
+        itemsState: items,
+        employee,
+        formData: { date: data, category: selected, type: types },
+      });
+      toast.success('Оборудование закреплено успешно');
     } catch (error) {
-      console.error(`Ошибка загрузки ${key}:`, error);
-      toast.error(`Не удалось загрузить ${key}`);
+      toast.error(error.message);
     }
   };
 
   useEffect(() => {
+    const controller = new AbortController();
+
     const loadData = async () => {
       try {
         await Promise.all([
-          fetchItems('select_employee', 'employees', 'surname', 'employee_id'),
-          fetchItems('computer', 'computers', 'name', 'id_computer'),
-          fetchItems('select_laptop', 'laptops', 'model', 'laptop_id'),
-          fetchItems('select_screen', 'screens', 'model', 'screen_id'),
-          fetchItems('select_scanner', 'scanners', 'nam', 'scanner_id'),
-          fetchItems('select_camera', 'cameras', 'model', 'camera_id'),
-          fetchItems('select_furniture', 'furniture', 'name', 'furniture_id'),
+          fetchItems(
+            'computer',
+            'computers',
+            'name',
+            'id_computer',
+            setItems,
+            controller,
+          ),
+          fetchItems(
+            'select_laptop',
+            'laptops',
+            'model',
+            'laptop_id',
+            setItems,
+            controller,
+          ),
+          fetchItems(
+            'select_screen',
+            'screens',
+            'model',
+            'screen_id',
+            setItems,
+            controller,
+          ),
+          fetchItems(
+            'select_scanner',
+            'scanners',
+            'nam',
+            'scanner_id',
+            setItems,
+            controller,
+          ),
+          fetchItems(
+            'select_camera',
+            'cameras',
+            'model',
+            'camera_id',
+            setItems,
+            controller,
+          ),
+          fetchItems(
+            'select_furniture',
+            'furniture',
+            'name',
+            'furniture_id',
+            setItems,
+            controller,
+          ),
           fetchItems(
             'select_ventilation',
             'ventilation',
             'model',
             'ventilation_id',
+            setItems,
+            controller,
           ),
         ]);
       } catch (error) {
-        console.error('Ошибка загрузки данных:', error);
-        toast.error('Не удалось загрузить данные');
+        toast.error(error.message);
       }
     };
+
     loadData();
+
+    return () => {
+      controller.abort();
+    };
   }, []);
 
   const equipmentTypes = {
@@ -142,7 +148,7 @@ export default function PinningEmployee() {
           scanners: null,
           cameras: null,
         }),
-      pinningFunction: () => pinningItem('update_computer', 'computers'),
+      pinningFunction: () => handlePinningItem('update_computer', 'computers'),
     },
     Ноутбук: {
       id: 'laptops',
@@ -155,7 +161,7 @@ export default function PinningEmployee() {
           scanners: null,
           cameras: null,
         }),
-      pinningFunction: () => pinningItem('update_laptop', 'laptops'),
+      pinningFunction: () => handlePinningItem('update_laptop', 'laptops'),
     },
     Монитор: {
       id: 'screens',
@@ -168,7 +174,7 @@ export default function PinningEmployee() {
           scanners: null,
           cameras: null,
         }),
-      pinningFunction: () => pinningItem('update_screen', 'screens'),
+      pinningFunction: () => handlePinningItem('update_screen', 'screens'),
     },
     МФУ: {
       id: 'scanners',
@@ -181,7 +187,7 @@ export default function PinningEmployee() {
           screens: null,
           cameras: null,
         }),
-      pinningFunction: () => pinningItem('update_scanner', 'scanners'),
+      pinningFunction: () => handlePinningItem('update_scanner', 'scanners'),
     },
     Камера: {
       id: 'cameras',
@@ -194,7 +200,7 @@ export default function PinningEmployee() {
           screens: null,
           scanners: null,
         }),
-      pinningFunction: () => pinningItem('update_camera', 'cameras'),
+      pinningFunction: () => handlePinningItem('update_camera', 'cameras'),
     },
   };
 
@@ -207,7 +213,7 @@ export default function PinningEmployee() {
           furniture: e.key,
           ventilation: null,
         }),
-      pinningFunction: () => pinningItem('update_furniture', 'furniture'),
+      pinningFunction: () => handlePinningItem('update_furniture', 'furniture'),
     },
     'Система вентиляции': {
       id: 'ventilation',
@@ -217,7 +223,8 @@ export default function PinningEmployee() {
           ventilation: e.key,
           furniture: null,
         }),
-      pinningFunction: () => pinningItem('update_ventilation', 'ventilation'),
+      pinningFunction: () =>
+        handlePinningItem('update_ventilation', 'ventilation'),
     },
   };
 
@@ -275,10 +282,7 @@ export default function PinningEmployee() {
                   options={equipmentTypes[types].options}
                   setState={equipmentTypes[types].setFunction}
                 />
-                <EmployeeSelect
-                  options={items.employees}
-                  setState={setEmployees}
-                />
+                <EmployeeSelect options={employees} setState={setEmployees} />
                 <Button
                   id="pinning__btn"
                   disabled={!valid}
@@ -297,10 +301,7 @@ export default function PinningEmployee() {
                   options={selectedTypes[selected].options}
                   setState={selectedTypes[selected].setFunction}
                 />
-                <EmployeeSelect
-                  options={items.employees}
-                  setState={setEmployees}
-                />
+                <EmployeeSelect options={employees} setState={setEmployees} />
                 <Button
                   id="pinning__btn"
                   disabled={!valid}

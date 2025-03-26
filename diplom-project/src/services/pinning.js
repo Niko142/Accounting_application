@@ -2,62 +2,95 @@ import Axios from 'axios';
 
 const API_URL = 'http://localhost:3001';
 
-export async function fetchEmployees(abortController) {
+export const fetchItems = async (
+  endpoint,
+  key,
+  valueKey = 'model',
+  idKey,
+  setItems,
+  controller,
+) => {
   try {
-    const res = await Axios.get(`${API_URL}/select_employee`, {
-      signal: abortController.signal,
+    const res = await Axios.get(`${API_URL}/${endpoint}`, {
+      signal: controller.signal,
     });
-    return Array.isArray(res.data) ? res.data : [];
-  } catch (err) {
-    if (err.name !== 'AbortError') {
-      console.error('Ошибка загрузки сотрудников:', err);
+
+    const arr = res.data.map((item) => ({
+      value: item[valueKey],
+      label: item[valueKey],
+      key: item[idKey],
+      [`${idKey}`]: item[idKey],
+    }));
+
+    setItems((prev) => ({ ...prev, [key]: arr }));
+    return true;
+  } catch (error) {
+    if (Axios.isCancel(error)) {
+      console.log(`Запрос ${endpoint} отменен`);
+    } else {
+      throw new Error(`Не удалось загрузить ${key}`);
     }
-    return [];
+    throw error;
   }
-}
+};
 
-export async function fetchItem(itemType, abortController) {
-  const endpoints = {
-    computer: `${API_URL}/computer`,
-    laptop: `${API_URL}/select_laptop`,
-    screen: `${API_URL}/select_screen`,
-    scanner: `${API_URL}/select_scanner`,
-    camera: `${API_URL}/select_camera`,
-    furniture: `${API_URL}/select_furniture`,
-    ventilation: `${API_URL}/select_ventilation`,
-  };
+export const pinningItem = async ({
+  endpoint,
+  itemsKey,
+  idState,
+  itemsState,
+  employee,
+  formData,
+}) => {
+  // Валидация входных данных
+  if (!idState[itemsKey]) {
+    throw new Error('Ошибка: объект не выбран');
+  }
 
-  if (!endpoints[itemType]) return [];
+  if (!employee?.key) {
+    throw new Error('Ошибка: сотрудник не выбран');
+  }
+  // Находим выбранный объект
+  const selectedObject = itemsState[itemsKey]?.find(
+    (obj) =>
+      obj.key === idState[itemsKey] ||
+      obj[`${itemsKey.slice(0, -1)}_id`] === idState[itemsKey],
+  );
+
+  if (!selectedObject) {
+    throw new Error('Выбранный объект не найден');
+  }
 
   try {
-    const res = await Axios.get(endpoints[itemType], {
-      signal: abortController.signal,
-    });
-    return Array.isArray(res.data) ? res.data : [];
-  } catch (err) {
-    if (err.name !== 'AbortError') {
-      console.error(`Ошибка загрузки ${itemType}:`, err);
+    // Отправка запросов
+    const [pinningRes, updateRes] = await Promise.all([
+      Axios.post(`${API_URL}/pinning-employee`, {
+        date: formData.date,
+        category: formData.category,
+        type: formData.type,
+        unit: selectedObject.label,
+        employee: employee.key,
+      }),
+      Axios.post(`${API_URL}/${endpoint}`, {
+        employee: employee.key,
+        id: idState[itemsKey],
+      }),
+    ]);
+
+    // Алерты
+    if (
+      !(
+        pinningRes.data.message === 'Успешное добавление' &&
+        updateRes.data.message === 'Успешное добавление'
+      )
+    ) {
+      throw new Error('Ошибка при закреплении объекта');
     }
-    return [];
+    return true;
+  } catch (error) {
+    if (error.isAxiosError) {
+      throw new Error('Ошибка сервера при закреплении');
+    }
+    throw error;
   }
-}
-
-export async function pinningEmployee(formData) {
-  try {
-    const res = await Axios.post(`${API_URL}/pinning-employee`, formData);
-    return res.data.message === 'Успешное добавление';
-  } catch (err) {
-    console.error('Ошибка закрепления:', err);
-    return false;
-  }
-}
-
-export async function updateItem(itemType, formData) {
-  try {
-    const res = await Axios.post(`${API_URL}/update_${itemType}`, formData);
-    return res.data.message === 'Успешное добавление';
-  } catch (err) {
-    console.error(`Ошибка обновления ${itemType}:`, err);
-    return false;
-  }
-}
+};
