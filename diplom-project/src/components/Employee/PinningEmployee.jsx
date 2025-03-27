@@ -10,8 +10,9 @@ import { useNavigate } from 'react-router-dom';
 import TableContainer from 'components/UI/TableContainer';
 import EmployeeSelect from './UI/EmployeeSelect';
 import ObjectSelect from './UI/ObjectSelect';
-import { fetchItems, pinningItem } from 'services/pinning';
+import { fetchAllItems, pinningItem } from 'services/pinning';
 import { useEmployee } from 'context/EmployeeContext';
+import { useEquipmentTypes } from './hook/useEquipmentTypes';
 
 export default function PinningEmployee() {
   const { employees } = useEmployee();
@@ -39,11 +40,8 @@ export default function PinningEmployee() {
   const [data, setData] = useState(null);
   const [types, setTypes] = useState('-');
   const [employee, setEmployees] = useState(null);
-  const [valid, setValid] = useState(false);
 
-  useEffect(() => {
-    setValid(data !== null && employee !== null);
-  }, [data, employee]);
+  const isValid = data !== null && employee !== null;
 
   const handlePinningItem = async (endpoint, itemsKey) => {
     try {
@@ -63,170 +61,17 @@ export default function PinningEmployee() {
 
   useEffect(() => {
     const controller = new AbortController();
-
-    const loadData = async () => {
-      try {
-        await Promise.all([
-          fetchItems(
-            'computer',
-            'computers',
-            'name',
-            'id_computer',
-            setItems,
-            controller,
-          ),
-          fetchItems(
-            'select_laptop',
-            'laptops',
-            'model',
-            'laptop_id',
-            setItems,
-            controller,
-          ),
-          fetchItems(
-            'select_screen',
-            'screens',
-            'model',
-            'screen_id',
-            setItems,
-            controller,
-          ),
-          fetchItems(
-            'select_scanner',
-            'scanners',
-            'nam',
-            'scanner_id',
-            setItems,
-            controller,
-          ),
-          fetchItems(
-            'select_camera',
-            'cameras',
-            'model',
-            'camera_id',
-            setItems,
-            controller,
-          ),
-          fetchItems(
-            'select_furniture',
-            'furniture',
-            'name',
-            'furniture_id',
-            setItems,
-            controller,
-          ),
-          fetchItems(
-            'select_ventilation',
-            'ventilation',
-            'model',
-            'ventilation_id',
-            setItems,
-            controller,
-          ),
-        ]);
-      } catch (error) {
-        toast.error(error.message);
-      }
-    };
-
-    loadData();
-
-    return () => {
-      controller.abort();
-    };
+    fetchAllItems(setItems, controller).catch((err) => {
+      toast.error(err.message);
+    });
+    return () => controller.abort();
   }, []);
 
-  const equipmentTypes = {
-    Компьютер: {
-      id: 'computers',
-      options: items.computers,
-      setFunction: (e) =>
-        setId({
-          computers: e.key,
-          laptops: null,
-          screens: null,
-          scanners: null,
-          cameras: null,
-        }),
-      pinningFunction: () => handlePinningItem('update_computer', 'computers'),
-    },
-    Ноутбук: {
-      id: 'laptops',
-      options: items.laptops,
-      setFunction: (e) =>
-        setId({
-          laptops: e.key,
-          computers: null,
-          screens: null,
-          scanners: null,
-          cameras: null,
-        }),
-      pinningFunction: () => handlePinningItem('update_laptop', 'laptops'),
-    },
-    Монитор: {
-      id: 'screens',
-      options: items.screens,
-      setFunction: (e) =>
-        setId({
-          screens: e.key,
-          computers: null,
-          laptops: null,
-          scanners: null,
-          cameras: null,
-        }),
-      pinningFunction: () => handlePinningItem('update_screen', 'screens'),
-    },
-    МФУ: {
-      id: 'scanners',
-      options: items.scanners,
-      setFunction: (e) =>
-        setId({
-          scanners: e.key,
-          computers: null,
-          laptops: null,
-          screens: null,
-          cameras: null,
-        }),
-      pinningFunction: () => handlePinningItem('update_scanner', 'scanners'),
-    },
-    Камера: {
-      id: 'cameras',
-      options: items.cameras,
-      setFunction: (e) =>
-        setId({
-          cameras: e.key,
-          computers: null,
-          laptops: null,
-          screens: null,
-          scanners: null,
-        }),
-      pinningFunction: () => handlePinningItem('update_camera', 'cameras'),
-    },
-  };
-
-  const selectedTypes = {
-    Мебель: {
-      id: 'furniture',
-      options: items.furniture,
-      setFunction: (e) =>
-        setId({
-          furniture: e.key,
-          ventilation: null,
-        }),
-      pinningFunction: () => handlePinningItem('update_furniture', 'furniture'),
-    },
-    'Система вентиляции': {
-      id: 'ventilation',
-      options: items.ventilation,
-      setFunction: (e) =>
-        setId({
-          ventilation: e.key,
-          furniture: null,
-        }),
-      pinningFunction: () =>
-        handlePinningItem('update_ventilation', 'ventilation'),
-    },
-  };
+  const { equipmentTypes, selectedTypes } = useEquipmentTypes(
+    items,
+    setId,
+    handlePinningItem,
+  );
 
   return (
     <>
@@ -285,8 +130,8 @@ export default function PinningEmployee() {
                 <EmployeeSelect options={employees} setState={setEmployees} />
                 <Button
                   id="pinning__btn"
-                  disabled={!valid}
-                  isActive={valid}
+                  disabled={!isValid}
+                  isActive={isValid}
                   onClick={equipmentTypes[types].pinningFunction}
                 >
                   Закрепить объект
@@ -304,8 +149,8 @@ export default function PinningEmployee() {
                 <EmployeeSelect options={employees} setState={setEmployees} />
                 <Button
                   id="pinning__btn"
-                  disabled={!valid}
-                  isActive={valid}
+                  disabled={!isValid}
+                  isActive={isValid}
                   onClick={selectedTypes[selected].pinningFunction}
                 >
                   Закрепить объект

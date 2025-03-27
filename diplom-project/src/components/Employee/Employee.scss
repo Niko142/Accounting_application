@@ -52,6 +52,11 @@
     }
   }
 
+  &__menu {
+    max-height: 150px;
+    overflow: auto !important;
+  }
+
   &__value-container {
     font-size: 1rem;
     padding: 0 8px !important;

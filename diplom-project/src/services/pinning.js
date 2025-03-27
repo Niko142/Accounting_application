@@ -2,36 +2,87 @@ import Axios from 'axios';
 
 const API_URL = 'http://localhost:3001';
 
-export const fetchItems = async (
-  endpoint,
-  key,
-  valueKey = 'model',
-  idKey,
-  setItems,
-  controller,
-) => {
+const fetchItems = async (endpoint, valueKey = 'model', idKey, controller) => {
   try {
     const res = await Axios.get(`${API_URL}/${endpoint}`, {
-      signal: controller.signal,
+      signal: controller?.signal,
     });
 
-    const arr = res.data.map((item) => ({
+    return res.data.map((item) => ({
       value: item[valueKey],
       label: item[valueKey],
       key: item[idKey],
-      [`${idKey}`]: item[idKey],
+      [idKey]: item[idKey], // Динамическое свойство
     }));
-
-    setItems((prev) => ({ ...prev, [key]: arr }));
-    return true;
   } catch (error) {
     if (Axios.isCancel(error)) {
       console.log(`Запрос ${endpoint} отменен`);
     } else {
-      throw new Error(`Не удалось загрузить ${key}`);
+      console.error(`Ошибка при загрузке ${endpoint}:`, error.message);
+      throw new Error(`Не удалось загрузить ${endpoint}`);
     }
-    throw error;
   }
+};
+
+export const fetchAllItems = async (setItems, controller) => {
+  // endpoint-ы, по которым происходит дальнейший перебор
+  const endpoints = [
+    {
+      key: 'computers',
+      endpoint: 'computer',
+      valueKey: 'name',
+      idKey: 'id_computer',
+    },
+    {
+      key: 'laptops',
+      endpoint: 'select_laptop',
+      valueKey: 'model',
+      idKey: 'laptop_id',
+    },
+    {
+      key: 'screens',
+      endpoint: 'select_screen',
+      valueKey: 'model',
+      idKey: 'screen_id',
+    },
+    {
+      key: 'scanners',
+      endpoint: 'select_scanner',
+      valueKey: 'nam',
+      idKey: 'scanner_id',
+    },
+    {
+      key: 'cameras',
+      endpoint: 'select_camera',
+      valueKey: 'model',
+      idKey: 'camera_id',
+    },
+    {
+      key: 'furniture',
+      endpoint: 'select_furniture',
+      valueKey: 'name',
+      idKey: 'furniture_id',
+    },
+    {
+      key: 'ventilation',
+      endpoint: 'select_ventilation',
+      valueKey: 'model',
+      idKey: 'ventilation_id',
+    },
+  ];
+
+  const results = await Promise.all(
+    endpoints.map(async ({ key, endpoint, valueKey, idKey }) => {
+      const items = await fetchItems(endpoint, valueKey, idKey, controller);
+      return { key, items };
+    }),
+  );
+
+  // Записываем полученные результаты в state
+  setItems((prev) => ({
+    ...prev,
+    ...Object.fromEntries(results.map(({ key, items }) => [key, items])),
+  }));
 };
 
 export const pinningItem = async ({
