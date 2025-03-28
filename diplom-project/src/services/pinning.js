@@ -1,10 +1,9 @@
 import Axios from 'axios';
-
-const API_URL = 'http://localhost:3001';
+import { instance } from './api';
 
 const fetchItems = async (endpoint, valueKey = 'model', idKey, controller) => {
   try {
-    const res = await Axios.get(`${API_URL}/${endpoint}`, {
+    const res = await instance.get(`/${endpoint}`, {
       signal: controller?.signal,
     });
 
@@ -115,14 +114,14 @@ export const pinningItem = async ({
   try {
     // Отправка запросов
     const [pinningRes, updateRes] = await Promise.all([
-      Axios.post(`${API_URL}/pinning-employee`, {
+      instance.post('/pinning-employee', {
         date: formData.date,
         category: formData.category,
         type: formData.type,
         unit: selectedObject.label,
         employee: employee.key,
       }),
-      Axios.post(`${API_URL}/${endpoint}`, {
+      instance.post(`/${endpoint}`, {
         employee: employee.key,
         id: idState[itemsKey],
       }),

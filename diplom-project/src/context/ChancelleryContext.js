@@ -8,7 +8,6 @@ import {
   useState,
   useCallback,
 } from 'react';
-import { toast } from 'react-toastify';
 import {
   addChancellery,
   deleteChancellery,
@@ -31,9 +30,15 @@ function ChancelleryProvider({ children }) {
     amounts: '',
   });
 
-  const handleSelect = (id) => {
-    selectChancellery(id, setCurrentGroup);
-  };
+  const selectCategory = useCallback(async (id) => {
+    try {
+      const selectedItem = await selectChancellery(id);
+      setCurrentGroup(selectedItem || null);
+      return { success: true, item: selectedItem };
+    } catch (err) {
+      return { success: false, message: err.message };
+    }
+  }, []);
 
   // Рендер списка категорий (работает при удалении, редактировании и добавлении)
   const updateProducts = useCallback(async () => {
@@ -42,49 +47,51 @@ function ChancelleryProvider({ children }) {
     }
     abortControllerRef.current = new AbortController();
     try {
-      await fetchData(abortControllerRef.current, setProducts);
+      const res = await fetchData(abortControllerRef.current);
+      setProducts(Array.isArray(res) ? res : []);
     } catch (error) {
       if (error.name !== 'AbortError') {
         console.error('Ошибка при загрузке данных:', error);
       }
+      setProducts([]);
     }
   }, []);
 
-  const handleDelete = useCallback(
+  const deleteProducts = useCallback(
     async (id) => {
       try {
         await deleteChancellery(id);
         await updateProducts();
-        toast.success('Категория успешно удалена');
+        return { success: true, message: 'Категория успешно удалена' };
       } catch (error) {
-        toast.error(error?.message || 'Ошибка при удалении категории');
+        return { success: false, message: error.message };
       }
     },
     [updateProducts],
   );
 
-  const handleAddGroup = useCallback(
+  const addGroup = useCallback(
     async (group) => {
       try {
         await addChancellery(group);
         await updateProducts();
-        toast.success('Новая категория успешно добавлена');
+        return { success: true, message: 'Новая категория успешно добавлена' };
       } catch (error) {
-        toast.error(error?.message || 'Ошибка при добавлении товарной группы');
+        return { success: false, message: error.message };
       }
     },
     [updateProducts],
   );
 
   // Функция для изменения количества товаров
-  const handleAmountChange = useCallback(
+  const amountChange = useCallback(
     async (updatedGroup) => {
       try {
         await editAmounts(updatedGroup);
         await updateProducts();
-        toast.success('Операция выполнена успешно');
+        return { success: true, message: 'Операция выполнена успешно' };
       } catch (error) {
-        toast.error(error.message || 'Ошибка при изменении количества товаров');
+        return { success: false, message: error.message };
       }
     },
     [updateProducts],
@@ -106,18 +113,19 @@ function ChancelleryProvider({ children }) {
       currentGroup,
       setCurrentGroup,
       updateProducts,
-      handleSelect,
-      handleAddGroup,
-      handleAmountChange,
-      handleDelete,
+      selectCategory,
+      addGroup,
+      amountChange,
+      deleteProducts,
     }),
     [
       products,
       currentGroup,
       updateProducts,
-      handleAddGroup,
-      handleAmountChange,
-      handleDelete,
+      selectCategory,
+      addGroup,
+      amountChange,
+      deleteProducts,
     ],
   );
 

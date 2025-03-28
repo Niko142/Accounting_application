@@ -1,9 +1,9 @@
-import Axios from 'axios';
+import { instance } from './api';
 
-export async function fetchData(endpoint, abortController) {
+export async function fetchData(endpoint, controller) {
   try {
-    const res = await Axios.get(`http://localhost:3001/${endpoint}`, {
-      signal: abortController.signal,
+    const res = await instance.get(`/${endpoint}`, {
+      signal: controller.signal,
     });
     return res.data;
   } catch (err) {
@@ -13,10 +13,10 @@ export async function fetchData(endpoint, abortController) {
   }
 }
 
-export async function fetchUtilization(abortController) {
+export async function fetchUtilization(controller) {
   try {
-    const res = await Axios.get('http://localhost:3001/select_utilization', {
-      signal: abortController.signal,
+    const res = await instance.get('/select_utilization', {
+      signal: controller.signal,
     });
     return res.data;
   } catch (err) {

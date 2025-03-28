@@ -6,7 +6,7 @@ import {
   useMemo,
   useState,
 } from 'react';
-import Axios from 'axios';
+import { instance } from 'services/api';
 
 const AuthContext = createContext();
 
@@ -29,7 +29,7 @@ function AuthProvider({ children }) {
 
   const login = async (username, password) => {
     try {
-      const response = await Axios.post('http://localhost:3001/login', {
+      const response = await instance.post('/login', {
         username: username.trim(),
         password: password.trim(),
       });

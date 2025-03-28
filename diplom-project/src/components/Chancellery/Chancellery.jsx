@@ -1,7 +1,7 @@
 import { React, useState, useMemo, useCallback } from 'react';
 import Header from 'components/Header/Header';
 import Button from 'components/Button/Button';
-import { ToastContainer } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import { chancelleryColumns } from 'data/columns';
 import DataTable from 'components/Table/Table';
 import CustomModal from 'components/Modal/Modal';
@@ -13,26 +13,74 @@ export default function Chancellery() {
   const {
     products,
     currentGroup,
-    handleSelect,
-    handleAmountChange,
-    handleDelete,
-    handleAddGroup,
+    selectCategory,
+    amountChange,
+    deleteProducts,
+    addGroup,
   } = useChancellery();
 
+  // Управление открытием/закрытием модальных окон
   const [openAddModal, setOpenAddModal] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
 
-  const selectCategory = useCallback(
-    (id) => {
-      setOpenEditModal(true);
-      handleSelect(id);
+  // Обработчик нажатия кнопки для добавления категории
+  const handleSelect = useCallback(
+    async (id) => {
+      try {
+        setOpenEditModal(true);
+        await selectCategory(id);
+      } catch (err) {
+        toast.error(err.message || 'Ошибка при выборе категории');
+      }
     },
-    [handleSelect],
+    [selectCategory],
   );
 
+  // Обработчик добавления категории
+  const handleAddGroup = useCallback(
+    async (productData) => {
+      try {
+        const result = await addGroup(productData);
+        if (result.success) {
+          toast.success(result.message);
+          setOpenAddModal(false);
+        } else {
+          toast.error(result.message);
+        }
+      } catch (error) {
+        toast.error(error.message || 'Ошибка при добавлении группы');
+      }
+    },
+    [addGroup],
+  );
+
+  // Обработчик удаления категории
+  const handleDelete = useCallback(
+    async (id) => {
+      try {
+        await deleteProducts(id);
+        toast.success('Категория успешно удалена');
+      } catch (error) {
+        toast.error(error.message || 'Ошибка при удалении категории');
+      }
+    },
+    [deleteProducts],
+  );
+
+  // Обработчик изменения количества товаров
+  const handleAmountChange = useCallback(async () => {
+    try {
+      await amountChange(currentGroup);
+      toast.success('Количество успешно изменено');
+      setOpenEditModal(false);
+    } catch (error) {
+      toast.error(error.message || 'Ошибка при изменении количества');
+    }
+  }, [amountChange, currentGroup]);
+
   const memoizedColumns = useMemo(
-    () => chancelleryColumns(selectCategory, handleDelete),
-    [selectCategory, handleDelete],
+    () => chancelleryColumns(handleSelect, handleDelete),
+    [handleSelect, handleDelete],
   );
 
   const memoizedData = useMemo(() => products || [], [products]);
@@ -45,21 +93,13 @@ export default function Chancellery() {
         onClose={() => setOpenAddModal(false)}
         title={'Добавление новой товарной группы'}
       >
-        <AddProductForm
-          onSubmit={(productData) => {
-            handleAddGroup(productData);
-            setOpenAddModal(false);
-          }}
-        />
+        <AddProductForm onSubmit={handleAddGroup} />
       </CustomModal>
       <CustomModal
         isOpen={openEditModal}
         onClose={() => setOpenEditModal(false)}
         title={'Изменение количества товаров'}
-        onComplete={() => {
-          handleAmountChange(currentGroup);
-          setOpenEditModal(false);
-        }}
+        onComplete={handleAmountChange}
       >
         <EditProductForm />
       </CustomModal>

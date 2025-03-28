@@ -11,10 +11,10 @@ import { pinningEmployeeColumns } from 'data/columns';
 import { useEmployee } from 'context/EmployeeContext';
 import CustomModal from 'components/Modal/Modal';
 import AddEmployeeForm from './UI/AddEmployeeForm';
-import { ToastContainer } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 
 export default function Employee() {
-  const { pinning, handleAddEmployee } = useEmployee();
+  const { pinning, addNewEmployee } = useEmployee();
   const [openModal, setOpenModal] = useState(false);
   const navigate = useNavigate();
 
@@ -23,6 +23,21 @@ export default function Employee() {
     () => (Array.isArray(pinning) ? pinning : []),
     [pinning],
   );
+
+  // Обработчик добавления сотрудника
+  const handleAdd = async (employeeData) => {
+    try {
+      const result = await addNewEmployee(employeeData);
+      if (result.success) {
+        toast.success(result.message);
+        setOpenModal(false);
+      } else {
+        toast.error(result.message || 'Ошибка при добавлении');
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
 
   return (
     <>
@@ -43,12 +58,7 @@ export default function Employee() {
         onClose={() => setOpenModal(false)}
         title={'Добавление нового материального лица'}
       >
-        <AddEmployeeForm
-          onSubmit={(productData) => {
-            handleAddEmployee(productData);
-            setOpenModal(false);
-          }}
-        />
+        <AddEmployeeForm onSubmit={handleAdd} />
       </CustomModal>
       <TableContainer>
         <h2 className="employee__header">

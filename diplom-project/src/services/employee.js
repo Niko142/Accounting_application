@@ -1,10 +1,11 @@
-import Axios from 'axios';
+// import Axios from 'axios';
+import { instance } from './api';
 
 // Запросы не напрямую передавая state
-export async function getPinningEmployee(abortController) {
+export async function getPinningEmployee(controller) {
   try {
-    const res = await Axios.get('http://localhost:3001/select_pinning', {
-      signal: abortController.signal,
+    const res = await instance.get('/select_pinning', {
+      signal: controller.signal,
     });
     return Array.isArray(res.data) ? res.data : []; // Проверка, что это массив
   } catch (err) {
@@ -15,10 +16,10 @@ export async function getPinningEmployee(abortController) {
   }
 }
 
-export async function fetchEmployee(abortController) {
+export async function fetchEmployee(controller) {
   try {
-    const res = await Axios.get('http://localhost:3001/select_employee', {
-      signal: abortController.signal,
+    const res = await instance.get('/select_employee', {
+      signal: controller.signal,
     });
     return Array.isArray(res.data) ? res.data : [];
   } catch (err) {
@@ -31,7 +32,7 @@ export async function fetchEmployee(abortController) {
 
 export const addEmployee = async (req) => {
   try {
-    const res = await Axios.post('http://localhost:3001/add-employee', req);
+    const res = await instance.post('/add-employee', req);
     if (res.data.message !== 'Успешное добавление') {
       throw new Error('Ошибка при добавлении нового сотрудника');
     }
@@ -42,7 +43,7 @@ export const addEmployee = async (req) => {
 
 export const deleteEmployee = async (id) => {
   try {
-    await Axios.delete(`http://localhost:3001/delete-employee/${id}`);
+    await instance.delete(`/delete-employee/${id}`);
   } catch (error) {
     throw new Error('Ошибка при удалении');
   }

@@ -14,7 +14,6 @@ import {
   addEmployee,
   deleteEmployee,
 } from 'services/employee';
-import { toast } from 'react-toastify';
 
 const EmployeeContext = createContext();
 export const useEmployee = () => useContext(EmployeeContext);
@@ -41,37 +40,39 @@ function EmployeeProvider({ children }) {
 
       setEmployees(Array.isArray(employeesData) ? employeesData : []);
       setPinning(Array.isArray(pinningHistory) ? pinningHistory : []);
+      return { success: true, item: [employeesData, pinningHistory] };
     } catch (error) {
       if (error.name !== 'AbortError') {
         console.error('Ошибка при загрузке данных:', error);
-        toast.error('Не удалось загрузить данные');
+        return { success: false, message: error.message };
       }
     }
   }, []);
 
   // Функция для добавления нового сотрудника
-  const handleAddEmployee = useCallback(
+  const addNewEmployee = useCallback(
     async (newEmployee) => {
       try {
         await addEmployee(newEmployee);
         await updateEmployees();
-        toast.success('Сотрудник успешно добавлен');
+        return { success: true, message: 'Сотрудник успешно добавлен' };
       } catch (error) {
-        toast.error(error?.message || 'Ошибка при добавлении сотрудника');
+        console.log('Ошибка при добавлении сотрудника');
+        return { success: false, message: error.message };
       }
     },
     [updateEmployees],
   );
 
   // Функция для удаления сотрудника
-  const handleDeleteEmployee = useCallback(
+  const deleteSelectEmployee = useCallback(
     async (id) => {
       try {
         await deleteEmployee(id);
         await updateEmployees();
-        toast.success('Сотрудник успешно удален');
+        return { success: true, message: 'Сотрудник успешно удален' };
       } catch (error) {
-        toast.error(error?.message || 'Ошибка при удалении сотрудника');
+        return { success: false, message: error.message };
       }
     },
     [updateEmployees],
@@ -91,16 +92,10 @@ function EmployeeProvider({ children }) {
       employees,
       pinning,
       updateEmployees,
-      handleAddEmployee,
-      handleDeleteEmployee,
+      addNewEmployee,
+      deleteSelectEmployee,
     }),
-    [
-      employees,
-      pinning,
-      updateEmployees,
-      handleAddEmployee,
-      handleDeleteEmployee,
-    ],
+    [employees, pinning, updateEmployees, addNewEmployee, deleteSelectEmployee],
   );
 
   return (
