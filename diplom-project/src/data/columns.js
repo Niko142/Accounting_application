@@ -312,7 +312,6 @@ export const pinningEmployeeColumns = [
   },
 ];
 
-// переименовать
 export const employeeColumns = (onMove, onDelete) => [
   { Header: 'ID', accessor: 'employee_id' },
   { Header: 'Имя', accessor: 'name' },
@@ -344,4 +343,22 @@ export const employeeColumns = (onMove, onDelete) => [
       </div>
     ),
   },
+];
+
+// Блок Перемещение
+export const audienceColumns = [
+  { Header: 'Id', accessor: 'cabinet_id' },
+  { Header: 'Номер аудитории', accessor: 'number' },
+  { Header: 'Описание', accessor: 'description' },
+];
+
+export const historyColumns = [
+  { Header: 'ID', accessor: 'id_pinning' },
+  { Header: 'Категория', accessor: 'category' },
+  { Header: 'Тип', accessor: 'type' },
+  { Header: 'Причина', accessor: 'reason' },
+  { Header: 'Наименование', accessor: 'unit' },
+  { Header: 'Откуда', accessor: 'start_location' },
+  { Header: 'Куда', accessor: 'end_location' },
+  { Header: 'Дата закрепления', accessor: 'date', Cell: getDateColumn() },
 ];

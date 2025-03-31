@@ -8,11 +8,11 @@ import Button from 'components/Button/Button';
 import { toast, ToastContainer } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import TableContainer from 'components/UI/TableContainer';
-import EmployeeSelect from './UI/EmployeeSelect';
-import ObjectSelect from './UI/ObjectSelect';
+import EmployeeSelect from '../UI/EmployeeSelect';
+import ObjectSelect from '../UI/ObjectSelect';
 import { fetchAllItems, pinningItem } from 'services/pinning';
 import { useEmployee } from 'context/EmployeeContext';
-import { useEquipmentTypes } from './hook/useEquipmentTypes';
+import { useEquipmentTypes } from '../hook/useEquipmentTypes';
 
 export default function PinningEmployee() {
   const { employees } = useEmployee();

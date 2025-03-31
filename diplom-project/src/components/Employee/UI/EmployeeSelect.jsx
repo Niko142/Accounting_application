@@ -15,6 +15,7 @@ const EmployeeSelect = ({ options, setState }) => {
       </label>
       <Select
         classNamePrefix="pinning-select"
+        maxMenuHeight={150}
         options={formattedOptions}
         onChange={(selected) => {
           console.log('Выбранный сотрудник:', selected);

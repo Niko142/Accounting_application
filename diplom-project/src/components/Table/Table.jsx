@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 // useSortBy приводил к ошибке max depth в некоторых случаях
 import { useTable, usePagination } from 'react-table';
 
-const DataTable = ({ head, mockData }) => {
+const DataTable = ({ head, mockData, size, disabledPagination = false }) => {
   const columns = useMemo(() => head, [head]);
   const data = useMemo(() => mockData, [mockData]);
 
@@ -23,7 +23,7 @@ const DataTable = ({ head, mockData }) => {
     {
       columns,
       data,
-      initialState: { pageIndex: 0, pageSize: 5 }, // Стандартное отображение начала для пагинации
+      initialState: { pageIndex: 0, pageSize: size || 5 }, // Стандартное отображение начала для пагинации
     },
     usePagination,
   );
@@ -57,40 +57,41 @@ const DataTable = ({ head, mockData }) => {
           })}
         </tbody>
       </table>
-
-      <div className="pagination">
-        <button
-          className="pagination__btn"
-          onClick={() => previousPage()}
-          disabled={!canPreviousPage}
-        >
-          Предыдущая
-        </button>
-        <button
-          className="pagination__btn"
-          onClick={() => nextPage()}
-          disabled={!canNextPage}
-        >
-          Следующая
-        </button>
-        <span className="pagination__currentPage">
-          Страница{' '}
-          <strong>
-            {pageIndex + 1} из {pageOptions.length}
-          </strong>
-        </span>
-        <select
-          className="pagination__select"
-          value={pageSize}
-          onChange={(e) => setPageSize(Number(e.target.value))}
-        >
-          {[5, 10, 20, 30].map((size) => (
-            <option key={size} value={size}>
-              Показывать {size}
-            </option>
-          ))}
-        </select>
-      </div>
+      {!disabledPagination && (
+        <div className="pagination">
+          <button
+            className="pagination__btn"
+            onClick={() => previousPage()}
+            disabled={!canPreviousPage}
+          >
+            Предыдущая
+          </button>
+          <button
+            className="pagination__btn"
+            onClick={() => nextPage()}
+            disabled={!canNextPage}
+          >
+            Следующая
+          </button>
+          <span className="pagination__currentPage">
+            Страница{' '}
+            <strong>
+              {pageIndex + 1} из {pageOptions.length}
+            </strong>
+          </span>
+          <select
+            className="pagination__select"
+            value={pageSize}
+            onChange={(e) => setPageSize(Number(e.target.value))}
+          >
+            {[5, 10, 20, 30].map((size) => (
+              <option key={size} value={size}>
+                Показывать {size}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
     </>
   );
 };
