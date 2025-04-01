@@ -362,3 +362,32 @@ export const historyColumns = [
   { Header: 'Куда', accessor: 'end_location' },
   { Header: 'Дата закрепления', accessor: 'date', Cell: getDateColumn() },
 ];
+
+export const repairColumns = (handle) => [
+  { Header: 'ID', accessor: 'id_repair' },
+  { Header: 'Модель', accessor: 'model' },
+  { Header: 'Дата отправки', accessor: 'date', Cell: getDateColumn() },
+  { Header: 'Дата окончания', accessor: 'end_date', Cell: getDateColumn() },
+  { Header: 'Причина отправки в ремонт', accessor: 'description' },
+  {
+    Header: 'Действия',
+    accessor: 'actions',
+    Cell: ({ row }) => {
+      const { original } = row;
+      const endDate = new Date(Date.parse(original.end_date));
+      const currentDate = new Date();
+
+      return (
+        <Button
+          isMove={endDate <= currentDate}
+          disabled={endDate > currentDate}
+          onClick={() => {
+            handle(original.number, original.id_repair, original.type);
+          }}
+        >
+          Вернуть из ремонта
+        </Button>
+      );
+    },
+  },
+];

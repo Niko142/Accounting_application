@@ -1,16 +1,17 @@
 import Axios from 'axios';
 import { React, useEffect, useState } from 'react';
-import SELECT from 'react-select';
+import Select from 'react-select';
 import { reason } from 'data/data';
 import Button from 'components/Button/Button';
 import { toast, ToastContainer } from 'react-toastify';
+import { instance } from 'services/api';
 
 export default function PinningFurniture() {
-  const [value, setValue] = useState(['']);
-  const [location, setLocation] = useState(['']);
+  const [value, setValue] = useState([]);
+  const [location, setLocation] = useState([]);
   const [date, setDate] = useState('');
   const [furniture, setFurniture] = useState('');
-  const [key, setKey] = useState('');
+  const [key, setKey] = useState('-');
   const [id, setId] = useState('');
   const [cabinet, setCabinet] = useState('');
   const [reasons, setReason] = useState('');
@@ -25,7 +26,7 @@ export default function PinningFurniture() {
   useEffect(() => {
     const FetchCabinet = async () => {
       let arr = [];
-      await Axios.get('http://localhost:3001/cabinet').then((res) => {
+      await instance.get('/cabinet').then((res) => {
         let result = res.data;
         result.map((cabinet) => {
           return arr.push({
@@ -60,13 +61,7 @@ export default function PinningFurniture() {
     FetchData();
   }, []);
 
-  const Label = ({ children }) => {
-    return (
-      <>
-        <label className="add">{children}</label>
-      </>
-    );
-  };
+  // 2 параллельных запроса
 
   const pinningFurniture = () => {
     Axios.post('http://localhost:3001/pinning-cabinet', {
@@ -111,71 +106,44 @@ export default function PinningFurniture() {
 
   return (
     <>
-      <form onSubmit={FormSubmit}>
-        <div style={{ height: '190px' }}>
-          <div
-            style={{
-              width: '45%',
-              float: 'left',
-              height: '190px',
-              padding: '5px',
-            }}
-          >
-            <Label>Дата перемещения:</Label>
-            <input
-              type="datetime-local"
-              id="form-input"
-              onChange={(e) => setDate(e.target.value)}
-            />
-            <Label>Выберите мебель для перемещения:</Label>
-            <SELECT
-              options={value}
-              placeholder="Мебель..."
-              onChange={(e) => {
-                setFurniture(e.value);
-                setKey(e.key);
-                setId(+e.keys);
-              }}
-            ></SELECT>
-          </div>
-          <div
-            style={{
-              width: '45%',
-              float: 'right',
-              height: '190px',
-              padding: '5px',
-            }}
-          >
-            <Label>Откуда</Label>
-            <input type="text" id="form-input" value={key} disabled />
-            <Label>Куда</Label>
-            <SELECT
-              options={location}
-              placeholder=""
-              onChange={(e) => setCabinet(e.value)}
-            ></SELECT>
-          </div>
-        </div>
-        <section style={{ width: '45%', marginLeft: '28%' }}>
-          <Label>Причина перемещения</Label>
-          <SELECT
-            options={reason}
-            placeholder="Причина..."
-            onChange={(e) => setReason(e.value)}
-          ></SELECT>
-        </section>
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            marginTop: '3rem',
+      <form className="" onSubmit={FormSubmit}>
+        <label>Дата перемещения:</label>
+        <input
+          type="datetime-local"
+          className="main__input"
+          onChange={(e) => setDate(e.target.value)}
+        />
+        <label>Выберите мебель для перемещения:</label>
+        <Select
+          classNamePrefix="pinning-select"
+          options={value}
+          placeholder="Мебель..."
+          onChange={(e) => {
+            setFurniture(e.value);
+            setKey(e.key);
+            setId(+e.keys);
           }}
-        >
-          <Button disabled={!valid} isActive={valid} onClick={pinningFurniture}>
-            Оформить
-          </Button>
-          <ToastContainer />
-        </div>
+        ></Select>
+        <label>Откуда</label>
+        <input type="text" className="main__input" value={key} disabled />
+        <label>Куда</label>
+        <Select
+          classNamePrefix="pinning-select"
+          options={location}
+          placeholder="Выбери куда будет перемещен объект"
+          onChange={(e) => setCabinet(e.value)}
+        ></Select>
+        <label>Причина перемещения</label>
+        <Select
+          classNamePrefix="pinning-select"
+          options={reason}
+          placeholder="Причина..."
+          onChange={(e) => setReason(e.value)}
+        ></Select>
+        <Button disabled={!valid} isActive={valid} onClick={pinningFurniture}>
+          Оформить
+        </Button>
+        <ToastContainer />
       </form>
     </>
   );

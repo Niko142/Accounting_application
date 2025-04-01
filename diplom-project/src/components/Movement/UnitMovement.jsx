@@ -1,5 +1,4 @@
 import { React, useState } from 'react';
-import './CabinetSection.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faBars,
@@ -21,9 +20,23 @@ import TableContainer from 'components/UI/TableContainer';
 
 // Отрефакторить код
 
+const navItems = [
+  { type: 'Компьютер', icon: faComputer, component: <PinningComputer /> },
+  { type: 'Ноутбук', icon: faLaptop, component: <PinningLaptop /> },
+  { type: 'Монитор', icon: faDisplay, component: <PinningScreen /> },
+  { type: 'МФУ', icon: faPrint, component: <PinningScanner /> },
+  { type: 'Камера', icon: faVideo, component: <PinningCamera /> },
+  { type: 'Мебель', icon: faChair, component: <PinningFurniture /> },
+];
+
 export default function UnitMovement() {
   const [type, setType] = useState('');
   const [open, setOpen] = useState(false);
+
+  const currentComponent = navItems.find(
+    (item) => item.type === type,
+  )?.component;
+
   return (
     <>
       <TableContainer>
@@ -44,78 +57,24 @@ export default function UnitMovement() {
         <div className="unit-movement__content">
           <nav className={`unit-movement__nav ${open ? 'active' : ''}`}>
             <ul>
-              <li
-                className="unit-movement__list-item"
-                onClick={() => setType('Компьютер')}
-              >
-                <FontAwesomeIcon
-                  className="unit-movement__icon"
-                  icon={faComputer}
-                />
-                <span>Компьютер</span>
-              </li>
-              <li
-                className="unit-movement__list-item"
-                onClick={() => setType('Ноутбук')}
-              >
-                <FontAwesomeIcon
-                  className="unit-movement__icon"
-                  icon={faLaptop}
-                />
-                <span>Ноутбук</span>
-              </li>
-              <li
-                className="unit-movement__list-item"
-                onClick={() => setType('Монитор')}
-              >
-                <FontAwesomeIcon
-                  className="unit-movement__icon"
-                  icon={faDisplay}
-                />
-                <span>Монитор</span>
-              </li>
-              <li
-                className="unit-movement__list-item"
-                onClick={() => setType('МФУ')}
-              >
-                <FontAwesomeIcon
-                  className="unit-movement__icon"
-                  icon={faPrint}
-                />
-                <span>МФУ</span>
-              </li>
-              <li
-                className="unit-movement__list-item"
-                onClick={() => setType('Камера')}
-              >
-                <FontAwesomeIcon
-                  className="unit-movement__icon"
-                  icon={faVideo}
-                />
-                <span>Камера</span>
-              </li>
-              <li
-                className="unit-movement__list-item"
-                onClick={() => setType('Мебель')}
-              >
-                <FontAwesomeIcon
-                  className="unit-movement__icon"
-                  icon={faChair}
-                />
-                <span>Мебель</span>
-              </li>
+              {navItems.map(({ type, icon }) => (
+                <li
+                  key={type}
+                  className="unit-movement__list-item"
+                  onClick={() => setType(type)}
+                >
+                  <FontAwesomeIcon
+                    className="unit-movement__icon"
+                    icon={icon}
+                  />
+                  <span>{type}</span>
+                </li>
+              ))}
             </ul>
           </nav>
-          <article>
-            <h3 style={{ textAlign: 'center' }}>
-              Форма для оформления перемещения
-            </h3>
-            {type === 'Компьютер' && <PinningComputer />}
-            {type === 'Ноутбук' && <PinningLaptop />}
-            {type === 'Монитор' && <PinningScreen />}
-            {type === 'МФУ' && <PinningScanner />}
-            {type === 'Камера' && <PinningCamera />}
-            {type === 'Мебель' && <PinningFurniture />}
+          <article className="unit-movement__form">
+            <h3>Форма для оформления перемещения</h3>
+            {currentComponent}
           </article>
         </div>
       </TableContainer>
