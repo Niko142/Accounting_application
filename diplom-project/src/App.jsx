@@ -13,7 +13,7 @@ import Component from 'components/Storage/Computer/Component';
 import AddComponents from 'components/Storage/Computer/AddComponents';
 import PinningEmployee from 'components/Employee/routes/PinningEmployee';
 import PinningCabinet from 'components/Movement/PinningForAudience';
-import HistoryMovement from 'components/Movement/HistoryMovement';
+import HistoryMovement from 'components/Movement/routes/HistoryMovement';
 import Repair from 'components/Movement/Repair';
 import SelectChange from 'components/Storage/SelectChange';
 import Chancellery from 'components/Chancellery/Chancellery';

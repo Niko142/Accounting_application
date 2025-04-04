@@ -6,16 +6,34 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { fetchCabinetInfo, fetchHistoryMovement } from 'services/movement';
+import { instance } from 'services/api';
+import {
+  fetchCabinetInfo,
+  fetchHistoryMovement,
+  fetchRepairData,
+} from 'services/movement';
 
 const MovementContext = createContext();
 export const useMovement = () => useContext(MovementContext);
 
 function MovementProvider({ children }) {
-  const [audience, setAudience] = useState();
-  const [historyMovement, setHistoryMovement] = useState();
-  const [isLoading, setIsLoading] = useState(false);
+  const [audience, setAudience] = useState(); // Описание аудиторий
+  const [historyMovement, setHistoryMovement] = useState(); // История перемещений объектов
+  const [isLoading, setIsLoading] = useState(false); // Статус загрузки
 
+  // Список объектов по категориям, которые находятся в ремонте
+  const [repairData, setRepairData] = useState({
+    Все: [],
+    Компьютер: [],
+    Ноутбук: [],
+    Монитор: [],
+    МФУ: [],
+    Камера: [],
+    Мебель: [],
+    'Система вентиляции': [],
+  });
+
+  // Обработчик получения информации об аудиториях
   const viewCabinetInfo = useCallback(async (signal) => {
     setIsLoading(true);
     try {
@@ -36,6 +54,7 @@ function MovementProvider({ children }) {
     }
   }, []);
 
+  // Обработчик получения истории о перемещении объектов
   const updateHistoryMovement = useCallback(async (signal) => {
     setIsLoading(true);
     try {
@@ -56,21 +75,83 @@ function MovementProvider({ children }) {
     }
   }, []);
 
+  // Обработчик получения информации о текущих объектах в ремонте
+  const updateRepairData = useCallback(async (signal) => {
+    setIsLoading(true);
+    try {
+      const data = await fetchRepairData({ signal });
+      setRepairData(data);
+      return { success: true, item: data };
+    } catch (err) {
+      if (err.name !== 'AbortError') {
+        console.error('Ошибка при загрузке данных:', err);
+        return {
+          success: false,
+          message: err.message || 'Ошибка при загрузке данных',
+        };
+      }
+      return { success: false, aborted: true };
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  // Валидация для возврата объекта обратно на склад
+  const ReturnRepairedObject = useCallback(
+    async (id, del, type) => {
+      const endpoints = {
+        Мебель: 'furniture_from_repair',
+        'Система вентиляции': 'ventilation_from_repair',
+        Компьютер: 'computer_from_repair',
+        Ноутбук: 'laptop_from_repair',
+        Монитор: 'screen_from_repair',
+        МФУ: 'scanner_from_repair',
+        Камера: 'camera_from_repair',
+      };
+      try {
+        const response = await instance.patch(`/${endpoints[type]}/${id}`);
+        if (response.data.message === 'Успех') {
+          await instance.delete(`/delete-repair/${del}`);
+          await updateRepairData();
+
+          return {
+            success: true,
+            message: 'Возврат объект с ремонта произошел успешно',
+          };
+        } else {
+          return {
+            success: false,
+            message: 'Не удалось вернуть объект с ремонта',
+          };
+        }
+      } catch (error) {
+        console.error('Ошибка при возврате объекта:', error);
+      }
+    },
+    [updateRepairData],
+  );
+
   const contextValue = useMemo(
     () => ({
       audience,
+      repairData,
       historyMovement,
+      isLoading,
       setAudience,
       viewCabinetInfo,
       updateHistoryMovement,
-      isLoading,
+      updateRepairData,
+      ReturnRepairedObject,
     }),
     [
       audience,
+      repairData,
       historyMovement,
+      isLoading,
       viewCabinetInfo,
       updateHistoryMovement,
-      isLoading,
+      updateRepairData,
+      ReturnRepairedObject,
     ],
   );
   return (

@@ -2,77 +2,36 @@ import { React, useEffect, useState } from 'react';
 import Header from 'components/Header/Header';
 import RepairTable from './RepairTable';
 import TableContainer from 'components/UI/TableContainer';
-import { instance } from 'services/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
+import { useMovement } from 'context/MovementContext';
+import { enumCategories } from 'data/data';
 
 export default function Repair() {
+  const { repairData, isLoading, updateRepairData } = useMovement();
   const navigate = useNavigate();
   const [type, setType] = useState('Все');
-  const [repairData, setRepairData] = useState({
-    Все: [],
-    Компьютер: [],
-    Ноутбук: [],
-    Монитор: [],
-    МФУ: [],
-    Камера: [],
-    Мебель: [],
-    'Система вентиляции': [],
-  });
 
   useEffect(() => {
-    FetchData();
-  }, []);
+    const abortController = new AbortController();
 
-  const FetchData = async () => {
-    try {
-      const categories = [
-        'computer',
-        'laptop',
-        'screen',
-        'scanner',
-        'camera',
-        'furniture',
-        'ventilation',
-      ];
-      const requests = categories.map((cat) =>
-        instance.get(`/select_repair_${cat}`),
-      );
+    const loadData = async () => {
+      try {
+        await updateRepairData(abortController.signal);
+      } catch (err) {
+        if (err.name !== 'AbortError') {
+          console.error('Запрос был отменен');
+        }
+      }
+    };
 
-      const results = await Promise.all([
-        instance.get('/select_repair'),
-        ...requests,
-      ]);
+    loadData();
 
-      const allData = results[0].data;
-      const categoryData = results.slice(1);
+    return () => abortController.abort();
+  }, [updateRepairData]);
 
-      setRepairData({
-        Все: allData,
-        Компьютер: categoryData[0].data,
-        Ноутбук: categoryData[1].data,
-        Монитор: categoryData[2].data,
-        МФУ: categoryData[3].data,
-        Камера: categoryData[4].data,
-        Мебель: categoryData[5].data,
-        'Система вентиляции': categoryData[6].data,
-      });
-    } catch (err) {
-      console.log('Ошибка при загрузке данных', err);
-    }
-  };
-
-  const categories = [
-    'Все',
-    'Компьютер',
-    'Ноутбук',
-    'Монитор',
-    'МФУ',
-    'Камера',
-    'Мебель',
-    'Система вентиляции',
-  ];
+  if (isLoading) return <div>Загрузка данных...</div>;
 
   return (
     <section className="repair-block">
@@ -88,7 +47,7 @@ export default function Repair() {
         </div>
         <nav className="repair-block__menu">
           <ul>
-            {categories.map((category) => (
+            {enumCategories.map((category) => (
               <li
                 key={category}
                 className={`repair-block__menu__item ${type === category ? 'active' : ''}`}

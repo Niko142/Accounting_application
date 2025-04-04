@@ -1,40 +1,36 @@
 import { React, useCallback, useMemo } from 'react';
-import { instance } from 'services/api';
 import DataTable from 'components/Table/Table';
 import { repairColumns } from 'data/columns';
+import { useMovement } from 'context/MovementContext';
+import { toast, ToastContainer } from 'react-toastify';
 
 export default function RepairTable({ repair }) {
-  const ReturnObject = useCallback(async (id, del, type) => {
-    const endpoints = {
-      Мебель: 'furniture_from_repair',
-      'Система вентиляции': 'ventilation_from_repair',
-      Компьютер: 'computer_from_repair',
-      Ноутбук: 'laptop_from_repair',
-      Монитор: 'screen_from_repair',
-      МФУ: 'scanner_from_repair',
-      Камера: 'camera_from_repair',
-    };
+  const { ReturnRepairedObject } = useMovement();
 
-    // добавить обновление состояния
+  const handleReturn = useCallback(
+    async (id, del, type) => {
+      const result = await ReturnRepairedObject(id, del, type);
 
-    try {
-      console.log('Вызов ReturnObject:', { id, del, type });
-      console.log('Эндпоинт:', endpoints[type]);
-      const response = await instance.patch(`/${endpoints[type]}/${id}`);
-      if (response.data.message === 'Успех') {
-        await instance.delete(`/delete-repair/${del}`);
+      if (result?.success) {
+        toast.success(result.message || 'Операция выполнена успешно!');
+      } else {
+        toast.error(result?.message || 'Ошибка при выполнении операции.');
       }
-    } catch (error) {
-      console.error('Ошибка при возврате объекта:', error);
-    }
-  }, []);
+    },
+    [ReturnRepairedObject],
+  );
 
   const memoizedColumns = useMemo(
-    () => repairColumns(ReturnObject),
-    [ReturnObject],
+    () => repairColumns(handleReturn),
+    [handleReturn],
   );
 
   const memoizedData = useMemo(() => repair || [], [repair]);
 
-  return <DataTable head={memoizedColumns} mockData={memoizedData} />;
+  return (
+    <>
+      <DataTable head={memoizedColumns} mockData={memoizedData} />
+      <ToastContainer />
+    </>
+  );
 }

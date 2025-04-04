@@ -55,6 +55,27 @@ export const reason = [
   { value: 'Утилизация', label: 'Утилизация' },
 ];
 
+export const repairCategories = [
+  'computer',
+  'laptop',
+  'screen',
+  'scanner',
+  'camera',
+  'furniture',
+  'ventilation',
+];
+
+export const enumCategories = [
+  'Все',
+  'Компьютер',
+  'Ноутбук',
+  'Монитор',
+  'МФУ',
+  'Камера',
+  'Мебель',
+  'Система вентиляции',
+];
+
 export const change_column = [
   {
     name: 'Модель компьютера',

@@ -1,7 +1,7 @@
 import { React, useState } from 'react';
 import Button from 'components/Button/Button';
 import Header from 'components/Header/Header';
-import AudienceForm from './UI/AudienceForm';
+import AudienceForm from './components/AudienceForm';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faScrewdriverWrench } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
