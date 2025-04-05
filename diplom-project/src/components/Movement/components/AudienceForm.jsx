@@ -6,7 +6,6 @@ import { audienceColumns } from 'data/columns';
 const AudienceForm = () => {
   const { audience, viewCabinetInfo } = useMovement();
 
-  const memoizedData = useMemo(() => audience || [], [audience]);
   useEffect(() => {
     const abortController = new AbortController();
     const loadData = async () => {
@@ -21,6 +20,8 @@ const AudienceForm = () => {
     loadData();
     return () => abortController.abort();
   }, [viewCabinetInfo]);
+
+  const memoizedData = useMemo(() => audience || [], [audience]);
 
   return (
     <DataTable

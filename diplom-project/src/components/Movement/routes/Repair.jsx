@@ -1,6 +1,6 @@
 import { React, useEffect, useState } from 'react';
 import Header from 'components/Header/Header';
-import RepairTable from './RepairTable';
+import RepairTable from '../components/RepairTable';
 import TableContainer from 'components/UI/TableContainer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';

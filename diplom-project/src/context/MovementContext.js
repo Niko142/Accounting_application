@@ -18,6 +18,7 @@ export const useMovement = () => useContext(MovementContext);
 
 function MovementProvider({ children }) {
   const [audience, setAudience] = useState(); // Описание аудиторий
+  const [filteredAudience, setFilteredAudience] = useState(); // Отфильтрованный список аудиторий
   const [historyMovement, setHistoryMovement] = useState(); // История перемещений объектов
   const [isLoading, setIsLoading] = useState(false); // Статус загрузки
 
@@ -39,6 +40,7 @@ function MovementProvider({ children }) {
     try {
       const res = await fetchCabinetInfo({ signal });
       setAudience(res);
+      setFilteredAudience(res.filter((cab) => cab?.description !== 'Склад')); // Фильтрация
       return { success: true, item: res };
     } catch (err) {
       if (err.name !== 'AbortError') {
@@ -134,6 +136,7 @@ function MovementProvider({ children }) {
   const contextValue = useMemo(
     () => ({
       audience,
+      filteredAudience,
       repairData,
       historyMovement,
       isLoading,
@@ -145,6 +148,7 @@ function MovementProvider({ children }) {
     }),
     [
       audience,
+      filteredAudience,
       repairData,
       historyMovement,
       isLoading,

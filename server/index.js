@@ -837,7 +837,7 @@ app.post("/pinning-cabinet", (req, res) => {
   db.query(
     "INSERT INTO pinning_cabinet (date, category, type, reason, unit, start_location, end_location) VALUES (?, ?, ?, ?, ?, ?, ?)",
     [date, category, type, reason, unit, start, end],
-    (err, result) => {
+    (err) => {
       if (err) {
         res.send({ err: err });
       } else {
@@ -857,15 +857,14 @@ app.get("/history-cabinet", (req, res) => {
   });
 });
 
-app.post("/location_computer", (req, res) => {
+app.patch("/location_computer", (req, res) => {
   const location = req.body.location;
   const status = req.body.status;
   const id = req.body.id;
-  const name = req.body.name;
   db.query(
-    "UPDATE computer SET location = ?, status = ? WHERE id_computer = ? AND name = ?",
-    [location, status, id, name],
-    (err, result) => {
+    "UPDATE computer SET location = ?, status = ? WHERE id_computer = ?",
+    [location, status, id],
+    (err) => {
       if (err) {
         res.send({ err: err });
       } else {
@@ -875,15 +874,14 @@ app.post("/location_computer", (req, res) => {
   );
 });
 
-app.post("/location_laptop", (req, res) => {
+app.patch("/location_laptop", (req, res) => {
   const location = req.body.location;
   const status = req.body.status;
   const id = req.body.id;
-  const model = req.body.model;
   db.query(
-    "UPDATE laptop_description SET location = ?, status = ? WHERE laptop_id = ? AND model = ?",
-    [location, status, id, model],
-    (err, result) => {
+    "UPDATE laptop_description SET location = ?, status = ? WHERE laptop_id = ?",
+    [location, status, id],
+    (err) => {
       if (err) {
         res.send({ err: err });
       } else {
@@ -893,15 +891,14 @@ app.post("/location_laptop", (req, res) => {
   );
 });
 
-app.post("/location_screen", (req, res) => {
+app.patch("/location_screen", (req, res) => {
   const location = req.body.location;
   const status = req.body.status;
   const id = req.body.id;
-  const model = req.body.model;
   db.query(
-    "UPDATE screen_description SET location = ?, status = ? WHERE screen_id = ? AND model = ?",
-    [location, status, id, model],
-    (err, result) => {
+    "UPDATE screen_description SET location = ?, status = ? WHERE screen_id = ?",
+    [location, status, id,],
+    (err) => {
       if (err) {
         res.send({ err: err });
       } else {
@@ -911,15 +908,14 @@ app.post("/location_screen", (req, res) => {
   );
 });
 
-app.post("/location_scanner", (req, res) => {
+app.patch("/location_scanner", (req, res) => {
   const location = req.body.location;
   const status = req.body.status;
   const id = req.body.id;
-  const nam = req.body.nam;
   db.query(
-    "UPDATE scanner_description SET location = ?, status = ? WHERE scanner_id = ? AND nam = ?",
-    [location, status, id, nam],
-    (err, result) => {
+    "UPDATE scanner_description SET location = ?, status = ? WHERE scanner_id = ?",
+    [location, status, id],
+    (err) => {
       if (err) {
         res.send({ err: err });
       } else {
@@ -929,15 +925,14 @@ app.post("/location_scanner", (req, res) => {
   );
 });
 
-app.post("/location_camera", (req, res) => {
+app.patch("/location_camera", (req, res) => {
   const location = req.body.location;
   const status = req.body.status;
   const id = req.body.id;
-  const model = req.body.model;
   db.query(
-    "UPDATE camera_description SET location = ?, status = ? WHERE camera_id = ? AND model = ?",
-    [location, status, id, model],
-    (err, result) => {
+    "UPDATE camera_description SET location = ?, status = ? WHERE camera_id = ?",
+    [location, status, id],
+    (err) => {
       if (err) {
         res.send({ err: err });
       } else {
@@ -947,14 +942,14 @@ app.post("/location_camera", (req, res) => {
   );
 });
 
-app.post("/location_furniture", (req, res) => {
+app.patch("/location_furniture", (req, res) => {
   const location = req.body.location;
   const status = req.body.status;
   const id = req.body.id;
   db.query(
     "UPDATE furniture_description SET location = ?, status = ? WHERE furniture_id = ?",
     [location, status, id],
-    (err, result) => {
+    (err) => {
       if (err) {
         res.send({ err: err });
       } else {
@@ -964,15 +959,14 @@ app.post("/location_furniture", (req, res) => {
   );
 });
 
-app.post("/location_ventilation", (req, res) => {
+app.patch("/location_ventilation", (req, res) => {
   const location = req.body.location;
   const status = req.body.status;
   const id = req.body.id;
-  const model = req.body.model;
   db.query(
-    "UPDATE ventilation_description SET location = ?, status = ? WHERE ventilation_id = ? AND model = ?",
-    [location, status, id, model],
-    (err, result) => {
+    "UPDATE ventilation_description SET location = ?, status = ? WHERE ventilation_id = ?",
+    [location, status, id],
+    (err) => {
       if (err) {
         res.send({ err: err });
       } else {

@@ -12,9 +12,9 @@ import SelectEmployee from 'components/Employee/routes/SelectEmployee';
 import Component from 'components/Storage/Computer/Component';
 import AddComponents from 'components/Storage/Computer/AddComponents';
 import PinningEmployee from 'components/Employee/routes/PinningEmployee';
-import PinningCabinet from 'components/Movement/PinningForAudience';
+import PinningForAudience from 'components/Movement/PinningForAudience';
 import HistoryMovement from 'components/Movement/routes/HistoryMovement';
-import Repair from 'components/Movement/Repair';
+import Repair from 'components/Movement/routes/Repair';
 import SelectChange from 'components/Storage/SelectChange';
 import Chancellery from 'components/Chancellery/Chancellery';
 import ChancelleryProvider from 'context/ChancelleryContext';
@@ -51,7 +51,7 @@ function App() {
         <Route path="/movement" element={<MovementLayout />}>
           <Route index element={<Movement />} />
           <Route path="history" element={<HistoryMovement />} />
-          <Route path="pinning_audience" element={<PinningCabinet />} />
+          <Route path="pinning_audience" element={<PinningForAudience />} />
           <Route path="repair" element={<Repair />} />
         </Route>
 
