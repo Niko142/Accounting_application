@@ -1,4 +1,4 @@
-import { React, useState } from 'react';
+import { React, useMemo, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faBars,
@@ -10,15 +10,13 @@ import {
   faChair,
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
-import PinningComputer from './PinningComputer';
-import PinningLaptop from './PinningLaptop';
-import PinningScreen from './PinningScreen';
-import PinningScanner from './PinningScanner';
-import PinningCamera from './PinningCamera';
-import PinningFurniture from './PinningFurniture';
+import PinningComputer from '../forms/PinningComputer';
+import PinningLaptop from '../forms/PinningLaptop';
+import PinningScreen from '../forms/PinningScreen';
+import PinningScanner from '../forms/PinningScanner';
+import PinningCamera from '../forms/PinningCamera';
+import PinningFurniture from '../forms/PinningFurniture';
 import TableContainer from 'components/UI/TableContainer';
-
-// Отрефакторить код
 
 const navItems = [
   { type: 'Компьютер', icon: faComputer, component: <PinningComputer /> },
@@ -33,13 +31,13 @@ export default function UnitMovement() {
   const [type, setType] = useState('');
   const [open, setOpen] = useState(false);
 
-  const currentComponent = navItems.find(
-    (item) => item.type === type,
-  )?.component;
+  const CurrentComponent = useMemo(() => {
+    return navItems.find((item) => item.type === type)?.component || null;
+  }, [type]);
 
   return (
     <>
-      <TableContainer>
+      <TableContainer Lg>
         <header className="unit-movement__header">
           <button
             className="unit-movement__burger-menu"
@@ -47,12 +45,13 @@ export default function UnitMovement() {
           >
             <FontAwesomeIcon icon={faBars} />
           </button>
-          <FontAwesomeIcon
-            size="xl"
-            className="unit-movement__close-icon"
-            icon={faXmark}
-            onClick={() => setType(null)}
-          />
+          <button className="unit-movement__close-icon">
+            <FontAwesomeIcon
+              size="xl"
+              icon={faXmark}
+              onClick={() => setType(null)}
+            />
+          </button>
         </header>
         <div className="unit-movement__content">
           <nav className={`unit-movement__nav ${open ? 'active' : ''}`}>
@@ -72,9 +71,10 @@ export default function UnitMovement() {
               ))}
             </ul>
           </nav>
+
           <article className="unit-movement__form">
             <h3>Форма для оформления перемещения</h3>
-            {currentComponent}
+            {CurrentComponent}
           </article>
         </div>
       </TableContainer>

@@ -1,10 +1,10 @@
 import { React, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Button from 'components/Button/Button';
 import Header from 'components/Header/Header';
-import { category, type } from 'data/data';
 import Select from 'react-select';
+import { category, type } from 'data/data';
 import { toast, ToastContainer } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
 import TableContainer from 'components/UI/TableContainer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
@@ -13,12 +13,13 @@ import {
   pinningItemForAudience,
 } from 'services/movement';
 import { useMovement } from 'context/MovementContext';
-import { useAudiencePinning } from './hook/useAudiencePinning';
 import ObjectSelect from 'components/UI/ObjectSelect';
-import AudienceSelect from './components/AudienceSelect';
+import AudienceSelect from '../components/AudienceSelect';
+import { usePinningTypes } from 'components/hooks/usePinningTypes';
 
 export default function PinningForAudience() {
-  const { filteredAudience, viewCabinetInfo } = useMovement();
+  // Отфильтрованная  информация о кабинетах
+  const { filteredAudience } = useMovement();
   const navigate = useNavigate();
 
   const [id, setId] = useState({
@@ -42,8 +43,8 @@ export default function PinningForAudience() {
   });
 
   const [date, setDate] = useState(null);
-  const [selected, setSelected] = useState(null);
-  const [types, setTypes] = useState('-');
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedType, setSelectedType] = useState('-');
   const [selectedAudience, setSelectedAudiece] = useState(null); // Выбранная аудитория для перемещения
 
   const isValid = date !== null && items !== null && selectedAudience !== null;
@@ -57,22 +58,6 @@ export default function PinningForAudience() {
     return () => controller.abort();
   }, []);
 
-  // Получение информации о кабинетах
-  useEffect(() => {
-    const abortController = new AbortController();
-    const loadData = async () => {
-      try {
-        await viewCabinetInfo(abortController.signal);
-      } catch (err) {
-        if (err.name !== 'AbortError') {
-          console.error('Запрос был отменен');
-        }
-      }
-    };
-    loadData();
-    return () => abortController.abort();
-  }, [viewCabinetInfo]);
-
   // Обработчик отправки объекта в эксплуатацию
   const handleAudiencePinning = async (endpoint, itemsKey) => {
     try {
@@ -82,7 +67,11 @@ export default function PinningForAudience() {
         idState: id,
         itemsState: items,
         audience: selectedAudience,
-        formData: { date: date, category: selected, type: types },
+        formData: {
+          date: date,
+          category: selectedCategory,
+          type: selectedType,
+        },
       });
       toast.success('Оборудование успешно передано в эксплуатацию');
     } catch (error) {
@@ -91,10 +80,46 @@ export default function PinningForAudience() {
   };
 
   // Хук на распреление объектов по типам
-  const { equipmentTypes, selectedTypes } = useAudiencePinning(
+  const { equipmentTypes, selectedTypes } = usePinningTypes(
     items,
     setId,
     handleAudiencePinning,
+    'location',
+  );
+
+  // Объединяем логику
+  const PinningBlock = ({
+    label,
+    options,
+    setFunction,
+    pinningFunction,
+    isValid,
+    audienceOptions,
+    setAudience,
+    selectedKey,
+    selectedAudience,
+  }) => (
+    <article>
+      <ObjectSelect
+        label={label}
+        options={options}
+        setState={setFunction}
+        selectedKey={selectedKey}
+      />
+      <AudienceSelect
+        options={audienceOptions}
+        setState={setAudience}
+        selectedAudience={selectedAudience}
+      />
+      <Button
+        id="pinning__btn"
+        disabled={!isValid}
+        isActive={isValid}
+        onClick={pinningFunction}
+      >
+        Отправить
+      </Button>
+    </article>
   );
 
   return (
@@ -130,69 +155,49 @@ export default function PinningForAudience() {
                 isClearable
                 options={category}
                 placeholder="Выберите категорию объекта"
-                onChange={(e) => setSelected(e?.value || '')}
+                onChange={(e) => setSelectedCategory(e?.value || '')}
               />
-              {selected === 'Оргтехника' && (
+              {selectedCategory === 'Оргтехника' && (
                 <>
                   <label htmlFor="type">Тип:</label>
                   <Select
+                    classNamePrefix="pinning-select"
                     isClearable
                     options={type}
                     id="type"
                     placeholder="Выберите тип оргтехники"
-                    onChange={(e) => setTypes(e?.value || '')}
+                    onChange={(e) => setSelectedType(e?.value || '')}
                   />
                 </>
               )}
             </article>
-            {equipmentTypes[types] && (
-              <article>
-                <ObjectSelect
-                  label={`${types}`}
-                  options={equipmentTypes[types].options}
-                  setState={equipmentTypes[types].setFunction}
-                />
-                <label>Откуда:</label>
-                <input
-                  type="text"
-                  defaultValue="Склад"
-                  className="main__input"
-                  disabled
-                />
-                <AudienceSelect
-                  options={filteredAudience}
-                  setState={setSelectedAudiece}
-                />
-                <Button
-                  id="pinning__btn"
-                  disabled={!isValid}
-                  isActive={isValid}
-                  onClick={equipmentTypes[types].pinningFunction}
-                >
-                  Отправить
-                </Button>
-              </article>
+            {equipmentTypes[selectedType] && (
+              <PinningBlock
+                label={selectedType}
+                options={equipmentTypes[selectedType].options}
+                setFunction={equipmentTypes[selectedType].setFunction}
+                pinningFunction={equipmentTypes[selectedType].pinningFunction}
+                isValid={isValid}
+                audienceOptions={filteredAudience}
+                setAudience={setSelectedAudiece}
+                selectedKey={id?.[equipmentTypes[selectedType].id]}
+                selectedAudience={selectedAudience}
+              />
             )}
-            {selectedTypes[selected] && (
-              <article>
-                <ObjectSelect
-                  label={`${selected}`}
-                  options={selectedTypes[selected].options}
-                  setState={selectedTypes[selected].setFunction}
-                />
-                <AudienceSelect
-                  options={filteredAudience}
-                  setState={setSelectedAudiece}
-                />
-                <Button
-                  id="pinning__btn"
-                  disabled={!isValid}
-                  isActive={isValid}
-                  onClick={selectedTypes[selected].pinningFunction}
-                >
-                  Отправить
-                </Button>
-              </article>
+            {selectedTypes[selectedCategory] && (
+              <PinningBlock
+                label={selectedCategory}
+                options={selectedTypes[selectedCategory].options}
+                setFunction={selectedTypes[selectedCategory].setFunction}
+                pinningFunction={
+                  selectedTypes[selectedCategory].pinningFunction
+                }
+                isValid={isValid}
+                audienceOptions={filteredAudience}
+                setAudience={setSelectedAudiece}
+                selectedKey={id?.[selectedTypes[selectedCategory].id]}
+                selectedAudience={selectedAudience}
+              />
             )}
           </div>
         </form>

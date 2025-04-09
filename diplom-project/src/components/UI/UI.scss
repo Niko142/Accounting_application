@@ -39,8 +39,14 @@
 }
 
 // TableContainer
+.table__wrapper {
+  display: flex;
+  justify-content: center;
+}
+
 .table__container {
   display: grid;
+  align-items: baseline;
   min-height: 20vh;
   max-height: max-content;
   border-radius: 10px;
@@ -52,6 +58,7 @@
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
 
   &.container-lg {
+    grid-template-rows: 40px 1fr;
     min-height: 50vh;
   }
 

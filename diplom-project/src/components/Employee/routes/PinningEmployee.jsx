@@ -12,11 +12,12 @@ import EmployeeSelect from '../UI/EmployeeSelect';
 import ObjectSelect from '../../UI/ObjectSelect';
 import { fetchAllItems, pinningItem } from 'services/pinning';
 import { useEmployee } from 'context/EmployeeContext';
-import { useEquipmentTypes } from '../hook/useEquipmentTypes';
+import { usePinningTypes } from 'components/hooks/usePinningTypes';
 
 export default function PinningEmployee() {
   const { employees } = useEmployee();
   const navigate = useNavigate();
+
   const [id, setId] = useState({
     computers: null,
     laptops: null,
@@ -36,12 +37,12 @@ export default function PinningEmployee() {
     ventilation: [],
   });
 
-  const [selected, setSelected] = useState(null);
-  const [data, setData] = useState(null);
-  const [types, setTypes] = useState('-');
-  const [employee, setEmployees] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [date, setDate] = useState(null);
+  const [selectedType, setSelectedType] = useState('-');
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
 
-  const isValid = data !== null && employee !== null;
+  const isValid = date !== null && selectedEmployee !== null;
 
   const handlePinningItem = async (endpoint, itemsKey) => {
     try {
@@ -50,8 +51,12 @@ export default function PinningEmployee() {
         itemsKey,
         idState: id,
         itemsState: items,
-        employee,
-        formData: { date: data, category: selected, type: types },
+        employee: selectedEmployee,
+        formData: {
+          date: date,
+          category: selectedCategory,
+          type: selectedType,
+        },
       });
       toast.success('Оборудование закреплено успешно');
     } catch (error) {
@@ -67,10 +72,45 @@ export default function PinningEmployee() {
     return () => controller.abort();
   }, []);
 
-  const { equipmentTypes, selectedTypes } = useEquipmentTypes(
+  const PinningBlock = ({
+    label,
+    options,
+    setFunction,
+    pinningFunction,
+    isValid,
+    employeeOptions,
+    setEmployee,
+    selectedKey,
+    selectedEmployee,
+  }) => (
+    <article>
+      <ObjectSelect
+        label={label}
+        options={options}
+        setState={setFunction}
+        selectedKey={selectedKey}
+      />
+      <EmployeeSelect
+        options={employeeOptions}
+        setState={setEmployee}
+        selectedEmployee={selectedEmployee}
+      />
+      <Button
+        id="pinning__btn"
+        disabled={!isValid}
+        isActive={isValid}
+        onClick={pinningFunction}
+      >
+        Отправить
+      </Button>
+    </article>
+  );
+
+  const { equipmentTypes, selectedTypes } = usePinningTypes(
     items,
     setId,
     handlePinningItem,
+    'update',
   );
 
   return (
@@ -96,7 +136,7 @@ export default function PinningEmployee() {
                 type="datetime-local"
                 className="main__input"
                 id="date"
-                onChange={(e) => setData(e.target.value)}
+                onChange={(e) => setDate(e.target.value)}
               />
               <label htmlFor="category">Категория:</label>
               <Select
@@ -104,9 +144,9 @@ export default function PinningEmployee() {
                 isClearable
                 placeholder="Выберите категорию объекта"
                 options={category}
-                onChange={(e) => setSelected(e?.value || '')}
+                onChange={(e) => setSelectedCategory(e?.value || '')}
               />
-              {selected === 'Оргтехника' && (
+              {selectedCategory === 'Оргтехника' && (
                 <>
                   <label htmlFor="type">Тип:</label>
                   <Select
@@ -114,48 +154,40 @@ export default function PinningEmployee() {
                     isClearable
                     placeholder="Выберите тип оргтехники"
                     options={type}
-                    onChange={(e) => setTypes(e?.value || '')}
+                    onChange={(e) => setSelectedType(e?.value || '')}
                   />
                 </>
               )}
             </article>
             {/* Все что касается категории оргтехники */}
-            {equipmentTypes[types] && (
-              <article>
-                <ObjectSelect
-                  label={`${types}`}
-                  options={equipmentTypes[types].options}
-                  setState={equipmentTypes[types].setFunction}
-                />
-                <EmployeeSelect options={employees} setState={setEmployees} />
-                <Button
-                  id="pinning__btn"
-                  disabled={!isValid}
-                  isActive={isValid}
-                  onClick={equipmentTypes[types].pinningFunction}
-                >
-                  Закрепить объект
-                </Button>
-              </article>
+            {equipmentTypes[selectedType] && (
+              <PinningBlock
+                label={selectedType}
+                options={equipmentTypes[selectedType].options}
+                setFunction={equipmentTypes[selectedType].setFunction}
+                pinningFunction={equipmentTypes[selectedType].pinningFunction}
+                isValid={isValid}
+                employeeOptions={employees}
+                setEmployee={setSelectedEmployee}
+                selectedKey={id?.[equipmentTypes[selectedType].id]}
+                selectedEmployee={selectedEmployee}
+              />
             )}
             {/* Касаемо категории мебели и систем вентиляции */}
-            {selectedTypes[selected] && (
-              <article>
-                <ObjectSelect
-                  label={`${selected}`}
-                  options={selectedTypes[selected].options}
-                  setState={selectedTypes[selected].setFunction}
-                />
-                <EmployeeSelect options={employees} setState={setEmployees} />
-                <Button
-                  id="pinning__btn"
-                  disabled={!isValid}
-                  isActive={isValid}
-                  onClick={selectedTypes[selected].pinningFunction}
-                >
-                  Закрепить объект
-                </Button>
-              </article>
+            {selectedTypes[selectedCategory] && (
+              <PinningBlock
+                label={selectedCategory}
+                options={selectedTypes[selectedCategory].options}
+                setFunction={selectedTypes[selectedCategory].setFunction}
+                pinningFunction={
+                  selectedTypes[selectedCategory].pinningFunction
+                }
+                isValid={isValid}
+                employeeOptions={employees}
+                setEmployee={setSelectedEmployee}
+                selectedKey={id?.[selectedTypes[selectedCategory].id]}
+                selectedEmployee={selectedEmployee}
+              />
             )}
           </div>
           <ToastContainer />

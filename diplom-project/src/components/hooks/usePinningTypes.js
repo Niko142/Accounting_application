@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 
-export const useEquipmentTypes = (items, setId, handlePinningItem) => {
+export const usePinningTypes = (items, setId, handlePinningItem, prefix) => {
   // Делаем общий setFunction, чтобы убрать избыточность
   const createSetFunction = useCallback(
     (key) => (e) => {
@@ -23,31 +23,32 @@ export const useEquipmentTypes = (items, setId, handlePinningItem) => {
       id: 'computers',
       options: items.computers,
       setFunction: createSetFunction('computers'),
-      pinningFunction: () => handlePinningItem('update_computer', 'computers'),
+      pinningFunction: () =>
+        handlePinningItem(`${prefix}_computer`, 'computers'),
     },
     Ноутбук: {
       id: 'laptops',
       options: items.laptops,
       setFunction: createSetFunction('laptops'),
-      pinningFunction: () => handlePinningItem('update_laptop', 'laptops'),
+      pinningFunction: () => handlePinningItem(`${prefix}_laptop`, 'laptops'),
     },
     Монитор: {
       id: 'screens',
       options: items.screens,
       setFunction: createSetFunction('screens'),
-      pinningFunction: () => handlePinningItem('update_screen', 'screens'),
+      pinningFunction: () => handlePinningItem(`${prefix}_screen`, 'screens'),
     },
     МФУ: {
       id: 'scanners',
       options: items.scanners,
       setFunction: createSetFunction('scanners'),
-      pinningFunction: () => handlePinningItem('update_scanner', 'scanners'),
+      pinningFunction: () => handlePinningItem(`${prefix}_scanner`, 'scanners'),
     },
     Камера: {
       id: 'cameras',
       options: items.cameras,
       setFunction: createSetFunction('cameras'),
-      pinningFunction: () => handlePinningItem('update_camera', 'cameras'),
+      pinningFunction: () => handlePinningItem(`${prefix}_camera`, 'cameras'),
     },
   };
 
@@ -56,14 +57,15 @@ export const useEquipmentTypes = (items, setId, handlePinningItem) => {
       id: 'furniture',
       options: items.furniture,
       setFunction: createSetFunction('furniture'),
-      pinningFunction: () => handlePinningItem('update_furniture', 'furniture'),
+      pinningFunction: () =>
+        handlePinningItem(`${prefix}_furniture`, 'furniture'),
     },
     'Система вентиляции': {
       id: 'ventilation',
       options: items.ventilation,
       setFunction: createSetFunction('ventilation'),
       pinningFunction: () =>
-        handlePinningItem('update_ventilation', 'ventilation'),
+        handlePinningItem(`${prefix}_ventilation`, 'ventilation'),
     },
   };
 

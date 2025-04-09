@@ -5,7 +5,7 @@ import AudienceForm from './components/AudienceForm';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faScrewdriverWrench } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
-import UnitMovement from './UnitMovement';
+import UnitMovement from './components/UnitMovement';
 import ButtonContainer from 'components/UI/ButtonContainer';
 import CustomModal from 'components/Modal/Modal';
 
@@ -37,7 +37,7 @@ export default function Movement() {
           Вернуть из ремонта
         </Button>
       </ButtonContainer>
-      <UnitMovement></UnitMovement>
+      <UnitMovement />
     </>
   );
 }

@@ -1,25 +1,10 @@
-import { React, useEffect, useMemo } from 'react';
+import { React, useMemo } from 'react';
 import { useMovement } from 'context/MovementContext';
 import DataTable from 'components/Table/Table';
 import { audienceColumns } from 'data/columns';
 
 const AudienceForm = () => {
-  const { audience, viewCabinetInfo } = useMovement();
-
-  useEffect(() => {
-    const abortController = new AbortController();
-    const loadData = async () => {
-      try {
-        await viewCabinetInfo(abortController.signal);
-      } catch (err) {
-        if (err.name !== 'AbortError') {
-          console.error('Запрос был отменен');
-        }
-      }
-    };
-    loadData();
-    return () => abortController.abort();
-  }, [viewCabinetInfo]);
+  const { audience } = useMovement();
 
   const memoizedData = useMemo(() => audience || [], [audience]);
 

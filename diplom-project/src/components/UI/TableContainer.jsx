@@ -2,7 +2,7 @@ import { React } from 'react';
 
 const TableContainer = ({ Lg, children }) => {
   return (
-    <section style={{ display: 'flex', justifyContent: 'center' }}>
+    <section className="table__wrapper">
       <div
         className={Lg ? 'table__container container-lg' : 'table__container'}
       >

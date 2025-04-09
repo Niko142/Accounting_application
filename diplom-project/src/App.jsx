@@ -1,24 +1,28 @@
 import { React } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import 'App.scss';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+
+// Основные страницы
 import FormAuthorization from 'components/FormAuthorization/FormAuthorization';
 import MainMenu from 'components/MainMenu/MainMenu';
 import Storage from 'components/Storage/Storage';
 import Employee from 'components/Employee/Employee';
-import Movement from 'components/Movement/Movement';
+import MovementMenu from 'components/Movement/MovementMenu';
 import DocumentReport from 'components/DocumentReport/DocumentReport';
 import AddStorage from 'components/Storage/AddStorage';
 import SelectEmployee from 'components/Employee/routes/SelectEmployee';
 import Component from 'components/Storage/Computer/Component';
 import AddComponents from 'components/Storage/Computer/AddComponents';
 import PinningEmployee from 'components/Employee/routes/PinningEmployee';
-import PinningForAudience from 'components/Movement/PinningForAudience';
+import PinningForAudience from 'components/Movement/routes/PinningForAudience';
 import HistoryMovement from 'components/Movement/routes/HistoryMovement';
 import Repair from 'components/Movement/routes/Repair';
 import SelectChange from 'components/Storage/SelectChange';
 import Chancellery from 'components/Chancellery/Chancellery';
 import ChancelleryProvider from 'context/ChancelleryContext';
 import GetUtilizationItems from 'components/MainMenu/Utilization/GetUtilizationItems';
+
+// Layout-ы для контекста
 import EmployeeLayout from 'layouts/EmployeeLayout';
 import MovementLayout from 'layouts/MovementLayout';
 
@@ -49,7 +53,7 @@ function App() {
 
         {/* Блок "Перемещение" */}
         <Route path="/movement" element={<MovementLayout />}>
-          <Route index element={<Movement />} />
+          <Route index element={<MovementMenu />} />
           <Route path="history" element={<HistoryMovement />} />
           <Route path="pinning_audience" element={<PinningForAudience />} />
           <Route path="repair" element={<Repair />} />

@@ -3,6 +3,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
 } from 'react';
@@ -55,6 +56,20 @@ function MovementProvider({ children }) {
       setIsLoading(false);
     }
   }, []);
+
+  // Получение сразу, поскольку он много где используется
+  useEffect(() => {
+    const abortController = new AbortController();
+    const { signal } = abortController;
+
+    const loadInitialData = async () => {
+      await viewCabinetInfo(signal);
+    };
+
+    loadInitialData();
+
+    return () => abortController.abort();
+  }, [viewCabinetInfo]);
 
   // Обработчик получения истории о перемещении объектов
   const updateHistoryMovement = useCallback(async (signal) => {
