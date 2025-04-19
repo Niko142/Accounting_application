@@ -1,13 +1,12 @@
 import { useNavigate } from 'react-router-dom';
 import Header from 'components/Header/Header';
 import { React, useMemo, useCallback } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import TableContainer from 'components/UI/TableContainer';
 import DataTable from 'components/Table/Table';
 import { employeeColumns } from 'data/columns';
 import { useEmployee } from 'context/EmployeeContext';
 import { toast, ToastContainer } from 'react-toastify';
+import ReturnButton from 'components/UI/ReturnButton';
 
 export default function SelectEmployee() {
   const { employees, deleteSelectEmployee } = useEmployee();
@@ -47,11 +46,7 @@ export default function SelectEmployee() {
     <>
       <Header />
       <TableContainer>
-        <FontAwesomeIcon
-          className="navigate-back"
-          icon={faArrowLeft}
-          onClick={() => navigate(-1)}
-        />
+        <ReturnButton />
         <h2 className="employee__header header-center">
           Информация о сотрудниках:
         </h2>

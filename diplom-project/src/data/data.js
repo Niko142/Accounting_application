@@ -1,3 +1,5 @@
+// Заменить categories
+
 export const categories = [
   { value: '', name: 'Выберите...' },
   { value: '1', name: 'Компьютер' },
@@ -74,27 +76,4 @@ export const enumCategories = [
   'Камера',
   'Мебель',
   'Система вентиляции',
-];
-
-export const change_column = [
-  {
-    name: 'Модель компьютера',
-    selector: (row) => row.name,
-    sortable: true,
-    grow: 1,
-  },
-  {
-    name: 'Тип запчасти',
-    selector: (row) => row.type,
-    sortable: true,
-    grow: 0.4,
-  },
-  { name: 'До замены', selector: (row) => row.start, sortable: true, grow: 1 },
-  { name: 'После замены', selector: (row) => row.end, sortable: true, grow: 1 },
-  {
-    name: 'Дата замены',
-    selector: (row) => row.date,
-    sortable: true,
-    grow: 0.5,
-  },
 ];

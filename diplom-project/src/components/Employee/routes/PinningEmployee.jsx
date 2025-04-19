@@ -1,22 +1,19 @@
 import Header from 'components/Header/Header';
 import Select from 'react-select';
 import { category, type } from 'data/data';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { React, useEffect, useState } from 'react';
 import Button from 'components/Button/Button';
 import { toast, ToastContainer } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
 import TableContainer from 'components/UI/TableContainer';
 import EmployeeSelect from '../UI/EmployeeSelect';
 import ObjectSelect from '../../UI/ObjectSelect';
 import { fetchAllItems, pinningItem } from 'services/pinning';
 import { useEmployee } from 'context/EmployeeContext';
 import { usePinningTypes } from 'components/hooks/usePinningTypes';
+import ReturnButton from 'components/UI/ReturnButton';
 
 export default function PinningEmployee() {
   const { employees } = useEmployee();
-  const navigate = useNavigate();
 
   const [id, setId] = useState({
     computers: null,
@@ -120,11 +117,7 @@ export default function PinningEmployee() {
         <form className="pinning__form" onSubmit={(e) => e.preventDefault()}>
           <div className="pinning__title">
             <h3>Закрепление материального лица за конкретным объектом</h3>
-            <FontAwesomeIcon
-              className="navigate-back"
-              icon={faArrowLeft}
-              onClick={() => navigate(-1)}
-            />
+            <ReturnButton />
           </div>
 
           <hr className="pinning__line" />

@@ -1,13 +1,10 @@
 import { React, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import Button from 'components/Button/Button';
 import Header from 'components/Header/Header';
 import Select from 'react-select';
 import { category, type } from 'data/data';
 import { toast, ToastContainer } from 'react-toastify';
 import TableContainer from 'components/UI/TableContainer';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import {
   fetchAllStorageItems,
   pinningItemForAudience,
@@ -16,11 +13,11 @@ import { useMovement } from 'context/MovementContext';
 import ObjectSelect from 'components/UI/ObjectSelect';
 import AudienceSelect from '../components/AudienceSelect';
 import { usePinningTypes } from 'components/hooks/usePinningTypes';
+import ReturnButton from 'components/UI/ReturnButton';
 
 export default function PinningForAudience() {
   // Отфильтрованная  информация о кабинетах
   const { filteredAudience } = useMovement();
-  const navigate = useNavigate();
 
   const [id, setId] = useState({
     computer: null,
@@ -129,11 +126,7 @@ export default function PinningForAudience() {
         <form onSubmit={(event) => event.preventDefault()}>
           <div className="pinning__title">
             <h3>Закрепление материального средства за кабинетом</h3>
-            <FontAwesomeIcon
-              className="navigate-back"
-              icon={faArrowLeft}
-              onClick={() => navigate(-1)}
-            />
+            <ReturnButton />
           </div>
 
           <hr className="pinning__line" />

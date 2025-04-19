@@ -1,15 +1,12 @@
 import { React, useEffect, useMemo } from 'react';
 import Header from 'components/Header/Header';
 import DataTable from 'components/Table/Table';
-import { useNavigate } from 'react-router-dom';
 import { historyColumns } from 'data/columns';
 import { useMovement } from 'context/MovementContext';
 import TableContainer from 'components/UI/TableContainer';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import ReturnButton from 'components/UI/ReturnButton';
 export default function HistoryMovement() {
   const { isLoading, historyMovement, updateHistoryMovement } = useMovement();
-  const navigate = useNavigate();
 
   const memoizedData = useMemo(() => historyMovement || [], [historyMovement]);
 
@@ -37,11 +34,7 @@ export default function HistoryMovement() {
       <TableContainer>
         <div className="history__header">
           <h2>История перемещения объектов:</h2>
-          <FontAwesomeIcon
-            className="navigate-back"
-            icon={faArrowLeft}
-            onClick={() => navigate(-1)}
-          />
+          <ReturnButton />
         </div>
         {isLoading ? (
           <p>Загрузка...</p>

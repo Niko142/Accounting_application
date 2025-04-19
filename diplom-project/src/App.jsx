@@ -9,22 +9,23 @@ import Storage from 'components/Storage/Storage';
 import Employee from 'components/Employee/Employee';
 import MovementMenu from 'components/Movement/MovementMenu';
 import DocumentReport from 'components/DocumentReport/DocumentReport';
-import AddStorage from 'components/Storage/AddStorage';
+import AddToStorage from 'components/Storage/routes/AddToStorage';
 import SelectEmployee from 'components/Employee/routes/SelectEmployee';
-import Component from 'components/Storage/Computer/Component';
+import ComponentsMenu from 'components/Storage/routes/ComponentsMenu';
 import AddComponents from 'components/Storage/Computer/AddComponents';
 import PinningEmployee from 'components/Employee/routes/PinningEmployee';
 import PinningForAudience from 'components/Movement/routes/PinningForAudience';
 import HistoryMovement from 'components/Movement/routes/HistoryMovement';
 import Repair from 'components/Movement/routes/Repair';
-import SelectChange from 'components/Storage/SelectChange';
+import ChangeDetailsHistory from 'components/Storage/routes/ChangeDetailsHistory';
 import Chancellery from 'components/Chancellery/Chancellery';
-import ChancelleryProvider from 'context/ChancelleryContext';
 import GetUtilizationItems from 'components/MainMenu/Utilization/GetUtilizationItems';
 
-// Layout-ы для контекста
+// Layout-ы для контекста или provider-ы
 import EmployeeLayout from 'layouts/EmployeeLayout';
 import MovementLayout from 'layouts/MovementLayout';
+import ChancelleryProvider from 'context/ChancelleryContext';
+import StorageLayout from 'layouts/StorageLayout';
 
 function App() {
   return (
@@ -45,11 +46,16 @@ function App() {
         </Route>
 
         {/* Склад */}
-        <Route path="/account" element={<Storage />} />
-        <Route path="/add_storage" element={<AddStorage />} />
-        <Route path="/components" element={<Component />} />
-        <Route path="/add_components" element={<AddComponents />} />
-        <Route path="/change" element={<SelectChange />} />
+        <Route path="/storage" element={<StorageLayout />}>
+          <Route index element={<Storage />} />
+          <Route path="add-objects" element={<AddToStorage />} />
+          <Route path="components" element={<ComponentsMenu />} />
+          <Route path="add-components" element={<AddComponents />} />
+          <Route
+            path="change-details-history"
+            element={<ChangeDetailsHistory />}
+          />
+        </Route>
 
         {/* Блок "Перемещение" */}
         <Route path="/movement" element={<MovementLayout />}>

@@ -97,7 +97,7 @@ export default function PinningForm({
 
   return (
     <>
-      <form onSubmit={(e) => e.preventDefault()}>
+      <form className="movement-form" onSubmit={(e) => e.preventDefault()}>
         <label>Дата перемещения:</label>
         <input
           type="datetime-local"
@@ -108,19 +108,13 @@ export default function PinningForm({
         <Select
           classNamePrefix="pinning-select"
           options={options}
+          maxMenuHeight={150}
           placeholder={title}
           onChange={(e) => {
             setUnit(e.value);
             setCurrentAudience(e.key);
             setId(+e.keys);
           }}
-        />
-        <label>Откуда:</label>
-        <input
-          type="text"
-          className="main__input"
-          value={currentAudience}
-          readOnly
         />
         <AudienceSelect
           options={audience}
@@ -130,9 +124,17 @@ export default function PinningForm({
         <label>Причина перемещения</label>
         <Select
           classNamePrefix="pinning-select"
+          maxMenuHeight={110}
           options={reason}
           placeholder="Причина..."
           onChange={(e) => setSelectedReason(e.value)}
+        />
+        <label>Откуда:</label>
+        <input
+          type="text"
+          className="main__input"
+          value={currentAudience}
+          readOnly
         />
         <Button disabled={!isValid} isActive={isValid} onClick={handleSubmit}>
           Оформить

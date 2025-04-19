@@ -5,10 +5,12 @@ import 'moment/locale/ru';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLock, faDeleteLeft } from '@fortawesome/free-solid-svg-icons';
 
+// Cell для цены объекта
 function getPriceColumn() {
   return ({ value }) => `${value} руб.`;
 }
 
+// Cell для описания материально-ответственного лица
 function getPersonColumn() {
   return ({ row }) => {
     const { surname, name, patronymic } = row.original;
@@ -16,11 +18,15 @@ function getPersonColumn() {
   };
 }
 
+// Cell для даты
 function getDateColumn() {
   return ({ value }) =>
     moment(value).isValid() ? moment(value).format('LLL') : '...';
 }
 
+/**
+ * Блок "Канцелярия"
+ * */
 export const chancelleryColumns = (onEdit, onDelete) => [
   { Header: 'ID', accessor: 'id_chancellery' },
   { Header: 'Группа', accessor: 'type' },
@@ -64,7 +70,9 @@ export const chancelleryColumns = (onEdit, onDelete) => [
   },
 ];
 
-// КОЛОНКИ для блока "УЧЕТ"
+/**
+ * Блок "Учет"
+ * */
 
 export const ventilationColumns = [
   { Header: 'ID', accessor: 'ventilation_id' },
@@ -82,7 +90,7 @@ export const ventilationColumns = [
 export const furnitureColumns = [
   { Header: 'ID', accessor: 'furniture_id' },
   {
-    name: 'Наименование',
+    Header: 'Описание',
     accessor: 'mark',
     Cell: ({ row }) => {
       const { name, model } = row.original;
@@ -167,8 +175,8 @@ export const laptopColumns = [
     Header: 'Процессор',
     accessor: 'processor',
   },
-  { name: 'Память', accessor: 'memory' },
-  { name: 'Объем', accessor: 'volume' },
+  { Header: 'Память', accessor: 'memory' },
+  { Header: 'Объем', accessor: 'volume' },
   {
     Header: 'Цена',
     accessor: 'price',
@@ -284,7 +292,9 @@ export const utilizationColumns = [
   },
 ];
 
-// Блок "Материально-ответственные лица"
+/**
+ * Блок "Материально-ответственные лица"
+ * */
 
 export const pinningEmployeeColumns = [
   {
@@ -345,7 +355,21 @@ export const employeeColumns = (onMove, onDelete) => [
   },
 ];
 
-// Блок Перемещение
+/**
+ * Блок "Склад"
+ * */
+
+export const changeDetailsColumns = [
+  { Header: 'Модель компьютера', accessor: 'name' },
+  { Header: 'Тип комплектующего', accessor: 'type' },
+  { Header: 'До замены:', accessor: 'start' },
+  { Header: 'После замены:', accessor: 'end', grow: 0.3 },
+  { Header: 'Дата изменения', accessor: 'date' },
+];
+
+/**
+ * Блок "Перемещение"
+ * */
 export const audienceColumns = [
   { Header: 'Id', accessor: 'cabinet_id' },
   { Header: 'Номер аудитории', accessor: 'number' },

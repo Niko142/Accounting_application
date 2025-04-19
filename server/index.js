@@ -560,7 +560,7 @@ app.post("/add_computer", (req, res) => {
   db.query(
     "INSERT INTO computer (name, videocard_id, processor_id, mothercard_id, memory_id, disk_id, location, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
     [name, videocard, processor, mothercard, memory, disk, location, status],
-    (err, result) => {
+    (err) => {
       if (err) {
         res.send({ message: "Ошибка при добавлении видекарты" });
       } else {
@@ -577,7 +577,7 @@ app.post("/add_videocard", (req, res) => {
   db.query(
     "INSERT INTO videocard (model, price, location) VALUES (?, ?, ?)",
     [model, price, location],
-    (err, result) => {
+    (err) => {
       if (err) {
         res.send({ message: "Ошибка при добавлении видекарты" });
       } else {
@@ -595,7 +595,7 @@ app.post("/add_processor", (req, res) => {
   db.query(
     "INSERT INTO processor (model, rate, price, location) VALUES (?, ?, ?, ?)",
     [model, rate, price, location],
-    (err, result) => {
+    (err) => {
       if (err) {
         res.send({ message: "Ошибка при добавлении видекарты" });
       } else {
@@ -1058,7 +1058,7 @@ app.post("/update_disk", (req, res) => {
 
 app.get("/computer_movement", (req, res) => {
   db.query(
-    "SELECT * FROM computer WHERE location <> 'Склад'",
+    "SELECT * FROM computer WHERE location <> 'Склад' AND location <> '-'",
     (err, result) => {
       if (err) {
         res.send({ err: err });
@@ -1071,7 +1071,7 @@ app.get("/computer_movement", (req, res) => {
 
 app.get("/laptop_movement", (req, res) => {
   db.query(
-    "SELECT * FROM laptop_description WHERE location <> 'Склад'",
+    "SELECT * FROM laptop_description WHERE location <> 'Склад' AND location <> '-'",
     (err, result) => {
       if (err) {
         res.send({ err: err });
@@ -1084,7 +1084,7 @@ app.get("/laptop_movement", (req, res) => {
 
 app.get("/screen_movement", (req, res) => {
   db.query(
-    "SELECT * FROM screen_description WHERE location <> 'Склад'",
+    "SELECT * FROM screen_description WHERE location <> 'Склад' AND location <> '-'",
     (err, result) => {
       if (err) {
         res.send({ err: err });
@@ -1097,7 +1097,7 @@ app.get("/screen_movement", (req, res) => {
 
 app.get("/scanner_movement", (req, res) => {
   db.query(
-    "SELECT * FROM scanner_description WHERE location <> 'Склад'",
+    "SELECT * FROM scanner_description WHERE location <> 'Склад' AND location <> '-'",
     (err, result) => {
       if (err) {
         res.send({ err: err });
@@ -1110,7 +1110,7 @@ app.get("/scanner_movement", (req, res) => {
 
 app.get("/camera_movement", (req, res) => {
   db.query(
-    "SELECT * FROM camera_description WHERE location <> 'Склад'",
+    "SELECT * FROM camera_description WHERE location <> 'Склад' AND location <> '-'",
     (err, result) => {
       if (err) {
         res.send({ err: err });
@@ -1123,7 +1123,7 @@ app.get("/camera_movement", (req, res) => {
 
 app.get("/furniture_movement", (req, res) => {
   db.query(
-    "SELECT * FROM furniture_description WHERE location <> 'Склад'",
+    "SELECT * FROM furniture_description WHERE location <> 'Склад' AND location <> '-'",
     (err, result) => {
       if (err) {
         res.send({ err: err });

@@ -73,7 +73,7 @@ export default function UnitMovement() {
           </nav>
 
           <article className="unit-movement__form">
-            <h3>Форма для оформления перемещения (не со склада)</h3>
+            <h3>Оформление перемещения (не со склада)</h3>
             {CurrentComponent}
           </article>
         </div>

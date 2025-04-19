@@ -1,7 +1,5 @@
 @use 'assets/styles/variables' as v;
 
-// Пофиксить ошибочки
-
 .history {
   &__header {
     display: flex;
@@ -39,6 +37,7 @@
     flex-direction: column;
     visibility: hidden;
     width: 100%;
+    height: min-content;
     background-color: v.$btn-active;
     border-radius: 5px;
     padding: 5px;
@@ -134,5 +133,16 @@
         color: v.$black;
       }
     }
+  }
+}
+
+.movement-form {
+  & label {
+    display: block;
+    margin-top: 10px;
+  }
+
+  & .main__input:last-of-type {
+    margin-bottom: 10px;
   }
 }

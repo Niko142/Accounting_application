@@ -35,7 +35,7 @@ export const Header = () => {
               </Link>
             </li>
             <li>
-              <Link className="link" to="/account">
+              <Link className="link" to="/storage">
                 Склад
               </Link>
             </li>

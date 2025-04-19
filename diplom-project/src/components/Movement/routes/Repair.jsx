@@ -2,15 +2,12 @@ import { React, useEffect, useState } from 'react';
 import Header from 'components/Header/Header';
 import RepairTable from '../components/RepairTable';
 import TableContainer from 'components/UI/TableContainer';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
-import { useNavigate } from 'react-router-dom';
 import { useMovement } from 'context/MovementContext';
 import { enumCategories } from 'data/data';
+import ReturnButton from 'components/UI/ReturnButton';
 
 export default function Repair() {
   const { repairData, isLoading, updateRepairData } = useMovement();
-  const navigate = useNavigate();
   const [type, setType] = useState('Все');
 
   useEffect(() => {
@@ -39,11 +36,7 @@ export default function Repair() {
       <TableContainer>
         <div className="repair-block__header">
           <h2>Материальные средства в ремонте</h2>
-          <FontAwesomeIcon
-            className="navigate-back"
-            icon={faArrowLeft}
-            onClick={() => navigate(-1)}
-          />
+          <ReturnButton />
         </div>
         <nav className="repair-block__menu">
           <ul>

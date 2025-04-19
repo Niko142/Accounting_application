@@ -1,0 +1,10 @@
+body {
+  overflow: auto;
+}
+
+.change {
+  &__header {
+    display: flex;
+    justify-content: space-between;
+  }
+}

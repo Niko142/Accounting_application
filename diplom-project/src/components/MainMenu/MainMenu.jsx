@@ -82,7 +82,7 @@ export default function MainMenu() {
             {type === 'technic' && (
               <>
                 <select
-                  id="form-input"
+                  className="main__input"
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
                 >
