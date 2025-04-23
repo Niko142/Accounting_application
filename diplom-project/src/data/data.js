@@ -77,3 +77,11 @@ export const enumCategories = [
   'Мебель',
   'Система вентиляции',
 ];
+
+export const computerPartsCategories = [
+  { value: 'videocard', label: 'Видеокарта' },
+  { value: 'processor', label: 'Процессор' },
+  { value: 'mothercard', label: 'Материнская плата' },
+  { value: 'memory', label: 'Оперативная память' },
+  { value: 'disk', label: 'Жесткий диск' },
+];

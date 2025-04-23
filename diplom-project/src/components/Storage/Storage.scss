@@ -1,3 +1,5 @@
+@use 'assets/styles/variables' as v;
+
 body {
   overflow: auto;
 }
@@ -6,5 +8,26 @@ body {
   &__header {
     display: flex;
     justify-content: space-between;
+  }
+}
+
+.component {
+  &__wrapper {
+    display: flex;
+    justify-content: center;
+    margin: 0 auto;
+    margin-bottom: 15px;
+    column-gap: 20px;
+    padding: 30px;
+    max-width: fit-content;
+    border-radius: 10px;
+    background: v.$white;
+    box-shadow: 4px 3px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 }

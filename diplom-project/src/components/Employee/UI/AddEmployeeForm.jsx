@@ -1,7 +1,6 @@
 import React from 'react';
 import Button from 'components/Button/Button';
 import { useForm } from 'react-hook-form';
-import 'react-phone-number-input/style.css';
 
 export default function AddEmployeeForm({ onSubmit }) {
   const {

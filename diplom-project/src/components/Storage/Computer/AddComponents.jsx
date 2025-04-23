@@ -9,8 +9,10 @@ import 'react-toastify/dist/ReactToastify.css';
 import Axios from 'axios';
 
 export default function AddComponents() {
+  //  Убрать этот ужас
+
   const [category, setCategory] = useState('');
-  const navigate = useNavigate('');
+  const navigate = useNavigate();
 
   //Хуки для видеокарты
   const [modelVideocard, setModelVideocard] = useState('');
@@ -281,11 +283,7 @@ export default function AddComponents() {
     <>
       <Header />
       <section style={{ marginBottom: '2rem' }}>
-        <Button
-          id="image-button"
-          isActive
-          onClick={() => navigate('/components')}
-        >
+        <Button id="image-button" isActive onClick={() => navigate(-1)}>
           Назад
         </Button>
         <Button id="image-button" isActive onClick={() => setCategory('')}>
