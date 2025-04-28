@@ -12,3 +12,25 @@ export const fetchChangeDetailsHistory = async (signal) => {
     throw error;
   }
 };
+
+// Запрос на получение данных о комплектующих
+export const fetchComponentData = async ({ component, signal }) => {
+  try {
+    const res = await instance.get(`/${component}`, { signal });
+    return res.data;
+  } catch (error) {
+    console.error('Ошибка при выполнении запроса: ', error);
+    throw error;
+  }
+};
+
+// Запрос на удаление комплектующего
+export const deleteComponentFromStorage = async ({ component, id }) => {
+  try {
+    await instance.delete(`/delete-${component}/${id}`);
+    return { success: true, message: 'Комплектующее успешно удалено' };
+  } catch (err) {
+    console.log('Возникла ошибка при удалении комплектующего');
+    return { success: false, message: 'Не удалось удалить объект' };
+  }
+};

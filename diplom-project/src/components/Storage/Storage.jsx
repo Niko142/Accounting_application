@@ -22,10 +22,6 @@ export default function Storage() {
   const [type, setType] = useState('');
   const [category, setCategory] = useState('');
 
-  function handleCategoryChange(e) {
-    setCategory(e.target.value);
-  }
-
   return (
     <>
       <Header />
@@ -56,7 +52,7 @@ export default function Storage() {
             <select
               className="main__input"
               value={category}
-              onChange={handleCategoryChange}
+              onChange={(e) => setCategory(e.target.value)}
             >
               {categories.map((item) => {
                 return <option key={item.value}>{item.name}</option>;

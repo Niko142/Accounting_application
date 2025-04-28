@@ -27,6 +27,7 @@ function getDateColumn() {
 /**
  * Блок "Канцелярия"
  * */
+
 export const chancelleryColumns = (onEdit, onDelete) => [
   { Header: 'ID', accessor: 'id_chancellery' },
   { Header: 'Группа', accessor: 'type' },
@@ -43,14 +44,7 @@ export const chancelleryColumns = (onEdit, onDelete) => [
     Header: 'Действия',
     accessor: 'actions',
     Cell: ({ row }) => (
-      <div
-        style={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          justifyContent: 'center',
-          gap: '5px',
-        }}
-      >
+      <div className="actions-wrapper">
         <Button
           isEdit
           variant="outline"
@@ -332,14 +326,7 @@ export const employeeColumns = (onMove, onDelete) => [
   {
     Header: 'Действия',
     Cell: ({ row }) => (
-      <div
-        style={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          justifyContent: 'center',
-          gap: '5px',
-        }}
-      >
+      <div className="actions-wrapper">
         <Button isMove variant="outline" onClick={() => onMove()}>
           Закрепить <FontAwesomeIcon size="lg" icon={faLock} />
         </Button>
@@ -363,13 +350,14 @@ export const changeDetailsColumns = [
   { Header: 'Модель компьютера', accessor: 'name' },
   { Header: 'Тип комплектующего', accessor: 'type' },
   { Header: 'До замены:', accessor: 'start' },
-  { Header: 'После замены:', accessor: 'end', grow: 0.3 },
+  { Header: 'После замены:', accessor: 'end' },
   { Header: 'Дата изменения', accessor: 'date' },
 ];
 
 /**
  * Блок "Перемещение"
  * */
+
 export const audienceColumns = [
   { Header: 'Id', accessor: 'cabinet_id' },
   { Header: 'Номер аудитории', accessor: 'number' },

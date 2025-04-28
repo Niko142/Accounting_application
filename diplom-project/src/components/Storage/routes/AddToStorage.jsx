@@ -11,30 +11,30 @@ import CameraSection from '../CameraSection';
 import ComputerSection from '../Computer/ComputerSection';
 import TableContainer from 'components/UI/TableContainer';
 import ReturnButton from 'components/UI/ReturnButton';
+import Button from 'components/Button/Button';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFileExcel } from '@fortawesome/free-solid-svg-icons';
 
 export default function AddToStorage() {
   const [type, setType] = useState('');
   const [category, setCategory] = useState('');
 
-  function handleCategoryChange(e) {
-    setCategory(e.target.value);
-  }
-
   return (
     <>
       <Header />
-      <div>
-        <TypeSelection
-          active={type}
-          onChange={(type) => {
-            setType(type);
-            setCategory('');
-          }}
-        />
-      </div>
+      <TypeSelection
+        active={type}
+        onChange={(type) => {
+          setType(type);
+          setCategory('');
+        }}
+      />
       <TableContainer>
         <div className="change__header">
-          <h2>Выберите категорию, в которую добавляется объект:</h2>
+          {/* Реализовать логику для импорта файла с данными помимо ручного ввода */}
+          <Button isMove>
+            Импорт <FontAwesomeIcon icon={faFileExcel} size="lg" />
+          </Button>
           <ReturnButton />
         </div>
         {type === 'technic' && (
@@ -42,7 +42,7 @@ export default function AddToStorage() {
             <select
               className="main__input"
               value={category}
-              onChange={handleCategoryChange}
+              onChange={(e) => setCategory(e.target.value)}
             >
               <option value="">. . .</option>
               {categories.map((item) => {

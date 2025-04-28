@@ -1,38 +1,13 @@
 import { React, useState } from 'react';
 import Header from 'components/Header/Header';
 import ComponentsSelection from '../components/ComponentsSelection';
+import SelectComponent from '../components/SelectComponent';
 import TableContainer from 'components/UI/TableContainer';
 import Button from 'components/Button/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
-import {
-  diskColumns,
-  memoryColumns,
-  mothercardColumns,
-  processorColumns,
-  videocardColumns,
-} from 'data/storageColumns';
-import SelectComponent from '../Computer/SelectComponent';
-
-// Конфиг данных
-const COMPONENT_CONFIG = {
-  videocard: {
-    columns: videocardColumns,
-  },
-  processor: {
-    columns: processorColumns,
-  },
-  mothercard: {
-    columns: mothercardColumns,
-  },
-  memory: {
-    columns: memoryColumns,
-  },
-  disk: {
-    columns: diskColumns,
-  },
-};
+import { COMPONENT_CONFIG } from '../config/config';
 
 export default function ComponentsMenu() {
   const navigate = useNavigate();
@@ -59,6 +34,7 @@ export default function ComponentsMenu() {
             onClick={() => navigate(-1)}
           />
         </div>
+
         {/* Обработка выбранного типа комплектующего */}
         {type && (
           <SelectComponent

@@ -1,4 +1,5 @@
-// Заменить categories
+// Убрать потом лишние данные
+import { faCouch, faComputer } from '@fortawesome/free-solid-svg-icons';
 
 export const categories = [
   { value: '', name: 'Выберите...' },
@@ -76,6 +77,12 @@ export const enumCategories = [
   'Камера',
   'Мебель',
   'Система вентиляции',
+];
+
+export const objectCategories = [
+  { value: 'technic', label: 'Оргтехника', image: faComputer },
+  { value: 'furniture', label: 'Мебель', image: faCouch },
+  { value: 'ventilation', label: 'Системы вентиляции' },
 ];
 
 export const computerPartsCategories = [
