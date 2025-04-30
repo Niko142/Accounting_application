@@ -32,3 +32,21 @@ body {
     margin-bottom: 20px;
   }
 }
+
+.storage {
+  &__form {
+    width: 600px;
+    margin: 0 auto;
+
+    & label {
+      display: block;
+      &:not(:first-of-type) {
+        margin-top: 10px;
+      }
+    }
+    & button {
+      display: block;
+      margin-top: 10px;
+    }
+  }
+}

@@ -1,7 +1,7 @@
 import { React, useState } from 'react';
 import Button from 'components/Button/Button';
 import Axios from 'axios';
-import Success from './Success';
+import Success from '../Success';
 import Validation from 'components/FormAuthorization/Validation';
 
 export default function VentilationSelection() {
@@ -32,7 +32,7 @@ export default function VentilationSelection() {
         warm: ventilation.warm,
         price: ventilation.price,
         location: 'Склад',
-        status: 'Находится в резерве',
+        status: 'В резерве',
       }).then((response) => {
         console.log(response);
         if (response.data.message === 'Успешное добавление') {

@@ -1,7 +1,7 @@
 import { React, useState } from 'react';
 import Button from 'components/Button/Button';
 import Axios from 'axios';
-import Success from './Success';
+import Success from '../Success';
 import Validation from 'components/FormAuthorization/Validation';
 
 export default function FurnitureSelection() {
@@ -30,7 +30,7 @@ export default function FurnitureSelection() {
         model: furniture.model,
         price: furniture.price,
         location: 'Склад',
-        status: 'Находится в резерве',
+        status: 'В резерве',
       }).then((response) => {
         console.log(response);
         if (response.data.message === 'Успешное добавление') {

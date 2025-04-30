@@ -1,7 +1,7 @@
 import { React, useState } from 'react';
 import Button from 'components/Button/Button';
 import Axios from 'axios';
-import Success from './Success';
+import Success from '../Success';
 import Validation from 'components/FormAuthorization/Validation';
 
 export default function LaptopSelection() {
@@ -43,7 +43,7 @@ export default function LaptopSelection() {
         volume: laptop.volume,
         price: laptop.price,
         location: 'Склад',
-        status: 'Находится в резерве',
+        status: 'В резерве',
       }).then((response) => {
         console.log(response);
         if (response.data.message === 'Успешное добавление') {

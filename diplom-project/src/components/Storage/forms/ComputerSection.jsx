@@ -62,7 +62,7 @@ export default function ComputerSection() {
       memory_id: +computer.memory,
       disk_id: +computer.disk,
       location: 'Склад',
-      status: 'Находится в резерве',
+      status: 'В резерве',
     }).then((response) => {
       console.log(response);
       if (response.data.message === 'Успешное добавление') {

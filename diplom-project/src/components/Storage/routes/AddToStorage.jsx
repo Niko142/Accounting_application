@@ -2,13 +2,13 @@ import { React, useState } from 'react';
 import Header from 'components/Header/Header';
 import TypeSelection from 'components/UI/TypeSelection';
 import { categories } from 'data/data';
-import FurnitureSelection from '../FurnitureSelection';
-import VentilationSelection from '../VentilationSelection';
-import LaptopSelection from '../LaptopSelection';
-import ScreenSection from '../ScreenSection';
-import ScannerSelection from '../ScannerSection';
-import CameraSection from '../CameraSection';
-import ComputerSection from '../Computer/ComputerSection';
+import FurnitureSelection from '../forms/FurnitureSelection';
+import VentilationSelection from '../forms/VentilationSelection';
+import LaptopSelection from '../forms/LaptopSelection';
+import ScreenSection from '../forms/ScreenSection';
+import ScannerSelection from '../forms/ScannerSection';
+import CameraSection from '../forms/CameraSection';
+import ComputerSection from '../forms/ComputerSection';
 import TableContainer from 'components/UI/TableContainer';
 import ReturnButton from 'components/UI/ReturnButton';
 import Button from 'components/Button/Button';
@@ -29,7 +29,7 @@ export default function AddToStorage() {
           setCategory('');
         }}
       />
-      <TableContainer>
+      <TableContainer Lg headerSizes={'75px 1fr'}>
         <div className="change__header">
           {/* Реализовать логику для импорта файла с данными помимо ручного ввода */}
           <Button isMove>
@@ -41,10 +41,10 @@ export default function AddToStorage() {
           <>
             <select
               className="main__input"
+              style={{ marginBottom: '20px' }}
               value={category}
               onChange={(e) => setCategory(e.target.value)}
             >
-              <option value="">. . .</option>
               {categories.map((item) => {
                 return <option key={item.value}>{item.name}</option>;
               })}

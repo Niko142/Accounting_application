@@ -1,8 +1,8 @@
 // Убрать потом лишние данные
-import { faCouch, faComputer } from '@fortawesome/free-solid-svg-icons';
+import { faCouch, faComputer, faFan } from '@fortawesome/free-solid-svg-icons';
 
 export const categories = [
-  { value: '', name: 'Выберите...' },
+  { value: '', name: '. . .' },
   { value: '1', name: 'Компьютер' },
   { value: '2', name: 'Ноутбук' },
   { value: '3', name: 'Монитор' },
@@ -82,7 +82,7 @@ export const enumCategories = [
 export const objectCategories = [
   { value: 'technic', label: 'Оргтехника', image: faComputer },
   { value: 'furniture', label: 'Мебель', image: faCouch },
-  { value: 'ventilation', label: 'Системы вентиляции' },
+  { value: 'ventilation', label: 'Системы вентиляции', image: faFan },
 ];
 
 export const computerPartsCategories = [
@@ -91,4 +91,11 @@ export const computerPartsCategories = [
   { value: 'mothercard', label: 'Материнская плата' },
   { value: 'memory', label: 'Оперативная память' },
   { value: 'disk', label: 'Жесткий диск' },
+];
+
+export const matrixOptions = [
+  { value: '', label: '. . .' },
+  { value: 'TN', label: 'TN' },
+  { value: 'VA', label: 'VA' },
+  { value: 'IPS', label: 'IPS' },
 ];
