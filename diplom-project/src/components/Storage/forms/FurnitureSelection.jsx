@@ -1,90 +1,89 @@
-import { React, useState } from 'react';
+import { React } from 'react';
+import { useForm } from 'react-hook-form';
+import { toast, ToastContainer } from 'react-toastify';
+import { instance } from 'services/api';
 import Button from 'components/Button/Button';
-import Axios from 'axios';
-import Success from '../Success';
-import Validation from 'components/FormAuthorization/Validation';
 
 export default function FurnitureSelection() {
-  const [furniture, setFurniture] = useState({
-    name: '',
-    model: '',
-    price: '',
-  });
-  const [errors, setErrors] = useState({});
-  const [addStatus, setAddStatus] = useState('');
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm({ mode: 'onSubmit' });
 
-  const handleFurnitureChange = (event) => {
-    setFurniture((furniture) => ({
-      ...furniture,
-      [event.target.name]: event.target.value,
-    }));
-    console.log(furniture);
-  };
-
-  const FormSubmit = (event) => {
-    event.preventDefault();
-    setErrors(Validation(furniture));
-    if (errors.name === '' && errors.model === '' && errors.price === '') {
-      Axios.post('http://localhost:3001/furniture', {
-        name: furniture.name,
-        model: furniture.model,
-        price: furniture.price,
+  const onSubmit = async (data) => {
+    try {
+      await instance.post('/furniture', {
+        name: data.name,
+        model: data.model,
+        price: data.price,
         location: 'Склад',
         status: 'В резерве',
-      }).then((response) => {
-        console.log(response);
-        if (response.data.message === 'Успешное добавление') {
-          console.log(response);
-          setAddStatus(true);
-        } else {
-          setAddStatus(false);
-        }
       });
+
+      reset();
+      toast.success('Мебель успешно добавлена на склад');
+    } catch (err) {
+      toast.error(
+        err.response?.data?.message || 'Не удалось добавить мебель на склад',
+      );
     }
   };
 
   return (
-    <form style={{ width: '420px' }} onSubmit={FormSubmit}>
-      <label htmlFor="name" className="add">
-        Наименование:
-      </label>
+    <form className="storage__form" onSubmit={handleSubmit(onSubmit)}>
+      <label htmlFor="name">Наименование:</label>
       <input
         type="text"
-        id="form-input"
-        name="name"
-        value={furniture.name}
-        style={{ borderColor: errors.name ? 'red' : null }}
-        onChange={handleFurnitureChange}
+        className="main__input"
+        id="name"
+        {...register('name', {
+          required: 'Поле обязательно для заполнения',
+        })}
       />
-      {errors.name && <span className="err">{errors.name}</span>}
-      <label htmlFor="model" className="add">
-        Модель:
-      </label>
+
+      {errors.name?.message && (
+        <span className="form__error">{errors.name?.message}</span>
+      )}
+
+      <label htmlFor="model">Модель:</label>
       <input
         type="text"
-        id="form-input"
-        name="model"
-        value={furniture.model}
-        style={{ borderColor: errors.model ? 'red' : null }}
-        onChange={handleFurnitureChange}
+        className="main__input"
+        id="model"
+        {...register('model', {
+          required: 'Поле обязательно для заполнения',
+        })}
       />
-      {errors.model && <span className="err">{errors.model}</span>}
-      <label htmlFor="price" className="add">
-        Цена:
-      </label>
+
+      {errors.model?.message && (
+        <span className="form__error">{errors.model?.message}</span>
+      )}
+
+      <label htmlFor="price">Стоимость:</label>
       <input
+        className="main__input"
         type="text"
-        id="form-input"
-        name="price"
-        value={furniture.price}
-        style={{ borderColor: errors.price ? 'red' : null }}
-        onChange={handleFurnitureChange}
+        id="price"
+        {...register('price', {
+          required: 'Поле обязательно для заполнения',
+          pattern: {
+            value: /^[0-9]+$/,
+            message: 'Неправильный формат ввода значения',
+          },
+        })}
       />
-      {errors.price && <span className="err">{errors.price}</span>}
-      <Button isActive style={{ marginLeft: '9rem' }} type="submit">
+
+      {errors.price?.message && (
+        <span className="form__error">{errors.price?.message}</span>
+      )}
+
+      <Button isActive type="submit">
         Добавить
       </Button>
-      {addStatus === true && <Success>Успешное добавление записи</Success>}
+
+      <ToastContainer />
     </form>
   );
 }

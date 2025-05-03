@@ -1,110 +1,115 @@
-import { React, useState } from 'react';
+import { React } from 'react';
+import { useForm } from 'react-hook-form';
+import { toast, ToastContainer } from 'react-toastify';
+import { instance } from 'services/api';
 import Button from 'components/Button/Button';
-import Axios from 'axios';
-import Success from '../Success';
-import Validation from 'components/FormAuthorization/Validation';
+import { filterOptions, warmOptions } from 'data/data';
 
 export default function VentilationSelection() {
-  const [ventilation, setVentilation] = useState({
-    model: '',
-    filter: '',
-    warm: '',
-    price: '',
-  });
-  const [errors, setErrors] = useState({});
-  const [addStatus, setAddStatus] = useState('');
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm({ mode: 'onSubmit' });
 
-  const handleVentilationChange = (event) => {
-    setVentilation((ventilation) => ({
-      ...ventilation,
-      [event.target.name]: event.target.value,
-    }));
-    console.log(ventilation);
-  };
-
-  const FormSubmit = (event) => {
-    event.preventDefault();
-    setErrors(Validation(ventilation));
-    if (errors.model === '' && errors.price === '') {
-      Axios.post('http://localhost:3001/ventilation', {
-        model: ventilation.model,
-        filter: ventilation.filter,
-        warm: ventilation.warm,
-        price: ventilation.price,
+  const onSubmit = async (data) => {
+    try {
+      await instance.post('/ventilation', {
+        model: data.model,
+        filter: data.filter,
+        warm: data.warm,
+        price: data.price,
         location: 'Склад',
         status: 'В резерве',
-      }).then((response) => {
-        console.log(response);
-        if (response.data.message === 'Успешное добавление') {
-          console.log(response);
-          setAddStatus(true);
-        } else {
-          setAddStatus(false);
-        }
       });
+
+      reset();
+      toast.success('Система вентиляции успешно добавлена на склад');
+    } catch (err) {
+      toast.error(
+        err.response?.data?.message || 'Не удалось добавить систему на склад',
+      );
     }
   };
 
   return (
-    <form style={{ width: '420px' }} action="" onSubmit={FormSubmit}>
-      <label htmlFor="model" className="add">
-        Модель:
-      </label>
+    <form className="storage__form" onSubmit={handleSubmit(onSubmit)}>
+      <label htmlFor="model">Модель:</label>
       <input
         type="text"
-        id="form-input"
-        name="model"
-        value={ventilation.model}
-        style={{ borderColor: errors.model ? 'red' : null }}
-        onChange={handleVentilationChange}
+        className="main__input"
+        id="model"
+        {...register('model', {
+          required: 'Поле обязательно для заполнения',
+        })}
       />
-      {errors.model && <span className="err">{errors.model}</span>}
-      <label htmlFor="type" className="add">
-        Тип фильтра:
-      </label>
+
+      {errors.model?.message && (
+        <span className="form__error">{errors.model?.message}</span>
+      )}
+
+      <label htmlFor="filter">Тип фильтра:</label>
       <select
-        id="form-input"
-        name="filter"
-        value={ventilation.filter}
-        onChange={handleVentilationChange}
+        id="filter"
+        className="main__input"
+        {...register('filter', {
+          required: 'Поле обязательно для заполнения',
+        })}
       >
-        <option>...</option>
-        <option>Базовый</option>
-        <option>Угольный</option>
-        <option>Полимерный</option>
-        <option>С ионами серебра</option>
-        <option>Фотокаталитический</option>
-        <option>Плазменный</option>
+        {filterOptions.map((item, ind) => (
+          <option key={ind} value={item.value}>
+            {item.label}
+          </option>
+        ))}
       </select>
-      <label htmlFor="name" className="add">
-        Возможность обогрева:
-      </label>
+
+      {errors.filter?.message && (
+        <span className="form__error">{errors.filter?.message}</span>
+      )}
+
+      <label htmlFor="warm">Возможность обогрева:</label>
       <select
-        id="form-input"
-        name="warm"
-        value={ventilation.warm}
-        onChange={handleVentilationChange}
+        className="main__input"
+        id="warm"
+        {...register('warm', {
+          required: 'Поле обязательно для заполнения',
+        })}
       >
-        <option>...</option>
-        <option>Да</option>
-        <option>Нет</option>
+        {warmOptions.map((item, ind) => (
+          <option key={ind} value={item.value}>
+            {item.label}
+          </option>
+        ))}
       </select>
-      <label htmlFor="price" className="add">
-        Цена:
-      </label>
+
+      {errors.warm?.message && (
+        <span className="form__error">{errors.warm?.message}</span>
+      )}
+
+      <label htmlFor="price">Стоимость:</label>
       <input
+        className="main__input"
         type="text"
-        id="form-input"
-        name="price"
-        value={ventilation.price}
-        style={{ borderColor: errors.price ? 'red' : null }}
-        onChange={handleVentilationChange}
+        id="price"
+        {...register('price', {
+          required: 'Поле обязательно для заполнения',
+          pattern: {
+            value: /^[0-9]+$/,
+            message: 'Неправильный формат ввода значения',
+          },
+        })}
       />
-      {errors.price && <span className="err">{errors.price}</span>}
-      <Button type="submit" isActive style={{ marginLeft: '9rem' }}>
+
+      {errors.price?.message && (
+        <span className="form__error">{errors.price?.message}</span>
+      )}
+
+      <Button isActive type="submit">
         Добавить
       </Button>
-      {addStatus === true && <Success>Успешное добавление записи</Success>}
+
+      <ToastContainer />
     </form>
   );
 }

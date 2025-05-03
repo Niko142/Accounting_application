@@ -112,7 +112,7 @@ app.post("/add-employee", (req, res) => {
   );
 });
 
-app.post("/add-laptop", (req, res) => {
+app.post("/laptop", (req, res) => {
   const model = req.body.model;
   const systems = req.body.systems;
   const videocard = req.body.videocard;

@@ -158,7 +158,7 @@ export const laptopColumns = [
   },
   { Header: 'Модель', accessor: 'model' },
   {
-    Header: 'Система',
+    Header: 'OC',
     accessor: 'systems',
   },
   {
@@ -169,7 +169,7 @@ export const laptopColumns = [
     Header: 'Процессор',
     accessor: 'processor',
   },
-  { Header: 'Память', accessor: 'memory' },
+  { Header: 'Память', accessor: 'memory', Cell: ({ value }) => `${value} ГБ` },
   { Header: 'Объем', accessor: 'volume' },
   {
     Header: 'Цена',
@@ -177,11 +177,11 @@ export const laptopColumns = [
     Cell: getPriceColumn(),
   },
   {
-    Header: 'Расположение',
+    Header: 'Кабинет',
     accessor: 'location',
   },
   {
-    Header: 'Материальное лицо',
+    Header: 'Ответственное лицо',
     accessor: 'material_person',
     Cell: getPersonColumn(),
   },
@@ -201,7 +201,7 @@ export const screenColumns = [
     Header: 'Диагональ',
     accessor: 'diagonal',
   },
-  { Header: 'Частота', accessor: 'rate' },
+  { Header: 'Частота', accessor: 'rate', Cell: ({ value }) => `${value} ГЦ` },
   {
     Header: 'Тип матрицы',
     accessor: 'type',

@@ -13,8 +13,6 @@ export default function ScreenSection() {
     reset,
   } = useForm({ mode: 'onSubmit' });
 
-  // Проставить ГЦ в колонках
-
   const onSubmit = async (data) => {
     try {
       await instance.post('/screen', {

@@ -1,136 +1,138 @@
-import { React, useState } from 'react';
-import Success from '../Success';
+import { React } from 'react';
+import { useForm } from 'react-hook-form';
+import { toast, ToastContainer } from 'react-toastify';
+import { instance } from 'services/api';
 import Button from 'components/Button/Button';
-import Fail from '../Fail';
-import Axios from 'axios';
-import Validation from 'components/FormAuthorization/Validation';
+import { bracingOptions, resolutionOptions } from 'data/data';
 
 export default function CameraSection() {
-  const [camera, setCamera] = useState({
-    model: '',
-    resolution: '',
-    angle: '',
-    bracing: '',
-    price: '',
-  });
-  const [errors, setErrors] = useState({});
-  const [addStatus, setAddStatus] = useState(null);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm({ mode: 'onSubmit' });
 
-  const handleCameraChange = (event) => {
-    setCamera((camera) => ({
-      ...camera,
-      [event.target.name]: event.target.value,
-    }));
-    console.log(camera);
-  };
-
-  const FormSubmit = (event) => {
-    event.preventDefault();
-    setErrors(Validation(camera));
-    if (
-      errors.model === '' &&
-      errors.resolution === '' &&
-      errors.angle === '' &&
-      errors.price === ''
-    ) {
-      Axios.post('http://localhost:3001/camera', {
-        model: camera.model,
-        resolution: camera.resolution,
-        angle: camera.angle,
-        bracing: camera.bracing,
-        price: camera.price,
+  const onSubmit = async (data) => {
+    try {
+      await instance.post('/camera', {
+        model: data.model,
+        resolution: data.resolution,
+        angle: data.angle,
+        bracing: data.bracing,
+        price: data.price,
         location: 'Склад',
         status: 'В резерве',
-      }).then((response) => {
-        console.log(response);
-        if (response.data.message === 'Успешное добавление') {
-          console.log(response);
-          setAddStatus(true);
-        } else {
-          console.log('Ошибка');
-        }
       });
-    } else {
-      setAddStatus(false);
+
+      reset();
+      toast.success('Камера успешно добавлена на склад');
+    } catch (err) {
+      toast.error(
+        err.response?.data?.message || 'Не удалось добавить камеру на склад',
+      );
     }
   };
 
   return (
-    <form style={{ width: '420px' }} onSubmit={FormSubmit}>
-      <label htmlFor="model" className="add">
-        Модель:
-      </label>
+    <form className="storage__form" onSubmit={handleSubmit(onSubmit)}>
+      <label htmlFor="model">Модель:</label>
       <input
         type="text"
-        id="form-input"
-        name="model"
-        value={camera.model}
-        style={{ borderColor: errors.model ? 'red' : null }}
-        onChange={handleCameraChange}
+        className="main__input"
+        id="model"
+        {...register('model', {
+          required: 'Поле обязательно для заполнения',
+        })}
       />
 
-      {errors.model && <span className="err">{errors.model}</span>}
+      {errors.model?.message && (
+        <span className="form__error">{errors.model?.message}</span>
+      )}
 
-      <label htmlFor="resolution" className="add">
-        Разрешение (в формате `значения`x`значения``):
-      </label>
-      <input
-        type="text"
-        id="form-input"
-        name="resolution"
-        value={camera.resolution}
-        style={{ borderColor: errors.resolution ? 'red' : null }}
-        onChange={handleCameraChange}
-      />
-
-      {errors.resolution && <span className="err">{errors.resolution}</span>}
-
-      <label htmlFor="angle" className="add">
-        Угол обзора (градусы):
-      </label>
-      <input
-        type="text"
-        id="form-input"
-        name="angle"
-        value={camera.angle}
-        style={{ borderColor: errors.angle ? 'red' : null }}
-        onChange={handleCameraChange}
-      />
-
-      {errors.angle && <span className="err">{errors.angle}</span>}
-
-      <label htmlFor="bracing" className="add">
-        Крепление:
-      </label>
+      <label htmlFor="resolution">Разрешение:</label>
       <select
-        id="form-input"
-        name="bracing"
-        value={camera.bracing}
-        onChange={handleCameraChange}
+        className="main__input"
+        id="resolution"
+        {...register('resolution', {
+          required: 'Поле обязательно для заполнения',
+        })}
       >
-        <option>...</option>
-        <option>Отсутствует</option>
-        <option>Присутствует</option>
+        {resolutionOptions.map((item, ind) => (
+          <option key={ind} value={item.value}>
+            {item.label}
+          </option>
+        ))}
       </select>
-      <label htmlFor="price" className="add">
-        Цена:
-      </label>
+
+      {errors.resolution?.message && (
+        <span className="form__error">{errors.resolution?.message}</span>
+      )}
+
+      <label htmlFor="angle">Угол обзора:</label>
       <input
         type="text"
-        id="form-input"
-        name="price"
-        value={camera.price}
-        style={{ borderColor: errors.price ? 'red' : null }}
-        onChange={handleCameraChange}
+        id="angle"
+        className="main__input"
+        {...register('angle', {
+          required: 'Поле обязательно для заполнения',
+          pattern: {
+            value: /^[1-9]\d*$/,
+            message: 'Введите целое число',
+          },
+          validate: {
+            maxAngle: (v) =>
+              parseInt(v) <= 360 || 'Угол не может быть больше 360°',
+          },
+        })}
       />
-      {errors.price && <span className="err">{errors.price}</span>}
-      <Button isActive style={{ marginLeft: '9rem' }} type="submit">
+
+      {errors.angle?.message && (
+        <span className="form__error">{errors.angle?.message}</span>
+      )}
+
+      <label htmlFor="bracing">Крепление:</label>
+      <select
+        className="main__input"
+        id="bracing"
+        {...register('bracing', {
+          required: 'Поле обязательно для заполнения',
+        })}
+      >
+        {bracingOptions.map((item, ind) => (
+          <option key={ind} value={item.value}>
+            {item.label}
+          </option>
+        ))}
+      </select>
+
+      {errors.bracing?.message && (
+        <span className="form__error">{errors.bracing?.message}</span>
+      )}
+
+      <label htmlFor="price">Стоимость:</label>
+      <input
+        className="main__input"
+        type="text"
+        id="price"
+        {...register('price', {
+          required: 'Поле обязательно для заполнения',
+          pattern: {
+            value: /^[0-9]+$/,
+            message: 'Неправильный формат ввода значения',
+          },
+        })}
+      />
+
+      {errors.price?.message && (
+        <span className="form__error">{errors.price?.message}</span>
+      )}
+
+      <Button isActive type="submit">
         Добавить
       </Button>
-      {addStatus === true && <Success>Успешное добавление камеры</Success>}
-      {addStatus === false && (
-        <Fail>Возникла ошибка при добавлении камеры</Fail>
-      )}
+
+      <ToastContainer />
     </form>
   );
 }

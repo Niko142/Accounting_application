@@ -99,3 +99,63 @@ export const matrixOptions = [
   { value: 'VA', label: 'VA' },
   { value: 'IPS', label: 'IPS' },
 ];
+
+export const filterOptions = [
+  { value: '', label: '. . .' },
+  { value: 'Базовый', label: 'Базовый' },
+  { value: 'Угольный', label: 'Угольный' },
+  { value: 'Полимерный', label: 'Полимерный' },
+  { value: 'С ионами серебра', label: 'С ионами серебра' },
+  { value: 'Фотокаталитический', label: 'Фотокаталитический' },
+  { value: 'Плазменный', label: 'Плазменный' },
+];
+
+export const warmOptions = [
+  { value: '', label: '. . .' },
+  { value: 'Да', label: 'Да' },
+  { value: 'Нет', label: 'Нет' },
+];
+
+export const colorOptions = [
+  { value: '', label: '. . .' },
+  { value: 'Черно-белая', label: 'Черно-белая' },
+  { value: 'Цветная', label: 'Цветная' },
+];
+
+export const resolutionOptions = [
+  { value: '', label: '. . .' },
+  { value: '640x480', label: '640x480 (VGA)' },
+  { value: '1280x720', label: '1280x720 (HD)' },
+  { value: '1920x1080', label: '1920x1080 (Full HD)' },
+  { value: '2048x1080', label: '2048x1080 (2K DCI)' },
+  { value: '2560x1440', label: '2560x1440 (2K QHD)' },
+  { value: '3840x2160', label: '3840x2160 (4K UHD)' },
+];
+
+export const bracingOptions = [
+  { value: '', label: '. . .' },
+  { value: 'Отсутствует', label: 'Отсутствует' },
+  { value: 'Присутствует', label: 'Присутствует' },
+];
+
+export const systemOptions = [
+  { value: '', label: '. . .' },
+  { value: 'Windows XP', label: 'Windows XP' },
+  { value: 'Windows 7', label: 'Windows 7' },
+  { value: 'Windows 8', label: 'Windows 8' },
+  { value: 'Windows 10', label: 'Windows 10' },
+  { value: 'Windows 11', label: 'Windows 11' },
+  { value: 'Linux', label: 'Linux' },
+];
+
+export const memoryOptions = [
+  { value: '', label: '. . .' },
+  { value: '2', label: '2 ГБ' },
+  { value: '4', label: '4 ГБ' },
+  { value: '8', label: '8 ГБ' },
+  { value: '16', label: '16 ГБ' },
+  { value: '32', label: '32 ГБ' },
+  { value: '64', label: '64 ГБ' },
+  { value: '128', label: '128 ГБ' },
+  { value: 'custom', label: 'Другое ...' },
+];

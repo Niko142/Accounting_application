@@ -1,115 +1,119 @@
-import { React, useState } from 'react';
+import { React } from 'react';
+import { useForm } from 'react-hook-form';
+import { toast, ToastContainer } from 'react-toastify';
+import { instance } from 'services/api';
 import Button from 'components/Button/Button';
-import Axios from 'axios';
-import Success from '../Success';
-import Validation from 'components/FormAuthorization/Validation';
+import { colorOptions } from 'data/data';
 
 export default function ScannerSelection() {
-  const [scanner, setScanner] = useState({
-    model: '',
-    color: '',
-    speed: '',
-    price: '',
-  });
-  const [errors, setErrors] = useState({});
-  const [addStatus, setAddStatus] = useState('');
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm({ mode: 'onSubmit' });
 
-  const handleScannerChange = (event) => {
-    setScanner((scanner) => ({
-      ...scanner,
-      [event.target.name]: event.target.value,
-    }));
-    console.log(scanner);
-  };
-
-  const FormSubmit = (event) => {
-    event.preventDefault();
-    setErrors(Validation(scanner));
-
-    if (errors.model === '' && errors.speed === '' && errors.price === '') {
-      Axios.post('http://localhost:3001/scanner', {
-        nam: scanner.model,
-        color: scanner.color,
-        speed: scanner.speed,
-        price: scanner.price,
+  const onSubmit = async (data) => {
+    try {
+      await instance.post('/scanner', {
+        nam: data.model,
+        color: data.color,
+        speed: data.speed,
+        price: data.price,
         location: 'Склад',
         status: 'В резерве',
-      }).then((response) => {
-        console.log(response);
-        if (response.data.message === 'Успешное добавление') {
-          console.log(response);
-          setAddStatus(true);
-        } else {
-          setAddStatus(false);
-        }
       });
-    } else {
-      setAddStatus(false);
+
+      reset();
+      toast.success('МФУ успешно добавлен на склад');
+    } catch (err) {
+      toast.error(
+        err.response?.data?.message || 'Не удалось добавить МФУ на склад',
+      );
     }
   };
 
   return (
-    <form style={{ width: '420px' }} onSubmit={FormSubmit}>
-      <label htmlFor="name" className="add">
-        Наименование:
-      </label>
+    <form className="storage__form" onSubmit={handleSubmit(onSubmit)}>
+      <label htmlFor="model">Модель:</label>
       <input
         type="text"
-        id="form-input"
-        name="model"
-        value={scanner.model}
-        style={{ borderColor: errors.model ? 'red' : null }}
-        onChange={handleScannerChange}
+        className="main__input"
+        id="model"
+        {...register('model', {
+          required: 'Поле обязательно для заполнения',
+        })}
       />
 
-      {errors.model && <span className="err">{errors.model}</span>}
+      {errors.model?.message && (
+        <span className="form__error">{errors.model?.message}</span>
+      )}
 
-      <label htmlFor="color" className="add">
-        Цвет печати:
-      </label>
+      <label htmlFor="color">Цвет печати:</label>
       <select
-        id="form-input"
-        name="color"
-        value={scanner.color}
-        onChange={handleScannerChange}
+        id="color"
+        className="main__input"
+        {...register('color', {
+          required: 'Поле обязательно для заполнения',
+        })}
       >
-        <option>...</option>
-        <option>Черно-белая</option>
-        <option>Цветная</option>
-        <option>Оба</option>
+        {colorOptions.map((item, ind) => (
+          <option key={ind} value={item.value}>
+            {item.label}
+          </option>
+        ))}
       </select>
-      <label htmlFor="speed" className="add">
-        Скорость печати (стр/мин):
-      </label>
+
+      {errors.color?.message && (
+        <span className="form__error">{errors.color?.message}</span>
+      )}
+
+      <label htmlFor="speed">Скорость печати (стр./мин):</label>
       <input
         type="text"
-        name="speed"
-        id="form-input"
-        value={scanner.speed}
-        style={{ borderColor: errors.speed ? 'red' : null }}
-        onChange={handleScannerChange}
+        className="main__input"
+        id="speed"
+        {...register('speed', {
+          required: 'Поле обязательно для заполнения',
+          pattern: {
+            value: /^[0-9]+$/,
+            message: 'Введите целое число',
+          },
+          validate: {
+            maxSpeed: (v) =>
+              parseInt(v) <= 100 ||
+              'Скорость печати не может превышать 100 стр./мин',
+          },
+        })}
       />
 
-      {errors.speed && <span className="err">{errors.speed}</span>}
+      {errors.speed?.message && (
+        <span className="form__error">{errors.speed?.message}</span>
+      )}
 
-      <label htmlFor="price" className="add">
-        Цена:
-      </label>
+      <label htmlFor="price">Стоимость:</label>
       <input
         type="text"
-        id="form-input"
-        name="price"
-        value={scanner.price}
-        style={{ borderColor: errors.price ? 'red' : null }}
-        onChange={handleScannerChange}
+        className="main__input"
+        id="price"
+        {...register('price', {
+          required: 'Поле обязательно для заполнения',
+          pattern: {
+            value: /^[0-9]+$/,
+            message: 'Неправильный формат ввода значения',
+          },
+        })}
       />
 
-      {errors.price && <span className="err">{errors.price}</span>}
+      {errors.price?.message && (
+        <span className="form__error">{errors.price?.message}</span>
+      )}
 
-      <Button isActive style={{ marginLeft: '9rem' }} type="submit">
+      <Button isActive type="submit">
         Добавить
       </Button>
-      {addStatus === true && <Success>Успешное добавление МФУ</Success>}
+
+      <ToastContainer />
     </form>
   );
 }

@@ -169,10 +169,10 @@ export const computerStorageColumns = (onDelete, onRepair, onChange) => [
 export const laptopStorageColumns = (onDelete, onRepair) => [
   { Header: 'ID', accessor: 'laptop_id' },
   { Header: 'Модель', accessor: 'model' },
-  { Header: 'Система', accessor: 'systems' },
+  { Header: 'OC', accessor: 'systems' },
   { Header: 'Видеокарта', accessor: 'videocard' },
   { Header: 'Процессор', accessor: 'processor' },
-  { Header: 'Объем ОЗУ', accessor: 'memory' },
+  { Header: 'ОЗУ', accessor: 'memory', Cell: ({ value }) => `${value} ГБ` },
   { Header: 'Объем диска', accessor: 'volume' },
   { Header: 'Стоимость', accessor: 'price', Cell: getPriceColumn() },
   {
@@ -203,7 +203,7 @@ export const screenStorageColumns = (onDelete, onRepair) => [
   { Header: 'ID', accessor: 'screen_id' },
   { Header: 'Модель', accessor: 'model' },
   { Header: 'Диагональ', accessor: 'diagonal' },
-  { Header: 'Частота', accessor: 'rate' },
+  { Header: 'Частота', accessor: 'rate', Cell: ({ value }) => `${value} ГЦ` },
   { Header: 'Тип матрицы', accessor: 'type' },
   { Header: 'Стоимость', accessor: 'price', Cell: getPriceColumn() },
   {
