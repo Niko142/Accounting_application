@@ -3,9 +3,9 @@ import { useForm } from 'react-hook-form';
 import { toast, ToastContainer } from 'react-toastify';
 import { instance } from 'services/api';
 import Button from 'components/Button/Button';
-import { filterOptions, warmOptions } from 'data/data';
+import { bracingOptions, resolutionOptions } from 'data/data';
 
-export default function VentilationSelection() {
+export default function AddCameraForm() {
   const {
     register,
     handleSubmit,
@@ -15,20 +15,21 @@ export default function VentilationSelection() {
 
   const onSubmit = async (data) => {
     try {
-      await instance.post('/ventilation', {
+      await instance.post('/camera', {
         model: data.model,
-        filter: data.filter,
-        warm: data.warm,
+        resolution: data.resolution,
+        angle: data.angle,
+        bracing: data.bracing,
         price: data.price,
         location: 'Склад',
         status: 'В резерве',
       });
 
       reset();
-      toast.success('Система вентиляции успешно добавлена на склад');
+      toast.success('Камера успешно добавлена на склад');
     } catch (err) {
       toast.error(
-        err.response?.data?.message || 'Не удалось добавить систему на склад',
+        err.response?.data?.message || 'Не удалось добавить камеру на склад',
       );
     }
   };
@@ -49,42 +50,64 @@ export default function VentilationSelection() {
         <span className="form__error">{errors.model?.message}</span>
       )}
 
-      <label htmlFor="filter">Тип фильтра:</label>
+      <label htmlFor="resolution">Разрешение:</label>
       <select
-        id="filter"
         className="main__input"
-        {...register('filter', {
+        id="resolution"
+        {...register('resolution', {
           required: 'Поле обязательно для заполнения',
         })}
       >
-        {filterOptions.map((item, ind) => (
+        {resolutionOptions.map((item, ind) => (
           <option key={ind} value={item.value}>
             {item.label}
           </option>
         ))}
       </select>
 
-      {errors.filter?.message && (
-        <span className="form__error">{errors.filter?.message}</span>
+      {errors.resolution?.message && (
+        <span className="form__error">{errors.resolution?.message}</span>
       )}
 
-      <label htmlFor="warm">Возможность обогрева:</label>
+      <label htmlFor="angle">Угол обзора:</label>
+      <input
+        type="text"
+        id="angle"
+        className="main__input"
+        {...register('angle', {
+          required: 'Поле обязательно для заполнения',
+          pattern: {
+            value: /^[1-9]\d*$/,
+            message: 'Введите целое число',
+          },
+          validate: {
+            maxAngle: (v) =>
+              parseInt(v) <= 360 || 'Угол не может быть больше 360°',
+          },
+        })}
+      />
+
+      {errors.angle?.message && (
+        <span className="form__error">{errors.angle?.message}</span>
+      )}
+
+      <label htmlFor="bracing">Крепление:</label>
       <select
         className="main__input"
-        id="warm"
-        {...register('warm', {
+        id="bracing"
+        {...register('bracing', {
           required: 'Поле обязательно для заполнения',
         })}
       >
-        {warmOptions.map((item, ind) => (
+        {bracingOptions.map((item, ind) => (
           <option key={ind} value={item.value}>
             {item.label}
           </option>
         ))}
       </select>
 
-      {errors.warm?.message && (
-        <span className="form__error">{errors.warm?.message}</span>
+      {errors.bracing?.message && (
+        <span className="form__error">{errors.bracing?.message}</span>
       )}
 
       <label htmlFor="price">Стоимость:</label>

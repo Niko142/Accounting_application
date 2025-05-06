@@ -1,21 +1,17 @@
 import { React, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { categories } from 'data/data';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMicrochip } from '@fortawesome/free-solid-svg-icons';
+import { OBJECT_CONFIG } from './config/config';
+
 import Button from 'components/Button/Button';
 import Header from 'components/Header/Header';
 import TypeSelection from 'components/UI/TypeSelection';
 import ButtonContainer from 'components/UI/ButtonContainer';
 import TableContainer from 'components/UI/TableContainer';
-import { categories } from 'data/data';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMicrochip } from '@fortawesome/free-solid-svg-icons';
 
-import SelectFurniture from './SelectStorage/SelectFurniture';
-import SelectVentilation from './SelectStorage/SelectVentilation';
-import SelectComputer from './SelectStorage/SelectComputer';
-import SelectLaptop from './SelectStorage/SelectLaptop';
-import SelectScreen from './SelectStorage/SelectScreen';
-import SelectScanner from './SelectStorage/SelectScanner';
-import SelectCamera from './SelectStorage/SelectCamera';
+import SelectStorageComponent from './components/SelectStorageComponent';
 
 export default function Storage() {
   const navigate = useNavigate();
@@ -46,7 +42,7 @@ export default function Storage() {
           setCategory('');
         }}
       />
-      <TableContainer Lg>
+      <TableContainer>
         {type === 'technic' && (
           <>
             <select
@@ -54,23 +50,35 @@ export default function Storage() {
               value={category}
               onChange={(e) => setCategory(e.target.value)}
             >
-              {categories.map((item) => {
-                return <option key={item.value}>{item.name}</option>;
-              })}
+              {categories.map((item) => (
+                <option key={item.value} value={item.value}>
+                  {item.label}
+                </option>
+              ))}
             </select>
           </>
         )}
-        {
-          <>
-            {category === 'Компьютер' && <SelectComputer />}
-            {category === 'Ноутбук' && <SelectLaptop />}
-            {category === 'Монитор' && <SelectScreen />}
-            {category === 'МФУ' && <SelectScanner />}
-            {category === 'Камера' && <SelectCamera />}
-          </>
-        }
-        {type === 'furniture' && <SelectFurniture />}
-        {type === 'ventilation' && <SelectVentilation />}
+
+        {category && OBJECT_CONFIG[category] && (
+          <SelectStorageComponent
+            objectCategory={category}
+            columns={OBJECT_CONFIG[category].columns}
+          />
+        )}
+
+        {type === 'furniture' && (
+          <SelectStorageComponent
+            objectCategory="furniture"
+            columns={OBJECT_CONFIG.furniture.columns}
+          />
+        )}
+
+        {type === 'ventilation' && (
+          <SelectStorageComponent
+            objectCategory="ventilation"
+            columns={OBJECT_CONFIG.ventilation.columns}
+          />
+        )}
       </TableContainer>
     </>
   );

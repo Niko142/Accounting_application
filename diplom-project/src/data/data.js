@@ -2,21 +2,21 @@
 import { faCouch, faComputer, faFan } from '@fortawesome/free-solid-svg-icons';
 
 export const categories = [
-  { value: '', name: '. . .' },
-  { value: '1', name: 'Компьютер' },
-  { value: '2', name: 'Ноутбук' },
-  { value: '3', name: 'Монитор' },
-  { value: '4', name: 'МФУ' },
-  { value: '5', name: 'Камера' },
+  { value: '', label: '. . .' },
+  { value: 'computer', label: 'Компьютер' },
+  { value: 'laptop', label: 'Ноутбук' },
+  { value: 'screen', label: 'Монитор' },
+  { value: 'scanner', label: 'МФУ' },
+  { value: 'camera', label: 'Камера' },
 ];
 
 export const components = [
-  { value: '', name: 'Выберите нужную категорию...' },
-  { value: '1', name: 'Видеокарта' },
-  { value: '2', name: 'Процессор' },
-  { value: '3', name: 'Материнская плата' },
-  { value: '4', name: 'Оперативная память' },
-  { value: '5', name: 'Жесткий диск' },
+  { value: '', label: 'Выберите нужную категорию...' },
+  { value: 'Видеокарта', label: 'Видеокарта' },
+  { value: 'Процессор', label: 'Процессор' },
+  { value: 'Материнка', label: 'Материнская плата' },
+  { value: 'ОЗУ', label: 'Оперативная память' },
+  { value: 'Диск', label: 'Жесткий диск' },
 ];
 
 export const product_groups = [

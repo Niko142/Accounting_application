@@ -4,7 +4,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import { instance } from 'services/api';
 import Button from 'components/Button/Button';
 
-export default function FurnitureSelection() {
+export default function AddFurnitureForm() {
   const {
     register,
     handleSubmit,

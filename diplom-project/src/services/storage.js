@@ -34,3 +34,14 @@ export const deleteComponentFromStorage = async ({ component, id }) => {
     return { success: false, message: 'Не удалось удалить объект' };
   }
 };
+
+// Запрос на получение данных об объектах разной категории и типов
+export const fetchObjectData = async ({ object, signal }) => {
+  try {
+    const res = await instance.get(`/sklad_${object}`, { signal });
+    return res.data;
+  } catch (error) {
+    console.error('Ошибка при выполнении запроса: ', error);
+    throw error;
+  }
+};

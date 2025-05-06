@@ -298,7 +298,7 @@ export default function AddComponents() {
           onChange={(e) => setCategory(e.target.value)}
         >
           {components.map((item) => {
-            return <option key={item.value}>{item.name}</option>;
+            return <option key={item.value}>{item.label}</option>;
           })}
         </select>
       </div>

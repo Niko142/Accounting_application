@@ -3,9 +3,9 @@ import { useForm } from 'react-hook-form';
 import { toast, ToastContainer } from 'react-toastify';
 import { instance } from 'services/api';
 import Button from 'components/Button/Button';
-import { bracingOptions, resolutionOptions } from 'data/data';
+import { colorOptions } from 'data/data';
 
-export default function CameraSection() {
+export default function AddScannerForm() {
   const {
     register,
     handleSubmit,
@@ -15,21 +15,20 @@ export default function CameraSection() {
 
   const onSubmit = async (data) => {
     try {
-      await instance.post('/camera', {
-        model: data.model,
-        resolution: data.resolution,
-        angle: data.angle,
-        bracing: data.bracing,
+      await instance.post('/scanner', {
+        nam: data.model,
+        color: data.color,
+        speed: data.speed,
         price: data.price,
         location: 'Склад',
         status: 'В резерве',
       });
 
       reset();
-      toast.success('Камера успешно добавлена на склад');
+      toast.success('МФУ успешно добавлен на склад');
     } catch (err) {
       toast.error(
-        err.response?.data?.message || 'Не удалось добавить камеру на склад',
+        err.response?.data?.message || 'Не удалось добавить МФУ на склад',
       );
     }
   };
@@ -50,70 +49,52 @@ export default function CameraSection() {
         <span className="form__error">{errors.model?.message}</span>
       )}
 
-      <label htmlFor="resolution">Разрешение:</label>
+      <label htmlFor="color">Цвет печати:</label>
       <select
+        id="color"
         className="main__input"
-        id="resolution"
-        {...register('resolution', {
+        {...register('color', {
           required: 'Поле обязательно для заполнения',
         })}
       >
-        {resolutionOptions.map((item, ind) => (
+        {colorOptions.map((item, ind) => (
           <option key={ind} value={item.value}>
             {item.label}
           </option>
         ))}
       </select>
 
-      {errors.resolution?.message && (
-        <span className="form__error">{errors.resolution?.message}</span>
+      {errors.color?.message && (
+        <span className="form__error">{errors.color?.message}</span>
       )}
 
-      <label htmlFor="angle">Угол обзора:</label>
+      <label htmlFor="speed">Скорость печати (стр./мин):</label>
       <input
         type="text"
-        id="angle"
         className="main__input"
-        {...register('angle', {
+        id="speed"
+        {...register('speed', {
           required: 'Поле обязательно для заполнения',
           pattern: {
-            value: /^[1-9]\d*$/,
+            value: /^[0-9]+$/,
             message: 'Введите целое число',
           },
           validate: {
-            maxAngle: (v) =>
-              parseInt(v) <= 360 || 'Угол не может быть больше 360°',
+            maxSpeed: (v) =>
+              parseInt(v) <= 100 ||
+              'Скорость печати не может превышать 100 стр./мин',
           },
         })}
       />
 
-      {errors.angle?.message && (
-        <span className="form__error">{errors.angle?.message}</span>
-      )}
-
-      <label htmlFor="bracing">Крепление:</label>
-      <select
-        className="main__input"
-        id="bracing"
-        {...register('bracing', {
-          required: 'Поле обязательно для заполнения',
-        })}
-      >
-        {bracingOptions.map((item, ind) => (
-          <option key={ind} value={item.value}>
-            {item.label}
-          </option>
-        ))}
-      </select>
-
-      {errors.bracing?.message && (
-        <span className="form__error">{errors.bracing?.message}</span>
+      {errors.speed?.message && (
+        <span className="form__error">{errors.speed?.message}</span>
       )}
 
       <label htmlFor="price">Стоимость:</label>
       <input
-        className="main__input"
         type="text"
+        className="main__input"
         id="price"
         {...register('price', {
           required: 'Поле обязательно для заполнения',

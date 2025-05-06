@@ -133,35 +133,35 @@ export const computerStorageColumns = (onDelete, onRepair, onChange) => [
   { Header: 'Материнская плата', accessor: 'mothercards' },
   { Header: 'ОЗУ', accessor: 'memories' },
   { Header: 'Жесткий диск', accessor: 'disks' },
-  {
-    Header: 'Действия',
-    accessor: 'actions',
-    Cell: ({ row }) => (
-      <div className="actions-wrapper">
-        <Button
-          isEdit
-          variant="destructive"
-          onClick={() => onDelete(row.original.id_computer)}
-        >
-          Изменить
-        </Button>
-        <Button
-          isDelete
-          variant="outline"
-          onClick={() => onRepair(row.original.id_computer)}
-        >
-          Удалить
-        </Button>
-        <Button
-          isDelete
-          variant="change"
-          onClick={() => onChange(row.original.id_computer)}
-        >
-          Удалить
-        </Button>
-      </div>
-    ),
-  },
+  // {
+  //   Header: 'Действия',
+  //   accessor: 'actions',
+  //   Cell: ({ row }) => (
+  //     <div className="actions-wrapper">
+  //       <Button
+  //         isEdit
+  //         variant="destructive"
+  //         onClick={() => onDelete(row.original.id_computer)}
+  //       >
+  //         Изменить
+  //       </Button>
+  //       <Button
+  //         isDelete
+  //         variant="outline"
+  //         onClick={() => onRepair(row.original.id_computer)}
+  //       >
+  //         Удалить
+  //       </Button>
+  //       <Button
+  //         isDelete
+  //         variant="change"
+  //         onClick={() => onChange(row.original.id_computer)}
+  //       >
+  //         Удалить
+  //       </Button>
+  //     </div>
+  //   ),
+  // },
 ];
 
 // Потом добавить Cell для полей, чтобы не писать в формах ГЦ и тд
@@ -175,28 +175,28 @@ export const laptopStorageColumns = (onDelete, onRepair) => [
   { Header: 'ОЗУ', accessor: 'memory', Cell: ({ value }) => `${value} ГБ` },
   { Header: 'Объем диска', accessor: 'volume' },
   { Header: 'Стоимость', accessor: 'price', Cell: getPriceColumn() },
-  {
-    Header: 'Действия',
-    accessor: 'actions',
-    Cell: ({ row }) => (
-      <div className="actions-wrapper">
-        <Button
-          isEdit
-          variant="destructive"
-          onClick={() => onDelete(row.original.laptop_id)}
-        >
-          Изменить
-        </Button>
-        <Button
-          isDelete
-          variant="outline"
-          onClick={() => onRepair(row.original.laptop_id)}
-        >
-          Удалить
-        </Button>
-      </div>
-    ),
-  },
+  // {
+  //   Header: 'Действия',
+  //   accessor: 'actions',
+  //   Cell: ({ row }) => (
+  //     <div className="actions-wrapper">
+  //       <Button
+  //         isEdit
+  //         variant="destructive"
+  //         onClick={() => onDelete(row.original.laptop_id)}
+  //       >
+  //         Изменить
+  //       </Button>
+  //       <Button
+  //         isDelete
+  //         variant="outline"
+  //         onClick={() => onRepair(row.original.laptop_id)}
+  //       >
+  //         Удалить
+  //       </Button>
+  //     </div>
+  //   ),
+  // },
 ];
 
 export const screenStorageColumns = (onDelete, onRepair) => [
@@ -206,28 +206,28 @@ export const screenStorageColumns = (onDelete, onRepair) => [
   { Header: 'Частота', accessor: 'rate', Cell: ({ value }) => `${value} ГЦ` },
   { Header: 'Тип матрицы', accessor: 'type' },
   { Header: 'Стоимость', accessor: 'price', Cell: getPriceColumn() },
-  {
-    Header: 'Действия',
-    accessor: 'actions',
-    Cell: ({ row }) => (
-      <div className="actions-wrapper">
-        <Button
-          isEdit
-          variant="destructive"
-          onClick={() => onDelete(row.original.screen_id)}
-        >
-          Изменить
-        </Button>
-        <Button
-          isDelete
-          variant="outline"
-          onClick={() => onRepair(row.original.screen_id)}
-        >
-          Удалить
-        </Button>
-      </div>
-    ),
-  },
+  // {
+  //   Header: 'Действия',
+  //   accessor: 'actions',
+  //   Cell: ({ row }) => (
+  //     <div className="actions-wrapper">
+  //       <Button
+  //         isEdit
+  //         variant="destructive"
+  //         onClick={() => onDelete(row.original.screen_id)}
+  //       >
+  //         Изменить
+  //       </Button>
+  //       <Button
+  //         isDelete
+  //         variant="outline"
+  //         onClick={() => onRepair(row.original.screen_id)}
+  //       >
+  //         Удалить
+  //       </Button>
+  //     </div>
+  //   ),
+  // },
 ];
 
 export const scannerStorageColumns = (onDelete, onRepair) => [
@@ -236,28 +236,28 @@ export const scannerStorageColumns = (onDelete, onRepair) => [
   { Header: 'Цвет печати', accessor: 'color' },
   { Header: 'Скорость печати (стр/мин)', accessor: 'speed' },
   { Header: 'Стоимость', accessor: 'price', Cell: getPriceColumn() },
-  {
-    Header: 'Действия',
-    accessor: 'actions',
-    Cell: ({ row }) => (
-      <div className="actions-wrapper">
-        <Button
-          isEdit
-          variant="destructive"
-          onClick={() => onDelete(row.original.scanner_id)}
-        >
-          Изменить
-        </Button>
-        <Button
-          isDelete
-          variant="outline"
-          onClick={() => onRepair(row.original.scanner_id)}
-        >
-          Удалить
-        </Button>
-      </div>
-    ),
-  },
+  // {
+  //   Header: 'Действия',
+  //   accessor: 'actions',
+  //   Cell: ({ row }) => (
+  //     <div className="actions-wrapper">
+  //       <Button
+  //         isEdit
+  //         variant="destructive"
+  //         onClick={() => onDelete(row.original.scanner_id)}
+  //       >
+  //         Изменить
+  //       </Button>
+  //       <Button
+  //         isDelete
+  //         variant="outline"
+  //         onClick={() => onRepair(row.original.scanner_id)}
+  //       >
+  //         Удалить
+  //       </Button>
+  //     </div>
+  //   ),
+  // },
 ];
 
 export const cameraStorageColumns = (onDelete, onRepair) => [
@@ -267,28 +267,28 @@ export const cameraStorageColumns = (onDelete, onRepair) => [
   { Header: 'Угол наклона', accessor: 'angle' },
   { Header: 'Наличие крепления', accessor: 'bracing' },
   { Header: 'Стоимость', accessor: 'price', Cell: getPriceColumn() },
-  {
-    Header: 'Действия',
-    accessor: 'actions',
-    Cell: ({ row }) => (
-      <div className="actions-wrapper">
-        <Button
-          isEdit
-          variant="destructive"
-          onClick={() => onDelete(row.original.camera_id)}
-        >
-          Изменить
-        </Button>
-        <Button
-          isDelete
-          variant="outline"
-          onClick={() => onRepair(row.original.camera_id)}
-        >
-          Удалить
-        </Button>
-      </div>
-    ),
-  },
+  // {
+  //   Header: 'Действия',
+  //   accessor: 'actions',
+  //   Cell: ({ row }) => (
+  //     <div className="actions-wrapper">
+  //       <Button
+  //         isEdit
+  //         variant="destructive"
+  //         onClick={() => onDelete(row.original.camera_id)}
+  //       >
+  //         Изменить
+  //       </Button>
+  //       <Button
+  //         isDelete
+  //         variant="outline"
+  //         onClick={() => onRepair(row.original.camera_id)}
+  //       >
+  //         Удалить
+  //       </Button>
+  //     </div>
+  //   ),
+  // },
 ];
 
 export const furnitureStorageColumns = (onDelete, onRepair) => [
@@ -296,28 +296,28 @@ export const furnitureStorageColumns = (onDelete, onRepair) => [
   { Header: 'Наименование', accessor: 'name' },
   { Header: 'Модель', accessor: 'model' },
   { Header: 'Стоимость', accessor: 'price', Cell: getPriceColumn() },
-  {
-    Header: 'Действия',
-    accessor: 'actions',
-    Cell: ({ row }) => (
-      <div className="actions-wrapper">
-        <Button
-          isEdit
-          variant="destructive"
-          onClick={() => onDelete(row.original.furniture_id)}
-        >
-          Изменить
-        </Button>
-        <Button
-          isDelete
-          variant="outline"
-          onClick={() => onRepair(row.original.furniture_id)}
-        >
-          Удалить
-        </Button>
-      </div>
-    ),
-  },
+  // {
+  //   Header: 'Действия',
+  //   accessor: 'actions',
+  //   Cell: ({ row }) => (
+  //     <div className="actions-wrapper">
+  //       <Button
+  //         isEdit
+  //         variant="destructive"
+  //         onClick={() => onDelete(row.original.furniture_id)}
+  //       >
+  //         Изменить
+  //       </Button>
+  //       <Button
+  //         isDelete
+  //         variant="outline"
+  //         onClick={() => onRepair(row.original.furniture_id)}
+  //       >
+  //         Удалить
+  //       </Button>
+  //     </div>
+  //   ),
+  // },
 ];
 
 export const ventilationStorageColumns = (onDelete, onRepair) => [
@@ -326,26 +326,26 @@ export const ventilationStorageColumns = (onDelete, onRepair) => [
   { Header: 'Фильтр', accessor: 'filter' },
   { Header: 'Возможность обогрева', accessor: 'warm' },
   { Header: 'Стоимость', accessor: 'price', Cell: getPriceColumn() },
-  {
-    Header: 'Действия',
-    accessor: 'actions',
-    Cell: ({ row }) => (
-      <div className="actions-wrapper">
-        <Button
-          isEdit
-          variant="destructive"
-          onClick={() => onDelete(row.original.ventilation_id)}
-        >
-          Изменить
-        </Button>
-        <Button
-          isDelete
-          variant="outline"
-          onClick={() => onRepair(row.original.ventilation_id)}
-        >
-          Удалить
-        </Button>
-      </div>
-    ),
-  },
+  // {
+  //   Header: 'Действия',
+  //   accessor: 'actions',
+  //   Cell: ({ row }) => (
+  //     <div className="actions-wrapper">
+  //       <Button
+  //         isEdit
+  //         variant="destructive"
+  //         onClick={() => onDelete(row.original.ventilation_id)}
+  //       >
+  //         Изменить
+  //       </Button>
+  //       <Button
+  //         isDelete
+  //         variant="outline"
+  //         onClick={() => onRepair(row.original.ventilation_id)}
+  //       >
+  //         Удалить
+  //       </Button>
+  //     </div>
+  //   ),
+  // },
 ];

@@ -5,7 +5,7 @@ import { instance } from 'services/api';
 import Button from 'components/Button/Button';
 import { memoryOptions, systemOptions } from 'data/data';
 
-export default function LaptopSelection() {
+export default function AddLaptopForm() {
   const {
     register,
     handleSubmit,

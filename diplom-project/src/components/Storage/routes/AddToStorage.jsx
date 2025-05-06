@@ -1,19 +1,19 @@
 import { React, useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFileExcel } from '@fortawesome/free-solid-svg-icons';
+import { categories } from 'data/data';
 import Header from 'components/Header/Header';
 import TypeSelection from 'components/UI/TypeSelection';
-import { categories } from 'data/data';
-import FurnitureSelection from '../forms/FurnitureSelection';
-import VentilationSelection from '../forms/VentilationSelection';
-import LaptopSelection from '../forms/LaptopSelection';
-import ScreenSection from '../forms/ScreenSection';
-import ScannerSelection from '../forms/ScannerSection';
-import CameraSection from '../forms/CameraSection';
-import ComputerSection from '../forms/ComputerSection';
 import TableContainer from 'components/UI/TableContainer';
 import ReturnButton from 'components/UI/ReturnButton';
 import Button from 'components/Button/Button';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFileExcel } from '@fortawesome/free-solid-svg-icons';
+import AddFurnitureForm from '../forms/AddFurnitureForm';
+import AddVentilationForm from '../forms/AddVentilationForm';
+import AddLaptopForm from '../forms/AddLaptopForm';
+import AddScreenForm from '../forms/AddScreenForm';
+import AddScannerForm from '../forms/AddScannerForm';
+import AddCameraForm from '../forms/AddCameraForm';
+import AddComputerForm from '../forms/AddComputerForm';
 
 export default function AddToStorage() {
   const [type, setType] = useState('');
@@ -46,22 +46,22 @@ export default function AddToStorage() {
               onChange={(e) => setCategory(e.target.value)}
             >
               {categories.map((item) => {
-                return <option key={item.value}>{item.name}</option>;
+                return <option key={item.value}>{item.label}</option>;
               })}
             </select>
           </>
         )}
         {
           <>
-            {category === 'Ноутбук' && <LaptopSelection />}
-            {category === 'Компьютер' && <ComputerSection />}
-            {category === 'Монитор' && <ScreenSection />}
-            {category === 'МФУ' && <ScannerSelection />}
-            {category === 'Камера' && <CameraSection />}
+            {category === 'Ноутбук' && <AddLaptopForm />}
+            {category === 'Компьютер' && <AddComputerForm />}
+            {category === 'Монитор' && <AddScreenForm />}
+            {category === 'МФУ' && <AddScannerForm />}
+            {category === 'Камера' && <AddCameraForm />}
           </>
         }
-        {type === 'furniture' && <FurnitureSelection />}
-        {type === 'ventilation' && <VentilationSelection />}
+        {type === 'furniture' && <AddFurnitureForm />}
+        {type === 'ventilation' && <AddVentilationForm />}
       </TableContainer>
     </>
   );

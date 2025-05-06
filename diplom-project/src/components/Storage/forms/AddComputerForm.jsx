@@ -3,11 +3,11 @@ import Button from 'components/Button/Button';
 import { toast, ToastContainer } from 'react-toastify';
 import { useForm } from 'react-hook-form';
 import { instance } from 'services/api';
-export default function ComputerSection() {
+export default function AddComputerForm() {
   const {
     register,
     handleSubmit,
-    // formState: { errors },
+    formState: { errors },
     reset,
   } = useForm({ mode: 'onSubmit' });
 
@@ -122,6 +122,10 @@ export default function ComputerSection() {
         })}
       />
 
+      {errors.price?.name && (
+        <span className="form__error">{errors.price?.name}</span>
+      )}
+
       <label htmlFor="videocard">Видеокарта:</label>
       <select
         className="main__input"
@@ -144,6 +148,10 @@ export default function ComputerSection() {
         })}
       </select>
 
+      {errors.videocard?.message && (
+        <span className="form__error">{errors.videocard?.message}</span>
+      )}
+
       <label htmlFor="processor">Процессор:</label>
       <select
         className="main__input"
@@ -165,6 +173,11 @@ export default function ComputerSection() {
           );
         })}
       </select>
+
+      {errors.processor?.message && (
+        <span className="form__error">{errors.processor?.message}</span>
+      )}
+
       <label htmlFor="mothercard">Материнская плата:</label>
       <select
         className="main__input"
@@ -186,6 +199,11 @@ export default function ComputerSection() {
           );
         })}
       </select>
+
+      {errors.mothercard?.message && (
+        <span className="form__error">{errors.mothercard?.message}</span>
+      )}
+
       <label htmlFor="memory">ОЗУ:</label>
       <select
         className="main__input"
@@ -208,6 +226,10 @@ export default function ComputerSection() {
         })}
       </select>
 
+      {errors.memory?.message && (
+        <span className="form__error">{errors.memory?.message}</span>
+      )}
+
       <label htmlFor="disk">Жесткий диск:</label>
       <select
         className="main__input"
@@ -229,6 +251,10 @@ export default function ComputerSection() {
           );
         })}
       </select>
+
+      {errors.disk?.message && (
+        <span className="form__error">{errors.disk?.message}</span>
+      )}
 
       <Button isActive type="submit">
         Добавить

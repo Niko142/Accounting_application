@@ -418,16 +418,6 @@ app.get("/main_ventilation", (req, res) => {
   );
 });
 
-app.get("/select_ventilation", (req, res) => {
-  db.query("SELECT * FROM ventilation_description", (err, result) => {
-    if (err) {
-      res.send({ err: err });
-    } else {
-      res.send(result);
-    }
-  });
-});
-
 app.get("/sklad_ventilation", (req, res) => {
   db.query(
     "SELECT * FROM ventilation_description WHERE location = 'Склад'",
