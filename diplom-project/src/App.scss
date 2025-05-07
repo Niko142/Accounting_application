@@ -122,15 +122,6 @@ textarea {
 
 // Потом убрать
 
-#butt {
-  display: flex;
-  justify-content: center;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 2rem;
-  width: 30%;
-}
-
 #sec {
   margin-top: 1rem;
   padding: 4rem;
@@ -151,12 +142,6 @@ textarea {
   color: #fffefe;
 }
 
-.but {
-  border: 0;
-  background-color: #ccc;
-  padding: 10px;
-}
-
 .but:hover {
   background-color: red;
 }
@@ -164,6 +149,6 @@ textarea {
 .actions-wrapper {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 5px;
 }

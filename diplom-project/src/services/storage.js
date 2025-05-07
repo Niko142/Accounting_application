@@ -45,3 +45,71 @@ export const fetchObjectData = async ({ object, signal }) => {
     throw error;
   }
 };
+
+// Запрос для утилизации объекта
+// export const utilizationObjectRecord = async (req) => {
+//   try {
+//     await instance.post('/utilization', req);
+//     return { success: true, message: 'Объект успешно утилизирован' };
+//   } catch (err) {
+//     console.log('Возникла ошибка при утилизации объекта', err);
+//     return { success: false, message: 'Не удалось утилизировать объект' };
+//   }
+// };
+
+// сделать универсальным
+export const utilizeObject = async ({
+  date,
+  category,
+  type,
+  number,
+  model,
+  reason,
+}) => {
+  await instance.post('http://localhost:3001/utilization', {
+    date,
+    category,
+    type,
+    number,
+    model,
+    reason,
+  });
+  return await instance.delete('http://localhost:3001/delete-laptop', {
+    id: number,
+  });
+};
+
+// export const repairObjectRecord = async (req) => {
+//   try {
+//     await instance.post('/repair', req);
+//     return { success: true, message: 'Объект успешно отправлен в ремонт' };
+//   } catch (err) {
+//     console.log('Возникла ошибка при отправке объекта в ремонт', err);
+//     return { success: false, message: 'Не удалось отправить объект в ремонт' };
+//   }
+// };
+
+export const repairObject = async ({
+  date,
+  category,
+  type,
+  model,
+  number,
+  end,
+  description,
+}) => {
+  await instance.post('http://localhost:3001/repair', {
+    date,
+    category,
+    type,
+    model,
+    number,
+    end,
+    description,
+  });
+  return await instance.post('http://localhost:3001/repair_laptop', {
+    status: 'В ремонте',
+    location: '-',
+    id: number,
+  });
+};
