@@ -1135,7 +1135,7 @@ app.delete("/delete-employee/:id", (req, res) => {
   });
 });
 
-app.post("/delete-computer", (req, res) => {
+app.delete("/delete-computer", (req, res) => {
   const id = req.body.id;
   db.query("DELETE FROM computer WHERE id_computer = ?", id, (err, result) => {
     if (err) {
@@ -1146,7 +1146,7 @@ app.post("/delete-computer", (req, res) => {
   });
 });
 
-app.post("/delete-laptop", (req, res) => {
+app.delete("/delete-laptop", (req, res) => {
   const id = req.body.id;
   db.query(
     "DELETE FROM laptop_description WHERE laptop_id = ?",
@@ -1161,7 +1161,7 @@ app.post("/delete-laptop", (req, res) => {
   );
 });
 
-app.post("/delete-screen", (req, res) => {
+app.delete("/delete-screen", (req, res) => {
   const id = req.body.id;
   db.query(
     "DELETE FROM screen_description WHERE screen_id = ?",
@@ -1176,7 +1176,7 @@ app.post("/delete-screen", (req, res) => {
   );
 });
 
-app.post("/delete-scanner", (req, res) => {
+app.delete("/delete-scanner", (req, res) => {
   const id = req.body.id;
   db.query(
     "DELETE FROM scanner_description WHERE scanner_id = ?",
@@ -1191,7 +1191,7 @@ app.post("/delete-scanner", (req, res) => {
   );
 });
 
-app.post("/delete-camera", (req, res) => {
+app.delete("/delete-camera", (req, res) => {
   const id = req.body.id;
   db.query(
     "DELETE FROM camera_description WHERE camera_id = ?",
@@ -1206,7 +1206,7 @@ app.post("/delete-camera", (req, res) => {
   );
 });
 
-app.post("/delete-ventilation", (req, res) => {
+app.delete("/delete-ventilation", (req, res) => {
   const id = req.body.id;
   db.query(
     "DELETE FROM ventilation_description WHERE ventilation_id = ?",
@@ -1221,7 +1221,7 @@ app.post("/delete-ventilation", (req, res) => {
   );
 });
 
-app.post("/delete-furniture", (req, res) => {
+app.delete("/delete-furniture", (req, res) => {
   const id = req.body.id;
   db.query(
     "DELETE FROM furniture_description WHERE furniture_id = ?",

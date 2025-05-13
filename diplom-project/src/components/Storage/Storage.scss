@@ -50,3 +50,21 @@ body {
     }
   }
 }
+
+.utilization__form, .repair__form {
+  &-title {
+    text-align: center;
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+
+    & span {
+      font-weight: 700;
+    }
+  }
+  & input {
+    min-width: 500px;
+  }
+  & button {
+    margin-top: 20px;
+  }
+}

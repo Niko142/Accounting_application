@@ -46,18 +46,6 @@ export const fetchObjectData = async ({ object, signal }) => {
   }
 };
 
-// Запрос для утилизации объекта
-// export const utilizationObjectRecord = async (req) => {
-//   try {
-//     await instance.post('/utilization', req);
-//     return { success: true, message: 'Объект успешно утилизирован' };
-//   } catch (err) {
-//     console.log('Возникла ошибка при утилизации объекта', err);
-//     return { success: false, message: 'Не удалось утилизировать объект' };
-//   }
-// };
-
-// сделать универсальным
 export const utilizeObject = async ({
   date,
   category,
@@ -65,29 +53,30 @@ export const utilizeObject = async ({
   number,
   model,
   reason,
+  object,
 }) => {
-  await instance.post('http://localhost:3001/utilization', {
-    date,
-    category,
-    type,
-    number,
-    model,
-    reason,
-  });
-  return await instance.delete('http://localhost:3001/delete-laptop', {
-    id: number,
-  });
+  try {
+    await instance.post('/utilization', {
+      date,
+      category,
+      type,
+      number,
+      model,
+      reason,
+    });
+    const deleteResponse = await instance.delete(`/delete-${object}`, {
+      data: { id: number },
+    });
+    return {
+      success: true,
+      message: 'Объект успешно утилизирован',
+      data: deleteResponse,
+    };
+  } catch (err) {
+    console.error('Ошибка при выполнении утилизации', err);
+    return { success: false, message: 'Не удалось утилизировать объект' };
+  }
 };
-
-// export const repairObjectRecord = async (req) => {
-//   try {
-//     await instance.post('/repair', req);
-//     return { success: true, message: 'Объект успешно отправлен в ремонт' };
-//   } catch (err) {
-//     console.log('Возникла ошибка при отправке объекта в ремонт', err);
-//     return { success: false, message: 'Не удалось отправить объект в ремонт' };
-//   }
-// };
 
 export const repairObject = async ({
   date,
@@ -97,19 +86,30 @@ export const repairObject = async ({
   number,
   end,
   description,
+  object,
 }) => {
-  await instance.post('http://localhost:3001/repair', {
-    date,
-    category,
-    type,
-    model,
-    number,
-    end,
-    description,
-  });
-  return await instance.post('http://localhost:3001/repair_laptop', {
-    status: 'В ремонте',
-    location: '-',
-    id: number,
-  });
+  try {
+    await instance.post('/repair', {
+      date,
+      category,
+      type,
+      model,
+      number,
+      end,
+      description,
+    });
+    const repairResponse = await instance.post(`/repair_${object}`, {
+      status: 'В ремонте',
+      location: '-',
+      id: number,
+    });
+    return {
+      success: true,
+      message: 'Объект успешно отправлен в ремонт',
+      data: repairResponse,
+    };
+  } catch (err) {
+    console.error('Ошибка при отправке объекта в ремонт', err);
+    return { success: false, message: 'Не удалось отправить объект в ремонт' };
+  }
 };

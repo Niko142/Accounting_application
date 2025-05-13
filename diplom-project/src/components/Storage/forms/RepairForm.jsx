@@ -6,20 +6,20 @@ export default function RepairForm({ onSubmit, objectName }) {
   const { register, handleSubmit } = useForm({ mode: 'onSubmit' });
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <p>
-        Выбранный объект: <strong>{objectName}</strong>
+    <form className="repair__form" onSubmit={handleSubmit(onSubmit)}>
+      <p className="repair__form-title">
+        Выбранный объект: <span>{objectName}</span>
       </p>
 
-      <label htmlFor="start">Дата начала ремонта:</label>
+      <label htmlFor="date">Дата начала ремонта:</label>
       <input
         type="datetime-local"
         className="main__input"
         id="start"
-        {...register('start')}
+        {...register('date')}
       />
 
-      <label htmlFor="end">Дата окончания ремонта:</label>
+      <label htmlFor="end">Предполагаемая дата окончания:</label>
       <input
         type="datetime-local"
         className="main__input"
@@ -34,7 +34,9 @@ export default function RepairForm({ onSubmit, objectName }) {
         {...register('description')}
       />
 
-      <Button type="submit">Отправить</Button>
+      <Button isActive type="submit">
+        Отправить
+      </Button>
     </form>
   );
 }

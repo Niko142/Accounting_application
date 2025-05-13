@@ -1,19 +1,24 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import DataTable from 'components/Table/Table';
-import { fetchObjectData } from 'services/storage';
+import { fetchObjectData, repairObject, utilizeObject } from 'services/storage';
 import CustomModal from 'components/Modal/Modal';
+import RepairForm from '../forms/RepairForm';
+import UtilizationForm from '../forms/UtilizationForm';
+import { toast, ToastContainer } from 'react-toastify';
 
-const SelectStorageComponent = ({ objectCategory, columns, idField }) => {
+const SelectStorageComponent = ({ objectType, columns, idField }) => {
   const [objectData, setObjectData] = useState([]); // данные об объектах на складе
   const [modalType, setModalType] = useState(null); // разделение логики модалок в зависимости от задачи
   const [selectedObject, setSelectedObject] = useState(null); // выбранный объект
+
+  // Часть логики можно будет отправить в отдельный блок
 
   // Получение и обновление данных об объектах на складе
   const updateObjectData = useCallback(
     async (signal) => {
       try {
         const res = await fetchObjectData({
-          object: objectCategory,
+          object: objectType,
           signal,
         });
         setObjectData(res);
@@ -21,7 +26,7 @@ const SelectStorageComponent = ({ objectCategory, columns, idField }) => {
         console.log('Запрос отменен');
       }
     },
-    [objectCategory],
+    [objectType],
   );
 
   // Закрытие модального окна
@@ -30,24 +35,30 @@ const SelectStorageComponent = ({ objectCategory, columns, idField }) => {
     setSelectedObject(null);
   };
 
+  // Поиск текущего объекта и выбор типа предназначения модального окна
+  const prepareObjectAction = useCallback(
+    (id, action) => {
+      const item = objectData.find((obj) => obj[idField] === id);
+      setSelectedObject(item);
+      setModalType(action);
+    },
+    [objectData, idField],
+  );
+
   // Обработчик открытия модального окна "ремонт"
   const handleRepair = useCallback(
     (id) => {
-      const item = objectData.find((obj) => obj[idField] === id);
-      setSelectedObject(item);
-      setModalType('repair');
+      prepareObjectAction(id, 'repair');
     },
-    [objectData, idField],
+    [prepareObjectAction],
   );
 
   // Обработчик открытия модального окна "утилизация"
   const handleDelete = useCallback(
     (id) => {
-      const item = objectData.find((obj) => obj[idField] === id);
-      setSelectedObject(item);
-      setModalType('delete');
+      prepareObjectAction(id, 'delete');
     },
-    [objectData, idField],
+    [prepareObjectAction],
   );
 
   useEffect(() => {
@@ -59,6 +70,47 @@ const SelectStorageComponent = ({ objectCategory, columns, idField }) => {
       abortController.abort();
     };
   }, [updateObjectData]);
+
+  // Вывод объекта в зависимости от столбцов в БД
+  const getObjectName = (object) => {
+    if (!object) return '';
+    switch (objectType) {
+      case 'furniture':
+        return `${object.name} ${object.model}`;
+      case 'computer':
+        return object.name;
+      case 'scanner':
+        return object.nam;
+      default:
+        return object.model;
+    }
+  };
+  const objectName = getObjectName(selectedObject);
+
+  // Определение категории объекта в зависимости от его типа
+  const getObjectCategory = (type) => {
+    switch (type) {
+      case 'furniture':
+        return 'Мебель';
+      case 'ventilation':
+        return 'Система вентиляции';
+      default:
+        return 'Оргтехника';
+    }
+  };
+  const objectCategory = getObjectCategory(objectType);
+
+  // Конвертирование типа для записи в БД и возможности возврата объекта
+  const categoryMap = {
+    computer: 'Компьютер',
+    laptop: 'Ноутбук',
+    screen: 'Монитор',
+    scanner: 'МФУ',
+    camera: 'Камера',
+    furniture: 'Мебель',
+    ventilation: 'Система вентиляции',
+  };
+  const objectMapType = categoryMap[objectType] || 'Неизвестно';
 
   const memoizedColumns = useMemo(
     () => columns(handleRepair, handleDelete),
@@ -73,56 +125,63 @@ const SelectStorageComponent = ({ objectCategory, columns, idField }) => {
         isOpen={modalType === 'repair'}
         onClose={closeModal}
         title={'Отправка объекта в ремонт'}
-        onComplete={() => {
-          console.log('Ремонт:', selectedObject);
-          // updateObjectData();
-          closeModal();
-        }}
       >
-        <p>
-          Выбранный объект:{' '}
-          <strong>
-            {selectedObject?.name ||
-              selectedObject?.model ||
-              selectedObject?.nam}
-          </strong>
-        </p>
+        <RepairForm
+          onSubmit={async (formData) => {
+            const response = await repairObject({
+              ...formData,
+              category: objectCategory,
+              type: objectMapType,
+              model: objectName,
+              number: selectedObject?.[idField],
+              object: objectType,
+            });
+
+            if (response.success) {
+              await updateObjectData();
+              toast.success('Объект успешно отправлен в ремонт');
+              closeModal();
+            } else {
+              toast.error(
+                response.message || 'Ошибка при отправке объекта в ремонт',
+              );
+            }
+          }}
+          objectName={objectName}
+        />
       </CustomModal>
       <CustomModal
         isOpen={modalType === 'delete'}
         onClose={closeModal}
         title={'Утилизация объекта'}
-        onComplete={() => {
-          console.log('Удалено:', selectedObject);
-          // updateObjectData();
-          closeModal();
-        }}
       >
-        <p>
-          Выбранный объект: <strong>{selectedObject?.nam}</strong>
-        </p>
+        <UtilizationForm
+          onSubmit={async (formData) => {
+            const response = await utilizeObject({
+              ...formData,
+              category: objectCategory,
+              type: objectMapType,
+              number: selectedObject?.[idField],
+              model: objectName,
+              object: objectType,
+            });
+
+            if (response.success) {
+              await updateObjectData();
+              toast.success('Объект успешно утилизирован');
+              closeModal();
+            } else {
+              toast.error(response.message || 'Ошибка при утилизации объекта');
+            }
+          }}
+          objectName={objectName}
+        />
       </CustomModal>
 
       <DataTable head={memoizedColumns} mockData={memoizedData} />
+      <ToastContainer />
     </>
   );
 };
 
 export default SelectStorageComponent;
-
-// Axios.post('http://localhost:3001/utilization', {
-//         date: date,
-//         category: 'Оргтехника',
-//         type: 'Ноутбук',
-//         number: now.id,
-//         model: now.name,
-//         reason: reason,
-
-// Axios.post('http://localhost:3001/repair', {
-//   date: startDate,
-//   category: 'Оргтехника',
-//   type: 'Ноутбук',
-//   model: now.name,
-//   number: now.id,
-//   end: endDate,
-//   description: desc,

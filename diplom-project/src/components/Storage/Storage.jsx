@@ -61,7 +61,7 @@ export default function Storage() {
 
         {category && OBJECT_CONFIG[category] && (
           <SelectStorageComponent
-            objectCategory={category}
+            objectType={category}
             columns={OBJECT_CONFIG[category].columns}
             idField={OBJECT_CONFIG[category].id}
           />
@@ -69,7 +69,7 @@ export default function Storage() {
 
         {type === 'furniture' && (
           <SelectStorageComponent
-            objectCategory="furniture"
+            objectType="furniture"
             columns={OBJECT_CONFIG.furniture.columns}
             idField={OBJECT_CONFIG.furniture.id}
           />
@@ -77,7 +77,7 @@ export default function Storage() {
 
         {type === 'ventilation' && (
           <SelectStorageComponent
-            objectCategory="ventilation"
+            objectType="ventilation"
             columns={OBJECT_CONFIG.ventilation.columns}
             idField={OBJECT_CONFIG.ventilation.id}
           />

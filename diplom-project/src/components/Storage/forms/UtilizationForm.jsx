@@ -7,12 +7,12 @@ export default function UtilizationForm({ onSubmit, objectName }) {
   const { register, handleSubmit } = useForm({ mode: 'onSubmit' });
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <p>
-        Выбранный объект: <strong>{objectName}</strong>
+    <form className="utilization__form" onSubmit={handleSubmit(onSubmit)}>
+      <p className="utilization__form-title">
+        Выбранный объект: <span>{objectName}</span>
       </p>
 
-      <label className="date">Дата утилизации:</label>
+      <label className="date">Дата назначения утилизации:</label>
       <input
         type="datetime-local"
         className="main__input"
@@ -20,7 +20,7 @@ export default function UtilizationForm({ onSubmit, objectName }) {
         {...register('date')}
       />
 
-      <label htmlFor="reason">Причина</label>
+      <label htmlFor="reason">Причина утилизации:</label>
       <select className="main__input" id="reason" {...register('reason')}>
         {reasonUtilOptions.map((item, ind) => (
           <option key={ind} value={item.value}>
@@ -29,7 +29,9 @@ export default function UtilizationForm({ onSubmit, objectName }) {
         ))}
       </select>
 
-      <Button type="submit">Утилизировать</Button>
+      <Button isActive type="submit">
+        Утилизировать
+      </Button>
     </form>
   );
 }
