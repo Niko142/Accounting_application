@@ -31,3 +31,45 @@ export const OBJECT_CONFIG = {
   furniture: { id: 'furniture_id', columns: furnitureStorageColumns },
   ventilation: { id: 'ventilation_id', columns: ventilationStorageColumns },
 };
+
+export const COMPUTER_COMPONENTS_CONFIG = {
+  Видеокарта: {
+    id: 'id_videocard',
+    componentKey: 'videocard',
+    apiUpdate: 'update_computer_videocard',
+    apiLocation: 'update_videocard',
+  },
+  Процессор: {
+    id: 'id_processor',
+    componentKey: 'processor',
+    apiUpdate: 'update_computer_processor',
+    apiLocation: 'update_processor',
+  },
+  'Материнская плата': {
+    id: 'id_mothercard',
+    componentKey: 'mothercard',
+    apiUpdate: 'update_computer_mothercard',
+    apiLocation: 'update_mothercard',
+  },
+  'Оперативная память': {
+    id: 'id_memory',
+    componentKey: 'memory',
+    apiUpdate: 'update_computer_memory',
+    apiLocation: 'update_memory',
+  },
+  'Жесткий диск': {
+    id: 'id_disk',
+    componentKey: 'disk',
+    apiUpdate: 'update_computer_disk',
+    apiLocation: 'update_disk',
+  },
+};
+
+// Для составления правильных ключей к колонкам таблицым
+export const componentMap = {
+  videocard: 'videocards',
+  processor: 'processors',
+  mothercard: 'mothercards',
+  memory: 'memories',
+  disk: 'disks',
+};

@@ -1,62 +1,44 @@
-import { React, useCallback, useEffect, useMemo, useState } from 'react';
+import { React, useCallback, useEffect, useMemo } from 'react';
 import DataTable from 'components/Table/Table';
-import {
-  deleteComponentFromStorage,
-  fetchComponentData,
-} from 'services/storage';
-import { toast, ToastContainer } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
+import { deleteComponentFromStorage } from 'services/storage';
+import { useStorage } from 'context/StorageContext';
 
 export default function SelectComponent({ componentType, columns }) {
-  const [componentData, setComponentData] = useState([]);
+  const { components, loadComponents } = useStorage();
 
-  // Получение данных о комплектующих и динамическое обновление при удалении
-  const updateComponentData = useCallback(
-    async (signal) => {
-      try {
-        const res = await fetchComponentData({
-          component: componentType,
-          signal,
-        });
-        setComponentData(res);
-      } catch (err) {
-        console.log('Запрос отменен');
-      }
-    },
-    [componentType],
-  );
+  // Получение данных о комплектующих
+  useEffect(() => {
+    const abortController = new AbortController();
+    loadComponents(componentType, abortController.signal);
 
-  // Обработчик для удаления записи
+    return () => abortController.abort();
+  }, [componentType, loadComponents]);
+
+  // Удаление данных и их динамическое обновление
   const handleDelete = useCallback(
     async (id) => {
       try {
         await deleteComponentFromStorage({ component: componentType, id });
-        await updateComponentData();
+        await loadComponents(componentType);
         toast.success('Выбранное комплектующее удалено успешно!!!');
       } catch (err) {
-        console.log('Ошибка при удалении компонента');
         toast.error(
           err.message || 'Не удалось удалить выбранное комплектующее',
         );
       }
     },
-    [componentType, updateComponentData],
+    [componentType, loadComponents],
   );
-
-  useEffect(() => {
-    const abortController = new AbortController();
-
-    updateComponentData(abortController.signal);
-
-    return () => {
-      abortController.abort();
-    };
-  }, [updateComponentData]);
 
   const memoizedColumns = useMemo(
     () => columns(handleDelete),
     [columns, handleDelete],
   );
-  const memoizedData = useMemo(() => componentData || [], [componentData]);
+  const memoizedData = useMemo(
+    () => components[componentType] || [],
+    [components, componentType],
+  );
 
   return (
     <>

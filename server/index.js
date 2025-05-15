@@ -527,7 +527,7 @@ app.get("/main_computer", (req, res) => {
 
 app.get("/sklad_computer", (req, res) => {
   db.query(
-    "SELECT id_computer, name, videocard.model AS videocards, processor.model AS processors, mothercard.model AS mothercards, memory.model AS memories, disk.model AS disks, computer.location FROM computer INNER JOIN videocard ON computer.videocard_id = videocard.id_videocard INNER JOIN processor ON computer.processor_id = processor.id_processor INNER JOIN mothercard ON computer.mothercard_id = mothercard.id_mothercard INNER JOIN memory ON computer.memory_id = memory.id_memory INNER JOIN disk ON computer.disk_id = disk.id_disk AND computer.location = 'Склад'",
+    "SELECT id_computer, videocard_id AS id_videocard, processor_id AS id_processor, mothercard_id AS id_mothercard, memory_id AS id_memory, disk_id AS id_disk, name, videocard.model AS videocards, processor.model AS processors, mothercard.model AS mothercards, memory.model AS memories, disk.model AS disks, computer.location FROM computer INNER JOIN videocard ON computer.videocard_id = videocard.id_videocard INNER JOIN processor ON computer.processor_id = processor.id_processor INNER JOIN mothercard ON computer.mothercard_id = mothercard.id_mothercard INNER JOIN memory ON computer.memory_id = memory.id_memory INNER JOIN disk ON computer.disk_id = disk.id_disk AND computer.location = 'Склад'",
     (err, result) => {
       if (err) {
         res.send({ err: err });
@@ -966,7 +966,7 @@ app.patch("/location_ventilation", (req, res) => {
   );
 });
 
-app.post("/update_videocard", (req, res) => {
+app.patch("/update_videocard", (req, res) => {
   const location = req.body.location;
   const id = req.body.id;
   db.query(
@@ -982,7 +982,7 @@ app.post("/update_videocard", (req, res) => {
   );
 });
 
-app.post("/update_processor", (req, res) => {
+app.patch("/update_processor", (req, res) => {
   const location = req.body.location;
   const id = req.body.id;
   db.query(
@@ -998,7 +998,7 @@ app.post("/update_processor", (req, res) => {
   );
 });
 
-app.post("/update_mothercard", (req, res) => {
+app.patch("/update_mothercard", (req, res) => {
   const location = req.body.location;
   const id = req.body.id;
   db.query(
@@ -1014,7 +1014,7 @@ app.post("/update_mothercard", (req, res) => {
   );
 });
 
-app.post("/update_memory", (req, res) => {
+app.patch("/update_memory", (req, res) => {
   const location = req.body.location;
   const id = req.body.id;
   db.query(
@@ -1030,7 +1030,7 @@ app.post("/update_memory", (req, res) => {
   );
 });
 
-app.post("/update_disk", (req, res) => {
+app.patch("/update_disk", (req, res) => {
   const location = req.body.location;
   const id = req.body.id;
   db.query(
@@ -1896,7 +1896,7 @@ app.post("/replace", (req, res) => {
   );
 });
 
-app.post("/update_computer_videocard", (req, res) => {
+app.patch("/update_computer_videocard", (req, res) => {
   const videocard = req.body.videocard;
   const id = req.body.id;
   db.query(
@@ -1911,7 +1911,8 @@ app.post("/update_computer_videocard", (req, res) => {
     }
   );
 });
-app.post("/update_computer_processor", (req, res) => {
+
+app.patch("/update_computer_processor", (req, res) => {
   const processor = req.body.processor;
   const id = req.body.id;
   db.query(
@@ -1926,7 +1927,7 @@ app.post("/update_computer_processor", (req, res) => {
     }
   );
 });
-app.post("/update_computer_mothercard", (req, res) => {
+app.patch("/update_computer_mothercard", (req, res) => {
   const mothercard = req.body.mothercard;
   const id = req.body.id;
   db.query(
@@ -1941,7 +1942,7 @@ app.post("/update_computer_mothercard", (req, res) => {
     }
   );
 });
-app.post("/update_computer_memory", (req, res) => {
+app.patch("/update_computer_memory", (req, res) => {
   const memory = req.body.memory;
   const id = req.body.id;
   db.query(
@@ -1956,7 +1957,7 @@ app.post("/update_computer_memory", (req, res) => {
     }
   );
 });
-app.post("/update_computer_disk", (req, res) => {
+app.patch("/update_computer_disk", (req, res) => {
   const disk = req.body.disk;
   const id = req.body.id;
   db.query(

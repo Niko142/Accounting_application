@@ -1,10 +1,17 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import DataTable from 'components/Table/Table';
-import { fetchObjectData, repairObject, utilizeObject } from 'services/storage';
+import {
+  fetchObjectData,
+  repairObject,
+  replaceDetailsComputer,
+  utilizeObject,
+} from 'services/storage';
 import CustomModal from 'components/Modal/Modal';
 import RepairForm from '../forms/RepairForm';
 import UtilizationForm from '../forms/UtilizationForm';
 import { toast, ToastContainer } from 'react-toastify';
+import ChangeDetailsForm from '../forms/ChangeDetailsForm';
+import { componentMap, COMPUTER_COMPONENTS_CONFIG } from '../config/config';
 
 const SelectStorageComponent = ({ objectType, columns, idField }) => {
   const [objectData, setObjectData] = useState([]); // данные об объектах на складе
@@ -29,13 +36,13 @@ const SelectStorageComponent = ({ objectType, columns, idField }) => {
     [objectType],
   );
 
-  // Закрытие модального окна
+  // Обработчик для закрытия модальных окон
   const closeModal = () => {
     setModalType(null);
     setSelectedObject(null);
   };
 
-  // Поиск текущего объекта и выбор типа предназначения модального окна
+  // Обработка выбранного объекта и конкретизация модальных окон по их назначению
   const prepareObjectAction = useCallback(
     (id, action) => {
       const item = objectData.find((obj) => obj[idField] === id);
@@ -61,6 +68,14 @@ const SelectStorageComponent = ({ objectType, columns, idField }) => {
     [prepareObjectAction],
   );
 
+  // Обработчик открытия модального окна "Замена" (только для компьютеров)
+  const handleChange = useCallback(
+    (id) => {
+      prepareObjectAction(id, 'change');
+    },
+    [prepareObjectAction],
+  );
+
   useEffect(() => {
     const abortController = new AbortController();
 
@@ -70,6 +85,8 @@ const SelectStorageComponent = ({ objectType, columns, idField }) => {
       abortController.abort();
     };
   }, [updateObjectData]);
+
+  // Попробовать все данные обработать через Map
 
   // Вывод объекта в зависимости от столбцов в БД
   const getObjectName = (object) => {
@@ -110,13 +127,17 @@ const SelectStorageComponent = ({ objectType, columns, idField }) => {
     furniture: 'Мебель',
     ventilation: 'Система вентиляции',
   };
-  const objectMapType = categoryMap[objectType] || 'Неизвестно';
+  const objectMapType = categoryMap[objectType] ?? 'Неизвестно';
 
   const memoizedColumns = useMemo(
-    () => columns(handleRepair, handleDelete),
-    [columns, handleRepair, handleDelete],
+    () =>
+      columns({
+        onChange: handleChange,
+        onRepair: handleRepair,
+        onDelete: handleDelete,
+      }),
+    [columns, handleRepair, handleDelete, handleChange],
   );
-
   const memoizedData = useMemo(() => objectData || [], [objectData]);
 
   return (
@@ -175,6 +196,61 @@ const SelectStorageComponent = ({ objectType, columns, idField }) => {
             }
           }}
           objectName={objectName}
+        />
+      </CustomModal>
+      <CustomModal
+        isOpen={modalType === 'change'}
+        onClose={closeModal}
+        title={'Замена комплектующих'}
+      >
+        <ChangeDetailsForm
+          /*
+           * Тестовый запросник
+           */
+          // onSubmit={async (formData) => {
+          //   const config = COMPUTER_COMPONENTS_CONFIG[formData.category];
+          //   // const componentKey = componentMap[config.componentKey];
+
+          //   console.log(selectedObject);
+          //   // console.log(selectedObject?.[componentKey]);
+          //   console.log(+selectedObject?.[config.id]);
+          //   console.log(formData);
+          //   closeModal();
+          // }}
+
+          onSubmit={async (formData) => {
+            const config = COMPUTER_COMPONENTS_CONFIG[formData.category];
+            const componentKey = componentMap[config.componentKey];
+
+            const selectedComponentId =
+              formData.selectedComponent.split(',')[0];
+            const selectedComponentName =
+              formData.selectedComponent.split(',')[1];
+
+            const response = await replaceDetailsComputer({
+              name: objectName,
+              type: formData.category,
+              start: selectedObject?.[componentKey],
+              end: selectedComponentName,
+              date: formData.date,
+              computerId: selectedObject?.[idField],
+              oldComponentId: selectedObject?.[config.id],
+              newComponentId: selectedComponentId,
+              config,
+            });
+
+            if (response.success) {
+              await updateObjectData();
+              toast.success('Успешная замена комплектующего');
+              closeModal();
+            } else {
+              toast.error(
+                response.message || 'Ошибка при замене комплектующего',
+              );
+            }
+          }}
+          selectedObject={selectedObject}
+          computerName={objectName}
         />
       </CustomModal>
 

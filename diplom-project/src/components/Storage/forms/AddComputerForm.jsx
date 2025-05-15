@@ -19,34 +19,36 @@ export default function AddComputerForm() {
     disk: [],
   });
 
+  // Добавить loadData в onSubmit (проверить)
+
+  const loadData = async (signal) => {
+    try {
+      const [videocardRes, processorRes, mothercardRes, memoryRes, diskRes] =
+        await Promise.all([
+          instance.get('/videocard', signal),
+          instance.get('/processor', signal),
+          instance.get('/mothercard', signal),
+          instance.get('/memory', signal),
+          instance.get('/disk', signal),
+        ]);
+
+      setComponents({
+        videocard: videocardRes.data,
+        processor: processorRes.data,
+        mothercard: mothercardRes.data,
+        memory: memoryRes.data,
+        disk: diskRes.data,
+      });
+    } catch (err) {
+      console.error('Ошибка при обработке запроса', err);
+    }
+  };
+
   useEffect(() => {
     const abortController = new AbortController();
     const signal = { signal: abortController.signal };
 
-    const fetchData = async () => {
-      try {
-        const [videocardRes, processorRes, mothercardRes, memoryRes, diskRes] =
-          await Promise.all([
-            instance.get('/videocard', signal),
-            instance.get('/processor', signal),
-            instance.get('/mothercard', signal),
-            instance.get('/memory', signal),
-            instance.get('/disk', signal),
-          ]);
-
-        setComponents({
-          videocard: videocardRes.data,
-          processor: processorRes.data,
-          mothercard: mothercardRes.data,
-          memory: memoryRes.data,
-          disk: diskRes.data,
-        });
-      } catch (err) {
-        console.error('Ошибка при обработке запроса', err);
-      }
-    };
-
-    fetchData();
+    loadData(signal);
 
     return () => {
       abortController.abort();
@@ -68,23 +70,23 @@ export default function AddComputerForm() {
         }),
 
         // Запросы на обновление компонентов
-        instance.post('/update_videocard', {
+        instance.patch('/update_videocard', {
           location: data.name,
           id: +data.videocard,
         }),
-        instance.post('/update_processor', {
+        instance.patch('/update_processor', {
           location: data.name,
           id: +data.processor,
         }),
-        instance.post('/update_mothercard', {
+        instance.patch('/update_mothercard', {
           location: data.name,
           id: +data.mothercard,
         }),
-        instance.post('/update_memory', {
+        instance.patch('/update_memory', {
           location: data.name,
           id: +data.memory,
         }),
-        instance.post('/update_disk', {
+        instance.patch('/update_disk', {
           location: data.name,
           id: +data.disk,
         }),
@@ -99,6 +101,7 @@ export default function AddComputerForm() {
 
       if (successRes) {
         toast.success('Компьютер и компоненты успешно обновлены');
+        loadData();
         reset();
       } else {
         throw new Error('Не удалось сформировать добавление компьютера');

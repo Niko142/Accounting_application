@@ -127,48 +127,46 @@ export const diskColumns = (onDelete) => [
 
 // Добавить кнопку для редактирования записи по возможности
 
-export const computerStorageColumns = (onChange, onRepair, onDelete) => [
+export const computerStorageColumns = ({ onChange, onRepair, onDelete }) => [
   { Header: 'ID', accessor: 'id_computer' },
   { Header: 'Модель', accessor: 'name' },
   { Header: 'Видеокарта', accessor: 'videocards' },
   { Header: 'Процессор', accessor: 'processors' },
-  { Header: 'Материнская плата', accessor: 'mothercards' },
+  { Header: 'Мат. плата', accessor: 'mothercards' },
   { Header: 'ОЗУ', accessor: 'memories' },
-  { Header: 'Жесткий диск', accessor: 'disks' },
-  // {
-  //   Header: 'Действия:',
-  //   accessor: 'actions',
-  //   Cell: ({ row }) => (
-  //     <div className="actions-wrapper">
-  //       <Button
-  //         isMove
-  //         variant="destructive"
-  //         onClick={() => onChange(row.original.id_computer)}
-  //       >
-  //         Изменить
-  //       </Button>
-  //       <Button
-  //         isEdit
-  //         variant="outline"
-  //         onClick={() => onRepair(row.original.id_computer)}
-  //       >
-  //         Ремонт
-  //       </Button>
-  //       <Button
-  //         isDelete
-  //         variant="change"
-  //         onClick={() => onDelete(row.original.id_computer)}
-  //       >
-  //         Удалить
-  //       </Button>
-  //     </div>
-  //   ),
-  // },
+  { Header: 'HDD', accessor: 'disks' },
+  {
+    Header: 'Действия:',
+    accessor: 'actions',
+    Cell: ({ row }) => (
+      <div className="actions-wrapper no-wrapper">
+        <Button
+          isMove
+          variant="change"
+          onClick={() => onChange(row.original.id_computer)}
+        >
+          Замена
+        </Button>
+        <Button
+          isEdit
+          variant="outline"
+          onClick={() => onRepair(row.original.id_computer)}
+        >
+          Ремонт
+        </Button>
+        <Button
+          isDelete
+          variant="destructive"
+          onClick={() => onDelete(row.original.id_computer)}
+        >
+          Удалить
+        </Button>
+      </div>
+    ),
+  },
 ];
 
-// Потом добавить Cell для полей, чтобы не писать в формах ГЦ и тд
-
-export const laptopStorageColumns = (onRepair, onDelete) => [
+export const laptopStorageColumns = ({ onRepair, onDelete }) => [
   { Header: 'ID', accessor: 'laptop_id' },
   { Header: 'Модель', accessor: 'model' },
   { Header: 'OC', accessor: 'systems' },
@@ -201,7 +199,7 @@ export const laptopStorageColumns = (onRepair, onDelete) => [
   },
 ];
 
-export const screenStorageColumns = (onRepair, onDelete) => [
+export const screenStorageColumns = ({ onRepair, onDelete }) => [
   { Header: 'ID', accessor: 'screen_id' },
   { Header: 'Модель', accessor: 'model' },
   { Header: 'Диагональ', accessor: 'diagonal' },
@@ -232,7 +230,7 @@ export const screenStorageColumns = (onRepair, onDelete) => [
   },
 ];
 
-export const scannerStorageColumns = (onRepair, onDelete) => [
+export const scannerStorageColumns = ({ onRepair, onDelete }) => [
   { Header: 'ID', accessor: 'scanner_id' },
   { Header: 'Модель', accessor: 'nam' },
   { Header: 'Цвет печати', accessor: 'color' },
@@ -262,7 +260,7 @@ export const scannerStorageColumns = (onRepair, onDelete) => [
   },
 ];
 
-export const cameraStorageColumns = (onRepair, onDelete) => [
+export const cameraStorageColumns = ({ onRepair, onDelete }) => [
   { Header: 'ID', accessor: 'camera_id' },
   { Header: 'Модель', accessor: 'model' },
   { Header: 'Разрешение', accessor: 'resolution' },
@@ -293,7 +291,7 @@ export const cameraStorageColumns = (onRepair, onDelete) => [
   },
 ];
 
-export const furnitureStorageColumns = (onRepair, onDelete) => [
+export const furnitureStorageColumns = ({ onRepair, onDelete }) => [
   { Header: 'ID', accessor: 'furniture_id' },
   { Header: 'Наименование', accessor: 'name' },
   { Header: 'Модель', accessor: 'model' },
@@ -322,7 +320,7 @@ export const furnitureStorageColumns = (onRepair, onDelete) => [
   },
 ];
 
-export const ventilationStorageColumns = (onRepair, onDelete) => [
+export const ventilationStorageColumns = ({ onRepair, onDelete }) => [
   { Header: 'ID', accessor: 'ventilation_id' },
   { Header: 'Модель', accessor: 'model' },
   { Header: 'Фильтр', accessor: 'filter' },

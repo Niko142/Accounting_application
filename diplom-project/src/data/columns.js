@@ -351,7 +351,7 @@ export const changeDetailsColumns = [
   { Header: 'Тип комплектующего', accessor: 'type' },
   { Header: 'До замены:', accessor: 'start' },
   { Header: 'После замены:', accessor: 'end' },
-  { Header: 'Дата изменения', accessor: 'date' },
+  { Header: 'Дата изменения', accessor: 'date', Cell: getDateColumn() },
 ];
 
 /**

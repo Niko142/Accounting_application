@@ -82,7 +82,7 @@ export const enumCategories = [
 export const objectCategories = [
   { value: 'technic', label: 'Оргтехника', image: faComputer },
   { value: 'furniture', label: 'Мебель', image: faCouch },
-  { value: 'ventilation', label: 'Системы вентиляции', image: faFan },
+  { value: 'ventilation', label: 'Сплит-системы', image: faFan },
 ];
 
 export const computerPartsCategories = [

@@ -19,7 +19,7 @@ export const fetchComponentData = async ({ component, signal }) => {
     const res = await instance.get(`/${component}`, { signal });
     return res.data;
   } catch (error) {
-    console.error('Ошибка при выполнении запроса: ', error);
+    console.log('Ошибка при выполнении запроса: ', error);
     throw error;
   }
 };
@@ -111,5 +111,49 @@ export const repairObject = async ({
   } catch (err) {
     console.error('Ошибка при отправке объекта в ремонт', err);
     return { success: false, message: 'Не удалось отправить объект в ремонт' };
+  }
+};
+
+export const replaceDetailsComputer = async ({
+  name,
+  type,
+  start,
+  end,
+  date,
+  computerId,
+  oldComponentId,
+  newComponentId,
+  config,
+}) => {
+  try {
+    // Формирование записи истории замены
+    await instance.post('/replace', {
+      name,
+      type,
+      start,
+      end,
+      date,
+    });
+    // Обновление Id компонента в таблице с компьютерами
+    await instance.patch(`/${config.apiUpdate}`, {
+      [config.componentKey]: +newComponentId,
+      id: computerId,
+    });
+
+    // Обновление местоположения замененного компонента
+    await instance.patch(`/${config.apiLocation}`, {
+      location: 'Склад',
+      id: oldComponentId,
+    });
+
+    // Обновление местоположения нового компонента компьютера
+    await instance.patch(`/${config.apiLocation}`, {
+      location: name,
+      id: +newComponentId,
+    });
+    return { success: true, message: 'Компонент заменён' };
+  } catch (err) {
+    console.error('Ошибка при замене комплектующего', err);
+    return { success: false, message: 'Не удалось заменить комплектующее' };
   }
 };

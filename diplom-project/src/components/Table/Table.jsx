@@ -43,18 +43,24 @@ const DataTable = ({ head, mockData, size, disabledPagination = false }) => {
           ))}
         </thead>
         <tbody {...getTableBodyProps()}>
-          {page.map((row) => {
-            prepareRow(row);
-            return (
-              <tr key={row.id} {...row.getRowProps()}>
-                {row.cells.map((cell) => (
-                  <td key={cell.column.id} {...cell.getCellProps()}>
-                    {cell.render('Cell')}
-                  </td>
-                ))}
-              </tr>
-            );
-          })}
+          {page.length > 0 ? (
+            page.map((row) => {
+              prepareRow(row);
+              return (
+                <tr key={row.id} {...row.getRowProps()}>
+                  {row.cells.map((cell) => (
+                    <td key={cell.column.id} {...cell.getCellProps()}>
+                      {cell.render('Cell')}
+                    </td>
+                  ))}
+                </tr>
+              );
+            })
+          ) : (
+            <tr>
+              <td>Данные не найдены ...</td>
+            </tr>
+          )}
         </tbody>
       </table>
       {!disabledPagination && (
