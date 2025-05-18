@@ -11,14 +11,18 @@ import RepairForm from '../forms/RepairForm';
 import UtilizationForm from '../forms/UtilizationForm';
 import { toast, ToastContainer } from 'react-toastify';
 import ChangeDetailsForm from '../forms/ChangeDetailsForm';
-import { componentMap, COMPUTER_COMPONENTS_CONFIG } from '../config/config';
+import {
+  categoryMap,
+  componentMap,
+  COMPUTER_COMPONENTS_CONFIG,
+} from '../config/config';
+import { getObjCategory, getObjName } from '../utils/storageComponentUtils';
 
 const SelectStorageComponent = ({ objectType, columns, idField }) => {
   const [objectData, setObjectData] = useState([]); // данные об объектах на складе
   const [modalType, setModalType] = useState(null); // разделение логики модалок в зависимости от задачи
   const [selectedObject, setSelectedObject] = useState(null); // выбранный объект
-
-  // Часть логики можно будет отправить в отдельный блок
+  const objectMapType = categoryMap[objectType] ?? 'Неизвестно'; // Корректная конвертация
 
   // Получение и обновление данных об объектах на складе
   const updateObjectData = useCallback(
@@ -30,7 +34,9 @@ const SelectStorageComponent = ({ objectType, columns, idField }) => {
         });
         setObjectData(res);
       } catch (err) {
-        console.log('Запрос отменен');
+        if (err.name === 'AbortError') {
+          console.log('Запрос отменен');
+        }
       }
     },
     [objectType],
@@ -86,49 +92,10 @@ const SelectStorageComponent = ({ objectType, columns, idField }) => {
     };
   }, [updateObjectData]);
 
-  // Попробовать все данные обработать через Map
+  const objectName = getObjName(objectType, selectedObject); // Имя выбранного объекта
+  const objectCategory = getObjCategory(objectType); // Категория выбранного объекта
 
-  // Вывод объекта в зависимости от столбцов в БД
-  const getObjectName = (object) => {
-    if (!object) return '';
-    switch (objectType) {
-      case 'furniture':
-        return `${object.name} ${object.model}`;
-      case 'computer':
-        return object.name;
-      case 'scanner':
-        return object.nam;
-      default:
-        return object.model;
-    }
-  };
-  const objectName = getObjectName(selectedObject);
-
-  // Определение категории объекта в зависимости от его типа
-  const getObjectCategory = (type) => {
-    switch (type) {
-      case 'furniture':
-        return 'Мебель';
-      case 'ventilation':
-        return 'Система вентиляции';
-      default:
-        return 'Оргтехника';
-    }
-  };
-  const objectCategory = getObjectCategory(objectType);
-
-  // Конвертирование типа для записи в БД и возможности возврата объекта
-  const categoryMap = {
-    computer: 'Компьютер',
-    laptop: 'Ноутбук',
-    screen: 'Монитор',
-    scanner: 'МФУ',
-    camera: 'Камера',
-    furniture: 'Мебель',
-    ventilation: 'Система вентиляции',
-  };
-  const objectMapType = categoryMap[objectType] ?? 'Неизвестно';
-
+  // Мемоизация колонок и данных
   const memoizedColumns = useMemo(
     () =>
       columns({
@@ -204,20 +171,6 @@ const SelectStorageComponent = ({ objectType, columns, idField }) => {
         title={'Замена комплектующих'}
       >
         <ChangeDetailsForm
-          /*
-           * Тестовый запросник
-           */
-          // onSubmit={async (formData) => {
-          //   const config = COMPUTER_COMPONENTS_CONFIG[formData.category];
-          //   // const componentKey = componentMap[config.componentKey];
-
-          //   console.log(selectedObject);
-          //   // console.log(selectedObject?.[componentKey]);
-          //   console.log(+selectedObject?.[config.id]);
-          //   console.log(formData);
-          //   closeModal();
-          // }}
-
           onSubmit={async (formData) => {
             const config = COMPUTER_COMPONENTS_CONFIG[formData.category];
             const componentKey = componentMap[config.componentKey];

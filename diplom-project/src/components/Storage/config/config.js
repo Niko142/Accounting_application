@@ -73,3 +73,25 @@ export const componentMap = {
   memory: 'memories',
   disk: 'disks',
 };
+
+// Конвертирование типа для записи в БД и возможности возврата объекта
+export const categoryMap = {
+  computer: 'Компьютер',
+  laptop: 'Ноутбук',
+  screen: 'Монитор',
+  scanner: 'МФУ',
+  camera: 'Камера',
+  furniture: 'Мебель',
+  ventilation: 'Система вентиляции',
+};
+
+// Вывод имени объекта в зависимости от его name в БД
+export const objNames = new Map()
+  .set('computer', (obj) => obj.name)
+  .set('furniture', (obj) => `${obj.name} ${obj.model}`)
+  .set('scanner', (obj) => obj.nam);
+
+// Разделение на категории
+export const objCategories = new Map()
+  .set('furniture', 'Мебель')
+  .set('ventilation', 'Система вентиляции');

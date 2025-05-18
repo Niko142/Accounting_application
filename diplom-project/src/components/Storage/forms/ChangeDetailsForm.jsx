@@ -29,7 +29,7 @@ export default function ChangeDetailsForm({
     });
 
     return () => abortController.abort();
-  }, [componentType, loadComponents]);
+  }, [loadComponents]);
 
   const handleChangeType = (e) => {
     setComponentType(e.target.value);
