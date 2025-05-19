@@ -51,7 +51,9 @@ body {
   }
 }
 
-.utilization__form, .repair__form, .change-details__form {
+.utilization__form,
+.repair__form,
+.change-details__form {
   &-title {
     text-align: center;
     font-size: 1.2rem;
@@ -68,4 +70,40 @@ body {
     margin-top: 20px;
     display: block;
   }
+}
+
+.components__form {
+  & input,
+  & select {
+    margin-top: 15px;
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+  & button {
+    display: block;
+    margin-top: 10px;
+  }
+}
+
+.components {
+  &-select {
+    box-sizing: border-box;
+    border: 2px solid v.$gray;
+    border-radius: 10px;
+    padding: 30px;
+    margin: 10px 0;
+  }
+}
+
+.block-input {
+  box-sizing: border-box;
+  display: grid;
+  align-items: center;
+  justify-items: center;
+  max-width: 60vw;
+  grid-template-columns: 1fr 2fr;
+  border: 2px solid v.$gray;
+  border-radius: 10px;
+  padding: 15px;
 }

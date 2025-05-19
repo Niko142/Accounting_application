@@ -1,5 +1,6 @@
 import { React } from 'react';
 import 'App.scss';
+import 'react-toastify/dist/ReactToastify.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 // Основные страницы
@@ -12,7 +13,7 @@ import DocumentReport from 'components/DocumentReport/DocumentReport';
 import AddToStorage from 'components/Storage/routes/AddToStorage';
 import SelectEmployee from 'components/Employee/routes/SelectEmployee';
 import ComponentsMenu from 'components/Storage/routes/ComponentsMenu';
-import AddComponents from 'components/Storage/Computer/AddComponents';
+import AddComponents from 'components/Storage/routes/AddComponents';
 import PinningEmployee from 'components/Employee/routes/PinningEmployee';
 import PinningForAudience from 'components/Movement/routes/PinningForAudience';
 import HistoryMovement from 'components/Movement/routes/HistoryMovement';

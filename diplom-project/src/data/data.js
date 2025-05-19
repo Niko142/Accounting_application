@@ -19,6 +19,14 @@ export const components = [
   { value: 'Диск', label: 'Жесткий диск' },
 ];
 
+export const componentCategories = [
+  { value: 'videocard', label: 'Видеокарта' },
+  { value: 'processor', label: 'Процессор' },
+  { value: 'mothercard', label: 'Материнская плата' },
+  { value: 'memory', label: 'Оперативная память' },
+  { value: 'disk', label: 'Жесткий диск' },
+];
+
 export const product_groups = [
   { value: 'Бумажно-беловые товары', name: 'Бумажно-беловые товары' },
   { value: 'Письменные принадлежности', name: 'Письменные принадлежности' },
@@ -149,7 +157,7 @@ export const systemOptions = [
 ];
 
 export const memoryOptions = [
-  { value: '', label: '. . .' },
+  { value: '', label: 'Выбери объем памяти' },
   { value: '2', label: '2 ГБ' },
   { value: '4', label: '4 ГБ' },
   { value: '8', label: '8 ГБ' },
@@ -158,6 +166,13 @@ export const memoryOptions = [
   { value: '64', label: '64 ГБ' },
   { value: '128', label: '128 ГБ' },
   { value: 'custom', label: 'Другое ...' },
+];
+
+export const ddrOptions = [
+  { value: 'DDR2', label: 'DDR2' },
+  { value: 'DDR3', label: 'DDR3' },
+  { value: 'DDR4', label: 'DDR4' },
+  { value: 'DDR5', label: 'DDR5' },
 ];
 
 export const reasonUtilOptions = [
