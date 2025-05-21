@@ -14,8 +14,10 @@ import AddScreenForm from '../forms/AddScreenForm';
 import AddScannerForm from '../forms/AddScannerForm';
 import AddCameraForm from '../forms/AddCameraForm';
 import AddComputerForm from '../forms/AddComputerForm';
+import { Outlet, useNavigate } from 'react-router-dom';
 
 export default function AddToStorage() {
+  const navivate = useNavigate();
   const [type, setType] = useState('');
   const [category, setCategory] = useState('');
 
@@ -31,8 +33,8 @@ export default function AddToStorage() {
       />
       <TableContainer Lg headerSizes={'75px 1fr'}>
         <div className="change__header">
-          {/* Реализовать логику для импорта файла с данными помимо ручного ввода */}
-          <Button isMove>
+          {/* Логика импорта excel-файла для добавления файлов */}
+          <Button isMove onClick={() => navivate('/storage/import-file')}>
             Импорт <FontAwesomeIcon icon={faFileExcel} size="lg" />
           </Button>
           <ReturnButton />
@@ -62,6 +64,7 @@ export default function AddToStorage() {
         }
         {type === 'furniture' && <AddFurnitureForm />}
         {type === 'ventilation' && <AddVentilationForm />}
+        <Outlet />
       </TableContainer>
     </>
   );

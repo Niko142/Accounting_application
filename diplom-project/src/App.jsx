@@ -27,6 +27,7 @@ import EmployeeLayout from 'layouts/EmployeeLayout';
 import MovementLayout from 'layouts/MovementLayout';
 import ChancelleryProvider from 'context/ChancelleryContext';
 import StorageLayout from 'layouts/StorageLayout';
+import ExcelImportBlock from 'components/Storage/routes/ExcelImportBlock';
 
 function App() {
   return (
@@ -49,7 +50,8 @@ function App() {
         {/* Склад */}
         <Route path="/storage" element={<StorageLayout />}>
           <Route index element={<Storage />} />
-          <Route path="add-objects" element={<AddToStorage />} />
+          <Route path="add-objects" element={<AddToStorage />}></Route>
+          <Route path="import-file" element={<ExcelImportBlock />} />
           <Route path="components" element={<ComponentsMenu />} />
           <Route path="add-components" element={<AddComponents />} />
           <Route

@@ -75,3 +75,32 @@ textarea {
     flex-wrap: nowrap;
   }
 }
+
+.excel-import {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  & h3 {
+    text-align: center;
+  }
+  & .input-file {
+    box-sizing: border-box;
+    width: 400px;
+    max-width: 100%;
+    padding: 5px;
+    border-radius: 10px;
+    border: 1px solid v.$arrow;
+
+    &::file-selector-button {
+      cursor: pointer;
+      background-color: v.$blue;
+      color: v.$white;
+      border: 0;
+      border-radius: 10px;
+      padding: 10px 20px;
+      &:hover {
+        background-color: v.$blue-hover;
+      }
+    }
+  }
+}
