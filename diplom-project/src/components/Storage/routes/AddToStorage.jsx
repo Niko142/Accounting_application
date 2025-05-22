@@ -45,8 +45,12 @@ export default function AddToStorage() {
               className="main__input"
               style={{ marginBottom: '20px' }}
               value={category}
+              defaultValue=""
               onChange={(e) => setCategory(e.target.value)}
             >
+              <option value="" disabled>
+                Выберите категорию ...
+              </option>
               {categories.map((item) => {
                 return <option key={item.value}>{item.label}</option>;
               })}

@@ -2,7 +2,6 @@
 import { faCouch, faComputer, faFan } from '@fortawesome/free-solid-svg-icons';
 
 export const categories = [
-  { value: '', label: '. . .' },
   { value: 'computer', label: 'Компьютер' },
   { value: 'laptop', label: 'Ноутбук' },
   { value: 'screen', label: 'Монитор' },

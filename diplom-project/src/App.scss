@@ -103,4 +103,16 @@ textarea {
       }
     }
   }
+  & .validation {
+    font-weight: 600;
+    font-size: 1.1rem;
+
+    &.success {
+      color: v.$btn-active;
+    }
+
+    &.error {
+      color: v.$error;
+    }
+  }
 }
