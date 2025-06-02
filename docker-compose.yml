@@ -1,0 +1,18 @@
+services:
+  frontend:
+    build: 
+      context: ./diplom-project
+      dockerfile: Dockerfile
+    ports:
+      - "3001: 3001"
+  backend:
+    build: 
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    depends_on:
+      - db
+  db:
+
+  
