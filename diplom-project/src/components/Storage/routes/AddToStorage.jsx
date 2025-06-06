@@ -45,7 +45,6 @@ export default function AddToStorage() {
               className="main__input"
               style={{ marginBottom: '20px' }}
               value={category}
-              defaultValue=""
               onChange={(e) => setCategory(e.target.value)}
             >
               <option value="" disabled>

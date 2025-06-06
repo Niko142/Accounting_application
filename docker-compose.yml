@@ -4,15 +4,34 @@ services:
       context: ./diplom-project
       dockerfile: Dockerfile
     ports:
-      - "3001: 3001"
+      - "${FRONTEND_PORT}:80"
+    env_file:
+      - ./diplom-project/.env
   backend:
     build: 
       context: ./server
       dockerfile: Dockerfile
     ports:
-      - "3000:80"
+      - "${BACKEND_PORT}:${BACKEND_PORT}"
+    env_file:
+      - ./server/.env
     depends_on:
       - db
   db:
+    image: postgres:16-alpine
+    restart: always
+    env_file:
+      - ./.env
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./server/db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5433:5432"
+volumes:
+  postgres_data:
 
   

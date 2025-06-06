@@ -48,7 +48,6 @@ export default function Storage() {
             <select
               className="main__input"
               value={category}
-              defaultValue=""
               onChange={(e) => setCategory(e.target.value)}
             >
               <option value="" disabled>

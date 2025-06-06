@@ -1,35 +1,36 @@
 const express = require("express");
-const mysql = require("mysql");
 const cors = require("cors");
 const app = express();
 const dotenv = require("dotenv");
+const { Pool } = require("pg");
 
 dotenv.config();
 
 app.use(express.json());
 app.use(cors());
 
-const db = mysql.createConnection({
-  host: process.env.HOST,
+const db = new Pool({
+  host: 'db',
+  // host: process.env.HOST, // Для локальной сборки
   user: process.env.USER_NAME,
   password: process.env.DB_PASSWORD,
   database: process.env.DATABASE,
+  port: process.env.DB_PORT,
 });
 
-db.connect(function (err) {
+db.connect((err) => {
   if (err) {
-    console.log(err);
+    console.error("Ошибка подключения к PostgreSQL:", err.stack);
   } else {
-    console.log("Соединение установлено успешно");
+    console.log("Соединение с PostgreSQL успешно установлено");
   }
 });
 
 app.post("/login", (req, res) => {
-  const username = req.body.username;
-  const password = req.body.password;
+  const { username, password } = req.body;
 
   db.query(
-    "SELECT * FROM users WHERE username = ? AND password = ?",
+    "SELECT * FROM users WHERE username = $1 AND password = $2",
     [username, password],
     (err, result) => {
       if (err) {
@@ -39,7 +40,7 @@ app.post("/login", (req, res) => {
           status: 400,
         });
       }
-      if (result.length > 0) {
+      if (result.rows.length > 0) {
         res.send({ message: "Успешная авторизация", status: 200 });
       } else {
         res.send({
@@ -53,13 +54,10 @@ app.post("/login", (req, res) => {
 });
 
 app.post("/furniture", (req, res) => {
-  const name = req.body.name;
-  const model = req.body.model;
-  const price = req.body.price;
-  const location = req.body.location;
-  const status = req.body.status;
+  const { name, model, price, location, status } = req.body;
+
   db.query(
-    "INSERT INTO furniture_description (name, model, price, location, status) VALUES (?, ?, ?, ?, ?)",
+    "INSERT INTO furniture_description (name, model, price, location, status) VALUES ($1, $2, $3, $4, $5)",
     [name, model, price, location, status],
     (err, result) => {
       if (err) {
@@ -72,14 +70,10 @@ app.post("/furniture", (req, res) => {
 });
 
 app.post("/ventilation", (req, res) => {
-  const model = req.body.model;
-  const filter = req.body.filter;
-  const warm = req.body.warm;
-  const price = req.body.price;
-  const location = req.body.location;
-  const status = req.body.status;
+  const { model, filter, warm, price, location, status } = req.body;
+
   db.query(
-    "INSERT INTO ventilation_description (model, filter, warm, price, location, status) VALUES (?, ?, ?, ?, ?, ?)",
+    "INSERT INTO ventilation_description (model, filter, warm, price, location, status) VALUES ($1, $2, $3, $4, $5, $6)",
     [model, filter, warm, price, location, status],
     (err, result) => {
       if (err) {
@@ -94,13 +88,10 @@ app.post("/ventilation", (req, res) => {
 });
 
 app.post("/add-employee", (req, res) => {
-  const name = req.body.name;
-  const surname = req.body.surname;
-  const patronymic = req.body.patronymic;
-  const email = req.body.email;
-  const phone = req.body.phone;
+  const { name, surname, patronymic, email, phone } = req.body;
+
   db.query(
-    "INSERT INTO employee (name, surname, patronymic, email, phone) VALUES (?, ?, ?, ?, ?)",
+    "INSERT INTO employee (name, surname, patronymic, email, phone) VALUES ($1, $2, $3, $4, $5)",
     [name, surname, patronymic, email, phone],
     (err, result) => {
       if (err) {
@@ -113,17 +104,19 @@ app.post("/add-employee", (req, res) => {
 });
 
 app.post("/laptop", (req, res) => {
-  const model = req.body.model;
-  const systems = req.body.systems;
-  const videocard = req.body.videocard;
-  const processor = req.body.processor;
-  const memory = req.body.memory;
-  const volume = req.body.volume;
-  const price = req.body.price;
-  const location = req.body.location;
-  const status = req.body.status;
+  const {
+    model,
+    systems,
+    videocard,
+    processor,
+    memory,
+    volume,
+    price,
+    location,
+    status,
+  } = req.body;
   db.query(
-    "INSERT INTO laptop_description (model, systems, videocard, processor, memory, volume, price, location, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+    "INSERT INTO laptop_description (model, systems, videocard, processor, memory, volume, price, location, status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)",
     [
       model,
       systems,
@@ -144,51 +137,55 @@ app.post("/laptop", (req, res) => {
     }
   );
 });
-app.get("/select_laptop", (req, res) => {
+
+app.get("/select_laptop", (_, res) => {
   db.query("SELECT * FROM laptop_description", (err, result) => {
     if (err) {
       res.send({ err: err });
     } else {
-      res.send(result);
+      res.send(result.rows);
     }
   });
 });
 
-app.get("/main_laptop", (req, res) => {
+app.get("/main_laptop", (_, res) => {
   db.query(
-    "SELECT laptop_id, model, systems, videocard, processor, memory, volume, price, laptop_description.location, status, COALESCE(employee.name, '.') AS name, COALESCE(employee.surname, '.') AS surname, COALESCE(employee.patronymic, '.') AS patronymic FROM laptop_description LEFT JOIN employee ON laptop_description.employee = employee.employee_id",
+    `SELECT 
+      laptop_id, model, systems, videocard, processor, memory, volume, price, 
+      laptop_description.location, status, 
+      COALESCE(employee.name, '.') AS name, 
+      COALESCE(employee.surname, '.') AS surname, 
+      COALESCE(employee.patronymic, '.') AS patronymic 
+    FROM laptop_description 
+    LEFT JOIN employee ON laptop_description.employee = employee.employee_id`,
     (err, result) => {
       if (err) {
         res.send({ err: err });
       } else {
-        res.send(result);
+        res.send(result.rows);
       }
     }
   );
 });
 
-app.get("/sklad_laptop", (req, res) => {
+app.get("/sklad_laptop", (_, res) => {
   db.query(
     "SELECT * FROM laptop_description WHERE location = 'Склад'",
     (err, result) => {
       if (err) {
         res.send({ err: err });
       } else {
-        res.send(result);
+        res.send(result.rows);
       }
     }
   );
 });
 
 app.post("/scanner", (req, res) => {
-  const nam = req.body.nam;
-  const color = req.body.color;
-  const speed = req.body.speed;
-  const price = req.body.price;
-  const location = req.body.location;
-  const status = req.body.status;
+  const { nam, color, speed, price, location, status } = req.body;
+
   db.query(
-    "INSERT INTO scanner_description (nam, color, speed, price, location, status) VALUES (?, ?, ?, ?, ?, ?)",
+    "INSERT INTO scanner_description (nam, color, speed, price, location, status) VALUES ($1, $2, $3, $4, $5, $6)",
     [nam, color, speed, price, location, status],
     (err, result) => {
       if (err) {
@@ -199,52 +196,53 @@ app.post("/scanner", (req, res) => {
     }
   );
 });
-app.get("/select_scanner", (req, res) => {
+
+app.get("/select_scanner", (_, res) => {
   db.query("SELECT * FROM scanner_description", (err, result) => {
     if (err) {
       res.send({ err: err });
     } else {
-      res.send(result);
+      res.send(result.rows);
     }
   });
 });
 
-app.get("/main_scanner", (req, res) => {
+app.get("/main_scanner", (_, res) => {
   db.query(
-    "SELECT scanner_id, nam, color, speed, price, scanner_description.location, status, COALESCE(employee.name, '.') AS name, COALESCE(employee.surname, '.') AS surname, COALESCE(employee.patronymic, '.') AS patronymic FROM scanner_description LEFT JOIN employee ON scanner_description.employee = employee.employee_id",
+    `SELECT scanner_id, nam, color, speed, price, scanner_description.location, status, 
+      COALESCE(employee.name, '.') AS name, 
+      COALESCE(employee.surname, '.') AS surname, 
+      COALESCE(employee.patronymic, '.') AS patronymic 
+    FROM scanner_description 
+    LEFT JOIN employee ON scanner_description.employee = employee.employee_id`,
     (err, result) => {
       if (err) {
         res.send({ err: err });
       } else {
-        res.send(result);
+        res.send(result.rows);
       }
     }
   );
 });
 
-app.get("/sklad_scanner", (req, res) => {
+app.get("/sklad_scanner", (_, res) => {
   db.query(
     "SELECT * FROM scanner_description WHERE location = 'Склад'",
     (err, result) => {
       if (err) {
         res.send({ err: err });
       } else {
-        res.send(result);
+        res.send(result.rows);
       }
     }
   );
 });
 
 app.post("/screen", (req, res) => {
-  const model = req.body.model;
-  const diagonal = req.body.diagonal;
-  const rate = req.body.rate;
-  const type = req.body.type;
-  const price = req.body.price;
-  const location = req.body.location;
-  const status = req.body.status;
+  const { model, diagonal, rate, type, price, location, status } = req.body;
+
   db.query(
-    "INSERT INTO screen_description (model, diagonal, rate, type, price, location, status) VALUES (?, ?, ?, ?, ?, ?, ?)",
+    "INSERT INTO screen_description (model, diagonal, rate, type, price, location, status) VALUES ($1, $2, $3, $4, $5, $6, $7)",
     [model, diagonal, rate, type, price, location, status],
     (err, result) => {
       if (err) {
@@ -256,52 +254,53 @@ app.post("/screen", (req, res) => {
   );
 });
 
-app.get("/select_screen", (req, res) => {
+app.get("/select_screen", (_, res) => {
   db.query("SELECT * FROM screen_description", (err, result) => {
     if (err) {
       res.send({ err: err });
     } else {
-      res.send(result);
+      res.send(result.rows);
     }
   });
 });
 
-app.get("/main_screen", (req, res) => {
+app.get("/main_screen", (_, res) => {
   db.query(
-    "SELECT screen_id, model, diagonal, rate, type, price, screen_description.location, status, COALESCE(employee.name, '.') AS name, COALESCE(employee.surname, '.') AS surname, COALESCE(employee.patronymic, '.') AS patronymic FROM screen_description LEFT JOIN employee ON screen_description.employee = employee.employee_id",
+    `SELECT screen_id, model, diagonal, rate, type, price, screen_description.location, status, 
+      COALESCE(employee.name, '.') AS name, 
+      COALESCE(employee.surname, '.') AS surname, 
+      COALESCE(employee.patronymic, '.') AS patronymic 
+    FROM screen_description 
+    LEFT JOIN employee ON screen_description.employee = employee.employee_id`,
     (err, result) => {
       if (err) {
         res.send({ err: err });
       } else {
-        res.send(result);
+        res.send(result.rows);
       }
     }
   );
 });
 
-app.get("/sklad_screen", (req, res) => {
+app.get("/sklad_screen", (_, res) => {
   db.query(
     "SELECT * FROM screen_description WHERE location = 'Склад'",
     (err, result) => {
       if (err) {
         res.send({ err: err });
       } else {
-        res.send(result);
+        res.send(result.rows);
       }
     }
   );
 });
 
 app.post("/camera", (req, res) => {
-  const model = req.body.model;
-  const resolution = req.body.resolution;
-  const angle = req.body.angle;
-  const bracing = req.body.bracing;
-  const price = req.body.price;
-  const location = req.body.location;
-  const status = req.body.status;
+  const { model, resolution, angle, bracing, price, location, status } =
+    req.body;
+
   db.query(
-    "INSERT INTO camera_description (model, resolution, angle, bracing, price, location, status) VALUES (?, ?, ?, ?, ?, ?, ?)",
+    "INSERT INTO camera_description (model, resolution, angle, bracing, price, location, status) VALUES ($1, $2, $3, $4, $5, $6, $7)",
     [model, resolution, angle, bracing, price, location, status],
     (err, result) => {
       if (err) {
@@ -313,242 +312,290 @@ app.post("/camera", (req, res) => {
   );
 });
 
-app.get("/select_camera", (req, res) => {
+app.get("/select_camera", (_, res) => {
   db.query("SELECT * FROM camera_description", (err, result) => {
     if (err) {
       res.send({ err: err });
     } else {
-      res.send(result);
+      res.send(result.rows);
     }
   });
 });
 
-app.get("/main_camera", (req, res) => {
+app.get("/main_camera", (_, res) => {
   db.query(
-    "SELECT camera_id, model, resolution, angle, price, camera_description.location, status, COALESCE(employee.name, '.') AS name, COALESCE(employee.surname, '.') AS surname, COALESCE(employee.patronymic, '.') AS patronymic FROM camera_description LEFT JOIN employee ON camera_description.employee = employee.employee_id",
+    `SELECT camera_id, model, resolution, angle, price, camera_description.location, status, 
+      COALESCE(employee.name, '.') AS name, 
+      COALESCE(employee.surname, '.') AS surname, 
+      COALESCE(employee.patronymic, '.') AS patronymic 
+    FROM camera_description 
+    LEFT JOIN employee ON camera_description.employee = employee.employee_id`,
     (err, result) => {
       if (err) {
         res.send({ err: err });
       } else {
-        res.send(result);
+        res.send(result.rows);
       }
     }
   );
 });
 
-app.get("/sklad_camera", (req, res) => {
+app.get("/sklad_camera", (_, res) => {
   db.query(
     "SELECT * FROM camera_description WHERE location = 'Склад'",
     (err, result) => {
       if (err) {
         res.send({ err: err });
       } else {
-        res.send(result);
+        res.send(result.rows);
       }
     }
   );
 });
 
-app.get("/select_employee", (req, res) => {
+app.get("/select_employee", (_, res) => {
   db.query("SELECT * FROM employee", (err, result) => {
     if (err) {
       res.send({ err: err });
     } else {
-      res.send(result);
+      res.send(result.rows);
     }
   });
 });
 
-app.get("/select_furniture", (req, res) => {
+app.get("/select_furniture", (_, res) => {
   db.query("SELECT * FROM furniture_description", (err, result) => {
     if (err) {
       res.send({ err: err });
     } else {
-      res.send(result);
+      res.send(result.rows);
     }
   });
 });
 
-app.get("/main_furniture", (req, res) => {
+app.get("/main_furniture", (_, res) => {
   db.query(
-    "SELECT furniture_id, furniture_description.name AS name, model, price, furniture_description.location, status, COALESCE(employee.name, '.') AS names, COALESCE(employee.surname, '.') AS surname, COALESCE(employee.patronymic, '.') AS patronymic FROM furniture_description LEFT JOIN employee ON furniture_description.employee = employee.employee_id",
+    `SELECT furniture_id, furniture_description.name AS name, model, price, furniture_description.location, status, 
+      COALESCE(employee.name, '.') AS names, 
+      COALESCE(employee.surname, '.') AS surname, 
+      COALESCE(employee.patronymic, '.') AS patronymic 
+    FROM furniture_description 
+    LEFT JOIN employee ON furniture_description.employee = employee.employee_id`,
     (err, result) => {
       if (err) {
         res.send({ err: err });
       } else {
-        res.send(result);
+        res.send(result.rows);
       }
     }
   );
 });
 
-app.get("/sklad_furniture", (req, res) => {
+app.get("/sklad_furniture", (_, res) => {
   db.query(
     "SELECT * FROM furniture_description WHERE location = 'Склад'",
     (err, result) => {
       if (err) {
         res.send({ err: err });
       } else {
-        res.send(result);
+        res.send(result.rows);
       }
     }
   );
 });
 
-app.get("/select_ventilation", (req, res) => {
+app.get("/select_ventilation", (_, res) => {
   db.query("SELECT * FROM ventilation_description", (err, result) => {
     if (err) {
       res.send({ err: err });
     } else {
-      res.send(result);
+      res.send(result.rows);
     }
   });
 });
 
-app.get("/main_ventilation", (req, res) => {
+app.get("/main_ventilation", (_, res) => {
   db.query(
-    "SELECT ventilation_id, model, price, ventilation_description.location, status, COALESCE(employee.name, '.') AS name, COALESCE(employee.surname, '.') AS surname, COALESCE(employee.patronymic, '.') AS patronymic FROM ventilation_description LEFT JOIN employee ON ventilation_description.employee = employee.employee_id",
+    `SELECT ventilation_id, model, price, ventilation_description.location, status, 
+      COALESCE(employee.name, '.') AS name, 
+      COALESCE(employee.surname, '.') AS surname, 
+      COALESCE(employee.patronymic, '.') AS patronymic 
+    FROM ventilation_description 
+    LEFT JOIN employee ON ventilation_description.employee = employee.employee_id`,
     (err, result) => {
       if (err) {
         res.send({ err: err });
       } else {
-        res.send(result);
+        res.send(result.rows);
       }
     }
   );
 });
 
-app.get("/sklad_ventilation", (req, res) => {
+app.get("/sklad_ventilation", (_, res) => {
   db.query(
     "SELECT * FROM ventilation_description WHERE location = 'Склад'",
     (err, result) => {
       if (err) {
         res.send({ err: err });
       } else {
-        res.send(result);
+        res.send(result.rows);
       }
     }
   );
 });
 
-app.get("/videocard", (req, res) => {
+app.get("/videocard", (_, res) => {
   db.query(
     "SELECT * FROM videocard WHERE location = 'Склад'",
     (err, result) => {
       if (err) {
         res.send({ err: err });
       } else {
-        res.send(result);
+        res.send(result.rows);
       }
     }
   );
 });
-app.post("/post_videocard", (req, res) => {
+
+app.post("/post_videocard", (_, res) => {
   db.query("SELECT * FROM videocard", (err, result) => {
     if (err) {
       res.send({ err: err });
     } else {
-      res.send(result);
+      res.send(result.rows);
     }
   });
 });
 
-app.get("/processor", (req, res) => {
+app.get("/processor", (_, res) => {
   db.query(
     "SELECT * FROM processor WHERE location = 'Склад'",
     (err, result) => {
       if (err) {
         res.send({ err: err });
       } else {
-        res.send(result);
+        res.send(result.rows);
       }
     }
   );
 });
 
-app.get("/mothercard", (req, res) => {
+app.get("/mothercard", (_, res) => {
   db.query(
     "SELECT * FROM mothercard WHERE location = 'Склад'",
     (err, result) => {
       if (err) {
         res.send({ err: err });
       } else {
-        res.send(result);
+        res.send(result.rows);
       }
     }
   );
 });
 
-app.get("/memory", (req, res) => {
+app.get("/memory", (_, res) => {
   db.query("SELECT * FROM memory WHERE location = 'Склад'", (err, result) => {
     if (err) {
       res.send({ err: err });
     } else {
-      res.send(result);
+      res.send(result.rows);
     }
   });
 });
 
-app.get("/disk", (req, res) => {
+app.get("/disk", (_, res) => {
   db.query("SELECT * FROM disk WHERE location = 'Склад'", (err, result) => {
     if (err) {
       res.send({ err: err });
     } else {
-      res.send(result);
+      res.send(result.rows);
     }
   });
 });
 
-app.get("/computer", (req, res) => {
+app.get("/computer", (_, res) => {
   db.query(
-    "SELECT id_computer, computer.employee, computer.location, computer.status, name, videocard.model AS videocards, processor.model AS processors, mothercard.model AS mothercards, memory.model AS memories, disk.model AS disks FROM computer INNER JOIN videocard ON computer.videocard_id = videocard.id_videocard INNER JOIN processor ON computer.processor_id = processor.id_processor INNER JOIN mothercard ON computer.mothercard_id = mothercard.id_mothercard INNER JOIN memory ON computer.memory_id = memory.id_memory INNER JOIN disk ON computer.disk_id = disk.id_disk",
+    `SELECT id_computer, computer.employee, computer.location, computer.status, name, 
+      videocard.model AS videocards, processor.model AS processors, 
+      mothercard.model AS mothercards, memory.model AS memories, 
+      disk.model AS disks 
+    FROM computer 
+    INNER JOIN videocard ON computer.videocard_id = videocard.id_videocard 
+    INNER JOIN processor ON computer.processor_id = processor.id_processor 
+    INNER JOIN mothercard ON computer.mothercard_id = mothercard.id_mothercard 
+    INNER JOIN memory ON computer.memory_id = memory.id_memory 
+    INNER JOIN disk ON computer.disk_id = disk.id_disk`,
     (err, result) => {
       if (err) {
         res.send({ err: err });
       } else {
-        res.send(result);
+        res.send(result.rows);
       }
     }
   );
 });
 
-app.get("/main_computer", (req, res) => {
+app.get("/main_computer", (_, res) => {
   db.query(
-    "SELECT id_computer, computer.location AS location, computer.status AS status, computer.name AS name, videocard.model AS videocards, processor.model AS processors, mothercard.model AS mothercards, memory.model AS memories, disk.model AS disks, COALESCE(employee.name, '.') AS names, COALESCE(employee.surname, '.') AS surname, COALESCE(employee.patronymic, '.') AS patronymic FROM computer INNER JOIN videocard ON computer.videocard_id = videocard.id_videocard INNER JOIN processor ON computer.processor_id = processor.id_processor INNER JOIN mothercard ON computer.mothercard_id = mothercard.id_mothercard INNER JOIN memory ON computer.memory_id = memory.id_memory INNER JOIN disk ON computer.disk_id = disk.id_disk LEFT JOIN employee ON computer.employee = employee.employee_id",
+    `SELECT id_computer, computer.location AS location, computer.status AS status, computer.name AS name, 
+      videocard.model AS videocards, processor.model AS processors, mothercard.model AS mothercards, 
+      memory.model AS memories, disk.model AS disks, 
+      COALESCE(employee.name, '.') AS names, 
+      COALESCE(employee.surname, '.') AS surname, 
+      COALESCE(employee.patronymic, '.') AS patronymic 
+    FROM computer 
+    INNER JOIN videocard ON computer.videocard_id = videocard.id_videocard 
+    INNER JOIN processor ON computer.processor_id = processor.id_processor 
+    INNER JOIN mothercard ON computer.mothercard_id = mothercard.id_mothercard 
+    INNER JOIN memory ON computer.memory_id = memory.id_memory 
+    INNER JOIN disk ON computer.disk_id = disk.id_disk 
+    LEFT JOIN employee ON computer.employee = employee.employee_id`,
     (err, result) => {
       if (err) {
         res.send({ err: err });
       } else {
-        res.send(result);
+        res.send(result.rows);
       }
     }
   );
 });
 
-app.get("/sklad_computer", (req, res) => {
+app.get("/sklad_computer", (_, res) => {
   db.query(
-    "SELECT id_computer, videocard_id AS id_videocard, processor_id AS id_processor, mothercard_id AS id_mothercard, memory_id AS id_memory, disk_id AS id_disk, name, videocard.model AS videocards, processor.model AS processors, mothercard.model AS mothercards, memory.model AS memories, disk.model AS disks, computer.location FROM computer INNER JOIN videocard ON computer.videocard_id = videocard.id_videocard INNER JOIN processor ON computer.processor_id = processor.id_processor INNER JOIN mothercard ON computer.mothercard_id = mothercard.id_mothercard INNER JOIN memory ON computer.memory_id = memory.id_memory INNER JOIN disk ON computer.disk_id = disk.id_disk AND computer.location = 'Склад'",
+    `SELECT id_computer, videocard_id AS id_videocard, processor_id AS id_processor, mothercard_id AS id_mothercard, 
+      memory_id AS id_memory, disk_id AS id_disk, name, videocard.model AS videocards, processor.model AS processors, 
+      mothercard.model AS mothercards, memory.model AS memories, disk.model AS disks, computer.location 
+    FROM computer 
+    INNER JOIN videocard ON computer.videocard_id = videocard.id_videocard 
+    INNER JOIN processor ON computer.processor_id = processor.id_processor 
+    INNER JOIN mothercard ON computer.mothercard_id = mothercard.id_mothercard 
+    INNER JOIN memory ON computer.memory_id = memory.id_memory 
+    INNER JOIN disk ON computer.disk_id = disk.id_disk AND computer.location = 'Склад'`,
     (err, result) => {
       if (err) {
         res.send({ err: err });
       } else {
-        res.send(result);
+        res.send(result.rows);
       }
     }
   );
 });
 
 app.post("/add_computer", (req, res) => {
-  const name = req.body.name;
-  const videocard = req.body.videocard_id;
-  const processor = req.body.processor_id;
-  const mothercard = req.body.mothercard_id;
-  const memory = req.body.memory_id;
-  const disk = req.body.disk_id;
-  const location = req.body.location;
-  const status = req.body.status;
+  const {
+    name,
+    videocard,
+    processor,
+    mothercard,
+    memory,
+    disk,
+    location,
+    status,
+  } = req.body;
+
   db.query(
-    "INSERT INTO computer (name, videocard_id, processor_id, mothercard_id, memory_id, disk_id, location, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+    "INSERT INTO computer (name, videocard_id, processor_id, mothercard_id, memory_id, disk_id, location, status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
     [name, videocard, processor, mothercard, memory, disk, location, status],
     (err) => {
       if (err) {
@@ -561,11 +608,10 @@ app.post("/add_computer", (req, res) => {
 });
 
 app.post("/add_videocard", (req, res) => {
-  const model = req.body.model;
-  const price = req.body.price;
-  const location = req.body.location;
+  const { model, price, location } = req.body;
+
   db.query(
-    "INSERT INTO videocard (model, price, location) VALUES (?, ?, ?)",
+    "INSERT INTO videocard (model, price, location) VALUES ($1, $2, $3)",
     [model, price, location],
     (err) => {
       if (err) {
@@ -578,12 +624,10 @@ app.post("/add_videocard", (req, res) => {
 });
 
 app.post("/add_processor", (req, res) => {
-  const model = req.body.model;
-  const rate = req.body.rate;
-  const price = req.body.price;
-  const location = req.body.location;
+  const { model, rate, price, location } = req.body;
+
   db.query(
-    "INSERT INTO processor (model, rate, price, location) VALUES (?, ?, ?, ?)",
+    "INSERT INTO processor (model, rate, price, location) VALUES ($1, $2, $3, $4)",
     [model, rate, price, location],
     (err) => {
       if (err) {
@@ -596,13 +640,10 @@ app.post("/add_processor", (req, res) => {
 });
 
 app.post("/add_mothercard", (req, res) => {
-  const model = req.body.model;
-  const type = req.body.type;
-  const rate = req.body.rate;
-  const price = req.body.price;
-  const location = req.body.location;
+  const { model, type, rate, price, location } = req.body;
+
   db.query(
-    "INSERT INTO mothercard (model, type, rate, price, location) VALUES (?, ?, ?, ?, ?)",
+    "INSERT INTO mothercard (model, type, rate, price, location) VALUES ($1, $2, $3, $4, $5)",
     [model, type, rate, price, location],
     (err, result) => {
       if (err) {
@@ -615,13 +656,10 @@ app.post("/add_mothercard", (req, res) => {
 });
 
 app.post("/add_memory", (req, res) => {
-  const model = req.body.model;
-  const type = req.body.type;
-  const volume = req.body.volume;
-  const price = req.body.price;
-  const location = req.body.location;
+  const { model, type, volume, price, location } = req.body;
+
   db.query(
-    "INSERT INTO memory (model, type, volume, price, location) VALUES (?, ?, ?, ?, ?)",
+    "INSERT INTO memory (model, type, volume, price, location) VALUES ($1, $2, $3, $4, $5)",
     [model, type, volume, price, location],
     (err, result) => {
       if (err) {
@@ -634,12 +672,10 @@ app.post("/add_memory", (req, res) => {
 });
 
 app.post("/add_disk", (req, res) => {
-  const model = req.body.model;
-  const volume = req.body.volume;
-  const price = req.body.price;
-  const location = req.body.location;
+  const { model, volume, price, location } = req.body;
+
   db.query(
-    "INSERT INTO disk (model, volume, price, location) VALUES (?, ?, ?, ?)",
+    "INSERT INTO disk (model, volume, price, location) VALUES ($1, $2, $3, $4)",
     [model, volume, price, location],
     (err, result) => {
       if (err) {
@@ -652,14 +688,10 @@ app.post("/add_disk", (req, res) => {
 });
 
 app.post("/pinning-employee", (req, res) => {
-  const date = req.body.date;
-  const type = req.body.type;
-  const category = req.body.category;
-  const unit = req.body.unit;
-  const employee = req.body.employee;
+  const { date, category, type, unit, employee } = req.body;
 
   db.query(
-    "INSERT INTO pinning_employee (date, category, type, unit, employee) VALUES (?, ?, ?, ?, ?)",
+    "INSERT INTO pinning_employee (date, category, type, unit, employee) VALUES ($1, $2, $3, $4, $5)",
     [date, category, type, unit, employee],
     (err, result) => {
       if (err) {
@@ -671,44 +703,44 @@ app.post("/pinning-employee", (req, res) => {
   );
 });
 
-app.get("/select_pinning", (req, res) => {
+app.get("/select_pinning", (_, res) => {
   db.query(
     "SELECT id_pinning, date, category, type, unit, employee.name AS name, employee.surname AS surname, employee.patronymic AS patronymic FROM pinning_employee INNER JOIN employee ON pinning_employee.employee = employee.employee_id",
     (err, result) => {
       if (err) {
         res.send({ err: err });
       } else {
-        res.send(result);
+        res.send(result.rows);
       }
     }
   );
 });
 
-app.get("/cabinet", (req, res) => {
+app.get("/cabinet", (_, res) => {
   db.query("SELECT * FROM cabinet", (err, result) => {
     if (err) {
       res.send({ err: err });
     } else {
-      res.send(result);
+      res.send(result.rows);
     }
   });
 });
 
-app.get("/not_sklad_cabinet", (req, res) => {
+app.get("/not_sklad_cabinet", (_, res) => {
   db.query("SELECT * FROM cabinet WHERE number <> 'Склад'", (err, result) => {
     if (err) {
       res.send({ err: err });
     } else {
-      res.send(result);
+      res.send(result.rows);
     }
   });
 });
 
 app.post("/update_ventilation", (req, res) => {
-  const employee = req.body.employee;
-  const id = req.body.id;
+  const { employee, id } = req.body;
+
   db.query(
-    "UPDATE ventilation_description SET employee = ? WHERE ventilation_id = ?",
+    "UPDATE ventilation_description SET employee = $1 WHERE ventilation_id = $2",
     [employee, id],
     (err) => {
       if (err) {
@@ -721,10 +753,10 @@ app.post("/update_ventilation", (req, res) => {
 });
 
 app.post("/update_furniture", (req, res) => {
-  const employee = req.body.employee;
-  const id = req.body.id;
+  const { employee, id } = req.body;
+
   db.query(
-    "UPDATE furniture_description SET employee = ? WHERE furniture_id = ?",
+    "UPDATE furniture_description SET employee = $1 WHERE furniture_id = $2",
     [employee, id],
     (err) => {
       if (err) {
@@ -737,10 +769,10 @@ app.post("/update_furniture", (req, res) => {
 });
 
 app.post("/update_computer", (req, res) => {
-  const employee = req.body.employee;
-  const id = req.body.id;
+  const { employee, id } = req.body;
+
   db.query(
-    "UPDATE computer SET employee = ? WHERE id_computer = ?",
+    "UPDATE computer SET employee = $1 WHERE id_computer = $2",
     [employee, id],
     (err) => {
       if (err) {
@@ -753,10 +785,10 @@ app.post("/update_computer", (req, res) => {
 });
 
 app.post("/update_laptop", (req, res) => {
-  const employee = req.body.employee;
-  const id = req.body.id;
+  const { employee, id } = req.body;
+
   db.query(
-    "UPDATE laptop_description SET employee = ? WHERE laptop_id = ?",
+    "UPDATE laptop_description SET employee = $1 WHERE laptop_id = $2",
     [employee, id],
     (err) => {
       if (err) {
@@ -769,10 +801,10 @@ app.post("/update_laptop", (req, res) => {
 });
 
 app.post("/update_screen", (req, res) => {
-  const employee = req.body.employee;
-  const id = req.body.id;
+  const { employee, id } = req.body;
+
   db.query(
-    "UPDATE screen_description SET employee = ? WHERE screen_id = ?",
+    "UPDATE screen_description SET employee = $1 WHERE screen_id = $2",
     [employee, id],
     (err) => {
       if (err) {
@@ -785,10 +817,10 @@ app.post("/update_screen", (req, res) => {
 });
 
 app.post("/update_scanner", (req, res) => {
-  const employee = req.body.employee;
-  const id = req.body.id;
+  const { employee, id } = req.body;
+
   db.query(
-    "UPDATE scanner_description SET employee = ? WHERE scanner_id = ?",
+    "UPDATE scanner_description SET employee = $1 WHERE scanner_id = $2",
     [employee, id],
     (err) => {
       if (err) {
@@ -801,10 +833,10 @@ app.post("/update_scanner", (req, res) => {
 });
 
 app.post("/update_camera", (req, res) => {
-  const employee = req.body.employee;
-  const id = req.body.id;
+  const { employee, id } = req.body;
+
   db.query(
-    "UPDATE camera_description SET employee = ? WHERE camera_id = ?",
+    "UPDATE camera_description SET employee = $1 WHERE camera_id = $2",
     [employee, id],
     (err) => {
       if (err) {
@@ -817,15 +849,10 @@ app.post("/update_camera", (req, res) => {
 });
 
 app.post("/pinning-cabinet", (req, res) => {
-  const date = req.body.date;
-  const type = req.body.type;
-  const category = req.body.category;
-  const reason = req.body.reason;
-  const unit = req.body.unit;
-  const start = req.body.start;
-  const end = req.body.end;
+  const { date, category, type, reason, unit, start, end } = req.body;
+
   db.query(
-    "INSERT INTO pinning_cabinet (date, category, type, reason, unit, start_location, end_location) VALUES (?, ?, ?, ?, ?, ?, ?)",
+    "INSERT INTO pinning_cabinet (date, category, type, reason, unit, start_location, end_location) VALUES ($1, $2, $3, $4, $5, $6, $7)",
     [date, category, type, reason, unit, start, end],
     (err) => {
       if (err) {
@@ -837,22 +864,21 @@ app.post("/pinning-cabinet", (req, res) => {
   );
 });
 
-app.get("/history-cabinet", (req, res) => {
+app.get("/history-cabinet", (_, res) => {
   db.query("SELECT * FROM pinning_cabinet", (err, result) => {
     if (err) {
       res.send({ err: err });
     } else {
-      res.send(result);
+      res.send(result.rows);
     }
   });
 });
 
 app.patch("/location_computer", (req, res) => {
-  const location = req.body.location;
-  const status = req.body.status;
-  const id = req.body.id;
+  const { location, status, id } = req.body;
+
   db.query(
-    "UPDATE computer SET location = ?, status = ? WHERE id_computer = ?",
+    "UPDATE computer SET location = $1, status = $2 WHERE id_computer = $3",
     [location, status, id],
     (err) => {
       if (err) {
@@ -865,11 +891,10 @@ app.patch("/location_computer", (req, res) => {
 });
 
 app.patch("/location_laptop", (req, res) => {
-  const location = req.body.location;
-  const status = req.body.status;
-  const id = req.body.id;
+  const { location, status, id } = req.body;
+
   db.query(
-    "UPDATE laptop_description SET location = ?, status = ? WHERE laptop_id = ?",
+    "UPDATE laptop_description SET location = $1, status = $2 WHERE laptop_id = $3",
     [location, status, id],
     (err) => {
       if (err) {
@@ -882,12 +907,11 @@ app.patch("/location_laptop", (req, res) => {
 });
 
 app.patch("/location_screen", (req, res) => {
-  const location = req.body.location;
-  const status = req.body.status;
-  const id = req.body.id;
+  const { location, status, id } = req.body;
+
   db.query(
-    "UPDATE screen_description SET location = ?, status = ? WHERE screen_id = ?",
-    [location, status, id,],
+    "UPDATE screen_description SET location = $1, status = $2 WHERE screen_id = $3",
+    [location, status, id],
     (err) => {
       if (err) {
         res.send({ err: err });
@@ -899,11 +923,10 @@ app.patch("/location_screen", (req, res) => {
 });
 
 app.patch("/location_scanner", (req, res) => {
-  const location = req.body.location;
-  const status = req.body.status;
-  const id = req.body.id;
+  const { location, status, id } = req.body;
+
   db.query(
-    "UPDATE scanner_description SET location = ?, status = ? WHERE scanner_id = ?",
+    "UPDATE scanner_description SET location = $1, status = $2 WHERE scanner_id = $3",
     [location, status, id],
     (err) => {
       if (err) {
@@ -916,11 +939,10 @@ app.patch("/location_scanner", (req, res) => {
 });
 
 app.patch("/location_camera", (req, res) => {
-  const location = req.body.location;
-  const status = req.body.status;
-  const id = req.body.id;
+  const { location, status, id } = req.body;
+
   db.query(
-    "UPDATE camera_description SET location = ?, status = ? WHERE camera_id = ?",
+    "UPDATE camera_description SET location = $1, status = $2 WHERE camera_id = $3",
     [location, status, id],
     (err) => {
       if (err) {
@@ -933,11 +955,10 @@ app.patch("/location_camera", (req, res) => {
 });
 
 app.patch("/location_furniture", (req, res) => {
-  const location = req.body.location;
-  const status = req.body.status;
-  const id = req.body.id;
+  const { location, status, id } = req.body;
+
   db.query(
-    "UPDATE furniture_description SET location = ?, status = ? WHERE furniture_id = ?",
+    "UPDATE furniture_description SET location = $1, status = $2 WHERE furniture_id = $3",
     [location, status, id],
     (err) => {
       if (err) {
@@ -950,11 +971,10 @@ app.patch("/location_furniture", (req, res) => {
 });
 
 app.patch("/location_ventilation", (req, res) => {
-  const location = req.body.location;
-  const status = req.body.status;
-  const id = req.body.id;
+  const { location, status, id } = req.body;
+
   db.query(
-    "UPDATE ventilation_description SET location = ?, status = ? WHERE ventilation_id = ?",
+    "UPDATE ventilation_description SET location = $1, status = $2 WHERE ventilation_id = $3",
     [location, status, id],
     (err) => {
       if (err) {
@@ -967,10 +987,10 @@ app.patch("/location_ventilation", (req, res) => {
 });
 
 app.patch("/update_videocard", (req, res) => {
-  const location = req.body.location;
-  const id = req.body.id;
+  const { location, id } = req.body;
+
   db.query(
-    "UPDATE videocard SET location = ? WHERE id_videocard = ?",
+    "UPDATE videocard SET location = $1 WHERE id_videocard = $2",
     [location, id],
     (err, result) => {
       if (err) {
@@ -983,10 +1003,10 @@ app.patch("/update_videocard", (req, res) => {
 });
 
 app.patch("/update_processor", (req, res) => {
-  const location = req.body.location;
-  const id = req.body.id;
+  const { location, id } = req.body;
+
   db.query(
-    "UPDATE processor SET location = ? WHERE id_processor = ?",
+    "UPDATE processor SET location = $1 WHERE id_processor = $2",
     [location, id],
     (err, result) => {
       if (err) {
@@ -999,10 +1019,10 @@ app.patch("/update_processor", (req, res) => {
 });
 
 app.patch("/update_mothercard", (req, res) => {
-  const location = req.body.location;
-  const id = req.body.id;
+  const { location, id } = req.body;
+
   db.query(
-    "UPDATE mothercard SET location = ? WHERE id_mothercard = ?",
+    "UPDATE mothercard SET location = $1 WHERE id_mothercard = $2",
     [location, id],
     (err, result) => {
       if (err) {
@@ -1015,10 +1035,10 @@ app.patch("/update_mothercard", (req, res) => {
 });
 
 app.patch("/update_memory", (req, res) => {
-  const location = req.body.location;
-  const id = req.body.id;
+  const { location, id } = req.body;
+
   db.query(
-    "UPDATE memory SET location = ? WHERE id_memory = ?",
+    "UPDATE memory SET location = $1 WHERE id_memory = $2",
     [location, id],
     (err, result) => {
       if (err) {
@@ -1031,10 +1051,10 @@ app.patch("/update_memory", (req, res) => {
 });
 
 app.patch("/update_disk", (req, res) => {
-  const location = req.body.location;
-  const id = req.body.id;
+  const { location, id } = req.body;
+
   db.query(
-    "UPDATE disk SET location = ? WHERE id_disk = ?",
+    "UPDATE disk SET location = $1 WHERE id_disk = $2",
     [location, id],
     (err, result) => {
       if (err) {
@@ -1046,79 +1066,79 @@ app.patch("/update_disk", (req, res) => {
   );
 });
 
-app.get("/computer_movement", (req, res) => {
+app.get("/computer_movement", (_, res) => {
   db.query(
     "SELECT * FROM computer WHERE location <> 'Склад' AND location <> '-'",
     (err, result) => {
       if (err) {
         res.send({ err: err });
       } else {
-        res.send(result);
+        res.send(result.rows);
       }
     }
   );
 });
 
-app.get("/laptop_movement", (req, res) => {
+app.get("/laptop_movement", (_, res) => {
   db.query(
     "SELECT * FROM laptop_description WHERE location <> 'Склад' AND location <> '-'",
     (err, result) => {
       if (err) {
         res.send({ err: err });
       } else {
-        res.send(result);
+        res.send(result.rows);
       }
     }
   );
 });
 
-app.get("/screen_movement", (req, res) => {
+app.get("/screen_movement", (_, res) => {
   db.query(
     "SELECT * FROM screen_description WHERE location <> 'Склад' AND location <> '-'",
     (err, result) => {
       if (err) {
         res.send({ err: err });
       } else {
-        res.send(result);
+        res.send(result.rows);
       }
     }
   );
 });
 
-app.get("/scanner_movement", (req, res) => {
+app.get("/scanner_movement", (_, res) => {
   db.query(
     "SELECT * FROM scanner_description WHERE location <> 'Склад' AND location <> '-'",
     (err, result) => {
       if (err) {
         res.send({ err: err });
       } else {
-        res.send(result);
+        res.send(result.rows);
       }
     }
   );
 });
 
-app.get("/camera_movement", (req, res) => {
+app.get("/camera_movement", (_, res) => {
   db.query(
     "SELECT * FROM camera_description WHERE location <> 'Склад' AND location <> '-'",
     (err, result) => {
       if (err) {
         res.send({ err: err });
       } else {
-        res.send(result);
+        res.send(result.rows);
       }
     }
   );
 });
 
-app.get("/furniture_movement", (req, res) => {
+app.get("/furniture_movement", (_, res) => {
   db.query(
     "SELECT * FROM furniture_description WHERE location <> 'Склад' AND location <> '-'",
     (err, result) => {
       if (err) {
         res.send({ err: err });
       } else {
-        res.send(result);
+        res.send(result.rows);
       }
     }
   );
@@ -1126,31 +1146,39 @@ app.get("/furniture_movement", (req, res) => {
 
 app.delete("/delete-employee/:id", (req, res) => {
   const id = req.params.id;
-  db.query("DELETE FROM employee WHERE employee_id = ?", id, (err, result) => {
-    if (err) {
-      res.send({ err: err });
-    } else {
-      res.send(result);
+  db.query(
+    "DELETE FROM employee WHERE employee_id = $1",
+    [id],
+    (err, result) => {
+      if (err) {
+        res.send({ err: err });
+      } else {
+        res.send(result.rows);
+      }
     }
-  });
+  );
 });
 
 app.delete("/delete-computer", (req, res) => {
   const id = req.body.id;
-  db.query("DELETE FROM computer WHERE id_computer = ?", id, (err, result) => {
-    if (err) {
-      res.send({ err: err });
-    } else {
-      res.send({ message: "Успешное добавление" });
+  db.query(
+    "DELETE FROM computer WHERE id_computer = $1",
+    [id],
+    (err, result) => {
+      if (err) {
+        res.send({ err: err });
+      } else {
+        res.send({ message: "Успешное добавление" });
+      }
     }
-  });
+  );
 });
 
 app.delete("/delete-laptop", (req, res) => {
   const id = req.body.id;
   db.query(
-    "DELETE FROM laptop_description WHERE laptop_id = ?",
-    id,
+    "DELETE FROM laptop_description WHERE laptop_id = $1",
+    [id],
     (err, result) => {
       if (err) {
         res.send({ err: err });
@@ -1164,8 +1192,8 @@ app.delete("/delete-laptop", (req, res) => {
 app.delete("/delete-screen", (req, res) => {
   const id = req.body.id;
   db.query(
-    "DELETE FROM screen_description WHERE screen_id = ?",
-    id,
+    "DELETE FROM screen_description WHERE screen_id = $1",
+    [id],
     (err, result) => {
       if (err) {
         res.send({ err: err });
@@ -1179,8 +1207,8 @@ app.delete("/delete-screen", (req, res) => {
 app.delete("/delete-scanner", (req, res) => {
   const id = req.body.id;
   db.query(
-    "DELETE FROM scanner_description WHERE scanner_id = ?",
-    id,
+    "DELETE FROM scanner_description WHERE scanner_id = $1",
+    [id],
     (err, result) => {
       if (err) {
         res.send({ err: err });
@@ -1194,8 +1222,8 @@ app.delete("/delete-scanner", (req, res) => {
 app.delete("/delete-camera", (req, res) => {
   const id = req.body.id;
   db.query(
-    "DELETE FROM camera_description WHERE camera_id = ?",
-    id,
+    "DELETE FROM camera_description WHERE camera_id = $1",
+    [id],
     (err, result) => {
       if (err) {
         res.send({ err: err });
@@ -1209,8 +1237,8 @@ app.delete("/delete-camera", (req, res) => {
 app.delete("/delete-ventilation", (req, res) => {
   const id = req.body.id;
   db.query(
-    "DELETE FROM ventilation_description WHERE ventilation_id = ?",
-    id,
+    "DELETE FROM ventilation_description WHERE ventilation_id = $1",
+    [id],
     (err, result) => {
       if (err) {
         res.send({ err: err });
@@ -1224,8 +1252,8 @@ app.delete("/delete-ventilation", (req, res) => {
 app.delete("/delete-furniture", (req, res) => {
   const id = req.body.id;
   db.query(
-    "DELETE FROM furniture_description WHERE furniture_id = ?",
-    id,
+    "DELETE FROM furniture_description WHERE furniture_id = $1",
+    [id],
     (err, result) => {
       if (err) {
         res.send({ err: err });
@@ -1239,13 +1267,21 @@ app.delete("/delete-furniture", (req, res) => {
 app.get("/computer/:id", (req, res) => {
   const id = req.params.id;
   db.query(
-    "SELECT id_computer, name, employee, status, computer.location AS location, videocard_id, videocard.model AS videocards, processor_id, processor.model AS processors, mothercard_id, mothercard.model AS mothercards, memory_id, memory.model AS memories, disk_id, disk.model AS disks FROM computer INNER JOIN videocard ON computer.videocard_id = videocard.id_videocard INNER JOIN processor ON computer.processor_id = processor.id_processor INNER JOIN mothercard ON computer.mothercard_id = mothercard.id_mothercard INNER JOIN memory ON computer.memory_id = memory.id_memory INNER JOIN disk ON computer.disk_id = disk.id_disk WHERE id_computer = ?",
-    id,
+    `SELECT id_computer, name, employee, status, computer.location AS location, videocard_id, 
+      videocard.model AS videocards, processor_id, processor.model AS processors, mothercard_id, 
+      mothercard.model AS mothercards, memory_id, memory.model AS memories, disk_id, disk.model AS disks 
+    FROM computer 
+    INNER JOIN videocard ON computer.videocard_id = videocard.id_videocard 
+    INNER JOIN processor ON computer.processor_id = processor.id_processor 
+    INNER JOIN mothercard ON computer.mothercard_id = mothercard.id_mothercard 
+    INNER JOIN memory ON computer.memory_id = memory.id_memory 
+    INNER JOIN disk ON computer.disk_id = disk.id_disk WHERE id_computer = $1`,
+    [id],
     (err, result) => {
       if (err) {
         res.send({ err: err });
       } else {
-        res.send(result);
+        res.send(result.rows);
       }
     }
   );
@@ -1254,13 +1290,13 @@ app.get("/computer/:id", (req, res) => {
 app.get("/select_laptop/:id", (req, res) => {
   const id = req.params.id;
   db.query(
-    "SELECT * FROM laptop_description WHERE laptop_id = ?",
-    id,
+    "SELECT * FROM laptop_description WHERE laptop_id = $1",
+    [id],
     (err, result) => {
       if (err) {
         res.send({ err: err });
       } else {
-        res.send(result);
+        res.send(result.rows);
       }
     }
   );
@@ -1269,13 +1305,13 @@ app.get("/select_laptop/:id", (req, res) => {
 app.get("/select_screen/:id", (req, res) => {
   const id = req.params.id;
   db.query(
-    "SELECT * FROM screen_description WHERE screen_id = ?",
-    id,
+    "SELECT * FROM screen_description WHERE screen_id = $1",
+    [id],
     (err, result) => {
       if (err) {
         res.send({ err: err });
       } else {
-        res.send(result);
+        res.send(result.rows);
       }
     }
   );
@@ -1284,13 +1320,13 @@ app.get("/select_screen/:id", (req, res) => {
 app.get("/select_scanner/:id", (req, res) => {
   const id = req.params.id;
   db.query(
-    "SELECT * FROM scanner_description WHERE scanner_id = ?",
-    id,
+    "SELECT * FROM scanner_description WHERE scanner_id = $1",
+    [id],
     (err, result) => {
       if (err) {
         res.send({ err: err });
       } else {
-        res.send(result);
+        res.send(result.rows);
       }
     }
   );
@@ -1299,13 +1335,13 @@ app.get("/select_scanner/:id", (req, res) => {
 app.get("/select_camera/:id", (req, res) => {
   const id = req.params.id;
   db.query(
-    "SELECT * FROM camera_description WHERE camera_id = ?",
-    id,
+    "SELECT * FROM camera_description WHERE camera_id = $1",
+    [id],
     (err, result) => {
       if (err) {
         res.send({ err: err });
       } else {
-        res.send(result);
+        res.send(result.rows);
       }
     }
   );
@@ -1314,13 +1350,13 @@ app.get("/select_camera/:id", (req, res) => {
 app.get("/select_furniture/:id", (req, res) => {
   const id = req.params.id;
   db.query(
-    "SELECT * FROM furniture_description WHERE furniture_id = ?",
-    id,
+    "SELECT * FROM furniture_description WHERE furniture_id = $1",
+    [id],
     (err, result) => {
       if (err) {
         res.send({ err: err });
       } else {
-        res.send(result);
+        res.send(result.rows);
       }
     }
   );
@@ -1329,27 +1365,23 @@ app.get("/select_furniture/:id", (req, res) => {
 app.get("/select_ventilation/:id", (req, res) => {
   const id = req.params.id;
   db.query(
-    "SELECT * FROM ventilation_description WHERE ventilation_id = ?",
-    id,
+    "SELECT * FROM ventilation_description WHERE ventilation_id = $1",
+    [id],
     (err, result) => {
       if (err) {
         res.send({ err: err });
       } else {
-        res.send(result);
+        res.send(result.rows);
       }
     }
   );
 });
 
 app.post("/utilization", (req, res) => {
-  const date = req.body.date;
-  const category = req.body.category;
-  const type = req.body.type;
-  const number = req.body.number;
-  const model = req.body.model;
-  const reason = req.body.reason;
+  const { date, category, type, number, model, reason } = req.body;
+
   db.query(
-    "INSERT INTO utilization (date, category, type, number, model, reason) VALUES (?, ?, ?, ?, ?, ?)",
+    "INSERT INTO utilization (date, category, type, number, model, reason) VALUES ($1, $2, $3, $4, $5, $6)",
     [date, category, type, number, model, reason],
     (err, result) => {
       if (err) {
@@ -1361,89 +1393,88 @@ app.post("/utilization", (req, res) => {
   );
 });
 
-app.get("/select_utilization", (req, res) => {
+app.get("/select_utilization", (_, res) => {
   db.query("SELECT * FROM utilization", (err, result) => {
     if (err) {
       res.send({ err: err });
     } else {
-      res.send(result);
+      res.send(result.rows);
     }
   });
 });
 
 app.delete("/delete-disk/:id", (req, res) => {
   const id = req.params.id;
-  db.query("DELETE FROM disk WHERE id_disk = ?", id, (err, result) => {
+  db.query("DELETE FROM disk WHERE id_disk = $1", [id], (err, result) => {
     if (err) {
       res.send({ err: err });
     } else {
-      res.send(result);
+      res.send(result.rows);
     }
   });
 });
+
 app.delete("/delete-memory/:id", (req, res) => {
   const id = req.params.id;
-  db.query("DELETE FROM memory WHERE id_memory = ?", id, (err, result) => {
+  db.query("DELETE FROM memory WHERE id_memory = $1", [id], (err, result) => {
     if (err) {
       res.send({ err: err });
     } else {
-      res.send(result);
+      res.send(result.rows);
     }
   });
 });
+
 app.delete("/delete-mothercard/:id", (req, res) => {
   const id = req.params.id;
   db.query(
-    "DELETE FROM mothercard WHERE id_mothercard = ?",
-    id,
+    "DELETE FROM mothercard WHERE id_mothercard = $1",
+    [id],
     (err, result) => {
       if (err) {
         res.send({ err: err });
       } else {
-        res.send(result);
+        res.send(result.rows);
       }
     }
   );
 });
+
 app.delete("/delete-processor/:id", (req, res) => {
   const id = req.params.id;
   db.query(
-    "DELETE FROM processor WHERE id_processor = ?",
-    id,
+    "DELETE FROM processor WHERE id_processor = $1",
+    [id],
     (err, result) => {
       if (err) {
         res.send({ err: err });
       } else {
-        res.send(result);
+        res.send(result.rows);
       }
     }
   );
 });
+
 app.delete("/delete-videocard/:id", (req, res) => {
   const id = req.params.id;
   db.query(
-    "DELETE FROM videocard WHERE id_videocard = ?",
-    id,
+    "DELETE FROM videocard WHERE id_videocard = $1",
+    [id],
     (err, result) => {
       if (err) {
         res.send({ err: err });
       } else {
-        res.send(result);
+        res.send(result.rows);
       }
     }
   );
 });
 
 app.post("/repair", (req, res) => {
-  const date = req.body.date;
-  const category = req.body.category;
-  const type = req.body.type;
-  const model = req.body.model;
-  const number = req.body.number;
-  const end = req.body.end;
-  const description = req.body.description;
+  const { date, category, type, model, number, end, description } = req.body;
+
   db.query(
-    "INSERT INTO repair (date, category, type, model, number, end_date, description) VALUES (?, ?, ?, ?, ?, ?, ?)",
+    "INSERT INTO repair (date, category, type, model, number, end_date, description) VALUES ($1, $2, $3, $4, $5, $6, $7)",
     [date, category, type, model, number, end, description],
     (err, result) => {
       if (err) {
@@ -1456,11 +1487,9 @@ app.post("/repair", (req, res) => {
 });
 
 app.post("/repair_ventilation", (req, res) => {
-  const status = req.body.status;
-  const location = req.body.location;
-  const id = req.body.id;
+  const { status, location, id } = req.body;
   db.query(
-    "UPDATE ventilation_description SET status = ?, location = ? WHERE ventilation_id = ?",
+    "UPDATE ventilation_description SET status = $1, location = $2 WHERE ventilation_id = $3",
     [status, location, id],
     (err, result) => {
       if (err) {
@@ -1473,11 +1502,9 @@ app.post("/repair_ventilation", (req, res) => {
 });
 
 app.post("/repair_furniture", (req, res) => {
-  const status = req.body.status;
-  const location = req.body.location;
-  const id = req.body.id;
+  const { status, location, id } = req.body;
   db.query(
-    "UPDATE furniture_description SET status = ?, location = ? WHERE furniture_id = ?",
+    "UPDATE furniture_description SET status = $1, location = $2 WHERE furniture_id = $3",
     [status, location, id],
     (err, result) => {
       if (err) {
@@ -1488,12 +1515,11 @@ app.post("/repair_furniture", (req, res) => {
     }
   );
 });
+
 app.post("/repair_computer", (req, res) => {
-  const status = req.body.status;
-  const location = req.body.location;
-  const id = req.body.id;
+  const { status, location, id } = req.body;
   db.query(
-    "UPDATE computer SET status = ?, location = ? WHERE id_computer = ?",
+    "UPDATE computer SET status = $1, location = $2 WHERE id_computer = $3",
     [status, location, id],
     (err, result) => {
       if (err) {
@@ -1504,12 +1530,11 @@ app.post("/repair_computer", (req, res) => {
     }
   );
 });
+
 app.post("/repair_laptop", (req, res) => {
-  const status = req.body.status;
-  const location = req.body.location;
-  const id = req.body.id;
+  const { status, location, id } = req.body;
   db.query(
-    "UPDATE laptop_description SET status = ?, location = ? WHERE laptop_id = ?",
+    "UPDATE laptop_description SET status = $1, location = $2 WHERE laptop_id = $3",
     [status, location, id],
     (err, result) => {
       if (err) {
@@ -1520,12 +1545,12 @@ app.post("/repair_laptop", (req, res) => {
     }
   );
 });
+
 app.post("/repair_screen", (req, res) => {
-  const status = req.body.status;
-  const location = req.body.location;
-  const id = req.body.id;
+  const { status, location, id } = req.body;
+
   db.query(
-    "UPDATE screen_description SET status = ?, location = ? WHERE screen_id = ?",
+    "UPDATE screen_description SET status = $1, location = $2 WHERE screen_id = $3",
     [status, location, id],
     (err, result) => {
       if (err) {
@@ -1536,12 +1561,12 @@ app.post("/repair_screen", (req, res) => {
     }
   );
 });
+
 app.post("/repair_scanner", (req, res) => {
-  const status = req.body.status;
-  const location = req.body.location;
-  const id = req.body.id;
+  const { status, location, id } = req.body;
+
   db.query(
-    "UPDATE scanner_description SET status = ?, location = ? WHERE scanner_id = ?",
+    "UPDATE scanner_description SET status = $1, location = $2 WHERE scanner_id = $3",
     [status, location, id],
     (err, result) => {
       if (err) {
@@ -1554,11 +1579,10 @@ app.post("/repair_scanner", (req, res) => {
 });
 
 app.post("/repair_camera", (req, res) => {
-  const status = req.body.status;
-  const location = req.body.location;
-  const id = req.body.id;
+  const { status, location, id } = req.body;
+
   db.query(
-    "UPDATE camera_description SET status = ?, location = ? WHERE camera_id = ?",
+    "UPDATE camera_description SET status = $1, location = $2 WHERE camera_id = $3",
     [status, location, id],
     (err, result) => {
       if (err) {
@@ -1570,96 +1594,96 @@ app.post("/repair_camera", (req, res) => {
   );
 });
 
-app.get("/select_repair", (req, res) => {
+app.get("/select_repair", (_, res) => {
   db.query("SELECT * FROM repair", (err, result) => {
     if (err) {
       res.send({ err: err });
     } else {
-      res.send(result);
+      res.send(result.rows);
     }
   });
 });
 
-app.get("/select_repair_computer", (req, res) => {
+app.get("/select_repair_computer", (_, res) => {
   db.query("SELECT * FROM repair WHERE type = 'Компьютер'", (err, result) => {
     if (err) {
       res.send({ err: err });
     } else {
-      res.send(result);
+      res.send(result.rows);
     }
   });
 });
 
-app.get("/select_repair_laptop", (req, res) => {
+app.get("/select_repair_laptop", (_, res) => {
   db.query("SELECT * FROM repair WHERE type = 'Ноутбук'", (err, result) => {
     if (err) {
       res.send({ err: err });
     } else {
-      res.send(result);
+      res.send(result.rows);
     }
   });
 });
 
-app.get("/select_repair_screen", (req, res) => {
+app.get("/select_repair_screen", (_, res) => {
   db.query("SELECT * FROM repair WHERE type = 'Монитор'", (err, result) => {
     if (err) {
       res.send({ err: err });
     } else {
-      res.send(result);
+      res.send(result.rows);
     }
   });
 });
 
-app.get("/select_repair_scanner", (req, res) => {
+app.get("/select_repair_scanner", (_, res) => {
   db.query("SELECT * FROM repair WHERE type = 'МФУ'", (err, result) => {
     if (err) {
       res.send({ err: err });
     } else {
-      res.send(result);
+      res.send(result.rows);
     }
   });
 });
 
-app.get("/select_repair_camera", (req, res) => {
+app.get("/select_repair_camera", (_, res) => {
   db.query("SELECT * FROM repair WHERE type = 'Камера'", (err, result) => {
     if (err) {
       res.send({ err: err });
     } else {
-      res.send(result);
+      res.send(result.rows);
     }
   });
 });
 
-app.get("/select_repair_ventilation", (req, res) => {
+app.get("/select_repair_ventilation", (_, res) => {
   db.query(
     "SELECT * FROM repair WHERE category = 'Система вентиляции'",
     (err, result) => {
       if (err) {
         res.send({ err: err });
       } else {
-        res.send(result);
+        res.send(result.rows);
       }
     }
   );
 });
 
-app.get("/select_repair_furniture", (req, res) => {
+app.get("/select_repair_furniture", (_, res) => {
   db.query("SELECT * FROM repair WHERE category = 'Мебель'", (err, result) => {
     if (err) {
       res.send({ err: err });
     } else {
-      res.send(result);
+      res.send(result.rows);
     }
   });
 });
 
 app.delete("/delete-repair/:del", (req, res) => {
   const del = req.params.del;
-  db.query("DELETE FROM repair WHERE id_repair = ?", del, (err, result) => {
+  db.query("DELETE FROM repair WHERE id_repair = $1", [del], (err, result) => {
     if (err) {
       res.send({ err: err });
     } else {
-      res.send(result);
+      res.send(result.rows);
     }
   });
 });
@@ -1667,8 +1691,8 @@ app.delete("/delete-repair/:del", (req, res) => {
 app.patch("/ventilation_from_repair/:id", (req, res) => {
   const id = req.params.id;
   db.query(
-    "UPDATE ventilation_description SET status = 'В резерве', location = 'Склад' WHERE ventilation_id = ?",
-    id,
+    "UPDATE ventilation_description SET status = 'В резерве', location = 'Склад' WHERE ventilation_id = $1",
+    [id],
     (err, result) => {
       if (err) {
         res.send({ err: err });
@@ -1682,8 +1706,8 @@ app.patch("/ventilation_from_repair/:id", (req, res) => {
 app.patch("/furniture_from_repair/:id", (req, res) => {
   const id = req.params.id;
   db.query(
-    "UPDATE furniture_description SET status = 'В резерве', location = 'Склад' WHERE furniture_id = ?",
-    id,
+    "UPDATE furniture_description SET status = 'В резерве', location = 'Склад' WHERE furniture_id = $1",
+    [id],
     (err, result) => {
       if (err) {
         res.send({ err: err });
@@ -1697,8 +1721,8 @@ app.patch("/furniture_from_repair/:id", (req, res) => {
 app.patch("/computer_from_repair/:id", (req, res) => {
   const id = req.params.id;
   db.query(
-    "UPDATE computer SET status = 'В резерве', location = 'Склад' WHERE id_computer = ?",
-    id,
+    "UPDATE computer SET status = 'В резерве', location = 'Склад' WHERE id_computer = $1",
+    [id],
     (err, result) => {
       if (err) {
         res.send({ err: err });
@@ -1708,11 +1732,12 @@ app.patch("/computer_from_repair/:id", (req, res) => {
     }
   );
 });
+
 app.patch("/laptop_from_repair/:id", (req, res) => {
   const id = req.params.id;
   db.query(
-    "UPDATE laptop_description SET status = 'В резерве', location = 'Склад' WHERE laptop_id = ?",
-    id,
+    "UPDATE laptop_description SET status = 'В резерве', location = 'Склад' WHERE laptop_id = $1",
+    [id],
     (err, result) => {
       if (err) {
         res.send({ err: err });
@@ -1722,11 +1747,12 @@ app.patch("/laptop_from_repair/:id", (req, res) => {
     }
   );
 });
+
 app.patch("/screen_from_repair/:id", (req, res) => {
   const id = req.params.id;
   db.query(
-    "UPDATE screen_description SET status = 'В резерве', location = 'Склад' WHERE screen_id = ?",
-    id,
+    "UPDATE screen_description SET status = 'В резерве', location = 'Склад' WHERE screen_id = $1",
+    [id],
     (err, result) => {
       if (err) {
         res.send({ err: err });
@@ -1736,11 +1762,12 @@ app.patch("/screen_from_repair/:id", (req, res) => {
     }
   );
 });
+
 app.patch("/scanner_from_repair/:id", (req, res) => {
   const id = req.params.id;
   db.query(
-    "UPDATE scanner_description SET status = 'В резерве', location = 'Склад' WHERE scanner_id = ?",
-    id,
+    "UPDATE scanner_description SET status = 'В резерве', location = 'Склад' WHERE scanner_id = $1",
+    [id],
     (err, result) => {
       if (err) {
         res.send({ err: err });
@@ -1750,11 +1777,12 @@ app.patch("/scanner_from_repair/:id", (req, res) => {
     }
   );
 });
+
 app.patch("/camera_from_repair/:id", (req, res) => {
   const id = req.params.id;
   db.query(
-    "UPDATE camera_description SET status = 'В резерве', location = 'Склад' WHERE camera_id = ?",
-    id,
+    "UPDATE camera_description SET status = 'В резерве', location = 'Склад' WHERE camera_id = $1",
+    [id],
     (err, result) => {
       if (err) {
         res.send({ err: err });
@@ -1766,17 +1794,18 @@ app.patch("/camera_from_repair/:id", (req, res) => {
 });
 
 app.post("/replace", (req, res) => {
-  const name = req.body.name;
-  const type = req.body.type;
-  const start = req.body.start;
-  const end = req.body.end;
-  const date = req.body.date;
+  const { name, type, old_part, new_part, date } = req.body;
+
   db.query(
-    "INSERT INTO replacement (name, type, start, end, date) VALUES (?, ?, ?, ?, ?)",
-    [name, type, start, end, date],
+    "INSERT INTO replacement (name, type, old_part, new_part, date) VALUES ($1, $2, $3, $4, $5)",
+    [name, type, old_part, new_part, date],
     (err, result) => {
       if (err) {
-        res.send({ err: err });
+        res.send({ err: err, details: {
+          code: err.code,
+          message: err.message,
+          constraint: err.constraint,
+        } });
       } else {
         res.send({ message: "Успешное добавление" });
       }
@@ -1785,10 +1814,10 @@ app.post("/replace", (req, res) => {
 });
 
 app.patch("/update_computer_videocard", (req, res) => {
-  const videocard = req.body.videocard;
-  const id = req.body.id;
+  const { videocard, id } = req.body;
+
   db.query(
-    "UPDATE computer SET videocard_id = ? WHERE id_computer = ?",
+    "UPDATE computer SET videocard_id = $1 WHERE id_computer = $2",
     [videocard, id],
     (err, result) => {
       if (err) {
@@ -1801,10 +1830,10 @@ app.patch("/update_computer_videocard", (req, res) => {
 });
 
 app.patch("/update_computer_processor", (req, res) => {
-  const processor = req.body.processor;
-  const id = req.body.id;
+  const { processor, id } = req.body;
+
   db.query(
-    "UPDATE computer SET processor_id = ? WHERE id_computer = ?",
+    "UPDATE computer SET processor_id = $1 WHERE id_computer = $2",
     [processor, id],
     (err, result) => {
       if (err) {
@@ -1816,10 +1845,10 @@ app.patch("/update_computer_processor", (req, res) => {
   );
 });
 app.patch("/update_computer_mothercard", (req, res) => {
-  const mothercard = req.body.mothercard;
-  const id = req.body.id;
+  const { mothercard, id } = req.body;
+
   db.query(
-    "UPDATE computer SET mothercard_id = ? WHERE id_computer = ?",
+    "UPDATE computer SET mothercard_id = $1 WHERE id_computer = $2",
     [mothercard, id],
     (err, result) => {
       if (err) {
@@ -1831,10 +1860,10 @@ app.patch("/update_computer_mothercard", (req, res) => {
   );
 });
 app.patch("/update_computer_memory", (req, res) => {
-  const memory = req.body.memory;
-  const id = req.body.id;
+  const { memory, id } = req.body;
+
   db.query(
-    "UPDATE computer SET memory_id = ? WHERE id_computer = ?",
+    "UPDATE computer SET memory_id = $1 WHERE id_computer = $2",
     [memory, id],
     (err, result) => {
       if (err) {
@@ -1846,10 +1875,10 @@ app.patch("/update_computer_memory", (req, res) => {
   );
 });
 app.patch("/update_computer_disk", (req, res) => {
-  const disk = req.body.disk;
-  const id = req.body.id;
+  const { disk, id } = req.body;
+
   db.query(
-    "UPDATE computer SET disk_id = ? WHERE id_computer = ?",
+    "UPDATE computer SET disk_id = $1 WHERE id_computer = $2",
     [disk, id],
     (err, result) => {
       if (err) {
@@ -1861,37 +1890,34 @@ app.patch("/update_computer_disk", (req, res) => {
   );
 });
 
-app.get("/change", (req, res) => {
+app.get("/change", (_, res) => {
   db.query("SELECT * FROM replacement", (err, result) => {
     if (err) {
       res.send({ err: err });
     } else {
-      res.send(result);
+      res.send(result.rows);
     }
   });
 });
 
-app.get("/chancellery", (req, res) => {
+app.get("/chancellery", (_, res) => {
   db.query(
     "SELECT id_chancellery, type, name, unit, price, amounts, (price * amounts) AS itog_price FROM chancellery",
     (err, result) => {
       if (err) {
         res.send({ err: err });
       } else {
-        res.send(result);
+        res.send(result.rows);
       }
     }
   );
 });
 
 app.post("/add-chancellery", (req, res) => {
-  const type = req.body.type;
-  const name = req.body.name;
-  const unit = req.body.unit;
-  const price = req.body.price;
-  const amounts = req.body.amounts;
+  const { type, name, unit, price, amounts } = req.body;
+
   db.query(
-    "INSERT INTO chancellery (type, name, unit, price, amounts) VALUES (?, ?, ?, ?, ?)",
+    "INSERT INTO chancellery (type, name, unit, price, amounts) VALUES ($1, $2, $3, $4, $5)",
     [type, name, unit, price, amounts],
     (err, result) => {
       if (err) {
@@ -1906,13 +1932,13 @@ app.post("/add-chancellery", (req, res) => {
 app.get("/select_chancellery/:id", (req, res) => {
   const id = req.params.id;
   db.query(
-    "SELECT * FROM chancellery WHERE id_chancellery = ?",
-    id,
+    "SELECT * FROM chancellery WHERE id_chancellery = $1",
+    [id],
     (err, result) => {
       if (err) {
         res.send({ err: err });
       } else {
-        res.send(result);
+        res.send(result.rows);
       }
     }
   );
@@ -1921,23 +1947,23 @@ app.get("/select_chancellery/:id", (req, res) => {
 app.delete("/delete-chancellery/:id", (req, res) => {
   const id = req.params.id;
   db.query(
-    "DELETE FROM chancellery WHERE id_chancellery = ?",
-    id,
+    "DELETE FROM chancellery WHERE id_chancellery = $1",
+    [id],
     (err, result) => {
       if (err) {
         res.send({ err: err });
       } else {
-        res.send(result);
+        res.send(result.rows);
       }
     }
   );
 });
 
 app.post("/update-chancellery", (req, res) => {
-  const amounts = req.body.amounts;
-  const id = req.body.id;
+  const { amounts, id } = req.body;
+
   db.query(
-    "UPDATE chancellery SET amounts = ? WHERE id_chancellery = ?",
+    "UPDATE chancellery SET amounts = $1 WHERE id_chancellery = $2",
     [amounts, id],
     (err, result) => {
       if (err) {

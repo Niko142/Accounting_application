@@ -75,7 +75,6 @@ const ExcelParser = () => {
       <h3>Импорт Excel</h3>
       <select
         className="main__input"
-        defaultValue=""
         onChange={(e) => setCategory(e.target.value)}
       >
         <option value="" disabled>

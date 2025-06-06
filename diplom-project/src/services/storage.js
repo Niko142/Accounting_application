@@ -117,8 +117,8 @@ export const repairObject = async ({
 export const replaceDetailsComputer = async ({
   name,
   type,
-  start,
-  end,
+  old_part,
+  new_part,
   date,
   computerId,
   oldComponentId,
@@ -130,8 +130,8 @@ export const replaceDetailsComputer = async ({
     await instance.post('/replace', {
       name,
       type,
-      start,
-      end,
+      old_part,
+      new_part,
       date,
     });
     // Обновление Id компонента в таблице с компьютерами

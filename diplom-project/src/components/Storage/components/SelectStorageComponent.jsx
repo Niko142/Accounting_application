@@ -183,8 +183,8 @@ const SelectStorageComponent = ({ objectType, columns, idField }) => {
             const response = await replaceDetailsComputer({
               name: objectName,
               type: formData.category,
-              start: selectedObject?.[componentKey],
-              end: selectedComponentName,
+              old_part: selectedObject?.[componentKey],
+              new_part: selectedComponentName,
               date: formData.date,
               computerId: selectedObject?.[idField],
               oldComponentId: selectedObject?.[config.id],

@@ -349,8 +349,8 @@ export const employeeColumns = (onMove, onDelete) => [
 export const changeDetailsColumns = [
   { Header: 'Модель компьютера', accessor: 'name' },
   { Header: 'Тип комплектующего', accessor: 'type' },
-  { Header: 'До замены:', accessor: 'start' },
-  { Header: 'После замены:', accessor: 'end' },
+  { Header: 'До замены:', accessor: 'old_part' },
+  { Header: 'После замены:', accessor: 'new_part' },
   { Header: 'Дата изменения', accessor: 'date', Cell: getDateColumn() },
 ];
 
