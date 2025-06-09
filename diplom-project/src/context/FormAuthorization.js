@@ -13,19 +13,26 @@ const AuthContext = createContext();
 export const useAuth = () => useContext(AuthContext);
 
 function AuthProvider({ children }) {
-  //Сохранение авторизованного пользователя при перезагрузке
+  // Авторизированный пользователь
   const [user, setUser] = useState(() => {
     const savedUser = localStorage.getItem('user');
     return savedUser ? JSON.parse(savedUser) : null;
   });
 
+  // Токен авторизации
+  const [token, setToken] = useState(
+    () => localStorage.getItem('token') || null,
+  );
+
   useEffect(() => {
-    if (user) {
+    if (user && token) {
       localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem('token', token);
     } else {
       localStorage.removeItem('user');
+      localStorage.removeItem('token');
     }
-  }, [user]);
+  }, [user, token]);
 
   const login = async (username, password) => {
     try {
@@ -34,25 +41,31 @@ function AuthProvider({ children }) {
         password: password.trim(),
       });
 
-      if (response.data.message === 'Успешная авторизация') {
-        const userData = {
-          username,
-          userId: response.data.userId,
-        };
-        setUser(userData);
-        return { success: true, message: 'Успешная авторизация' };
-      } else {
-        return { success: false, message: response.data.message };
-      }
+      const userData = {
+        userId: response.data.user.id,
+        username: response.data.user.username,
+      };
+
+      setUser(userData);
+      setToken(response.data.token);
+
+      return { success: true, message: response.data.message };
     } catch (error) {
-      console.error('Ошибка запроса:', error);
-      return { success: false, message: 'Ошибка сервера. Попробуйте позже.' };
+      let message = 'Ошибка подключения к сети';
+
+      if (error.response) {
+        message = error.response.data?.message || 'Ошибка при авторизации';
+      }
+      return { success: false, message };
     }
   };
 
+  // Выход из системы/аккаунта
   const logout = () => {
     setUser(null);
+    setToken(null);
     localStorage.removeItem('user');
+    localStorage.removeItem('token');
   };
 
   const contextValue = useMemo(

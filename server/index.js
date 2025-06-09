@@ -2,7 +2,10 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 const dotenv = require("dotenv");
+const jwt = require("jsonwebtoken");
 const { Pool } = require("pg");
+const verifyJwtToken = require("./utils/verifyToken");
+const bcrypt = require("bcryptjs");
 
 dotenv.config();
 
@@ -10,14 +13,15 @@ app.use(express.json());
 app.use(cors());
 
 const db = new Pool({
-  host: 'db',
-  // host: process.env.HOST, // Для локальной сборки
+  // host: 'db',
+  host: process.env.HOST, // Для локальной сборки
   user: process.env.USER_NAME,
   password: process.env.DB_PASSWORD,
   database: process.env.DATABASE,
   port: process.env.DB_PORT,
 });
 
+// Подключение к БД
 db.connect((err) => {
   if (err) {
     console.error("Ошибка подключения к PostgreSQL:", err.stack);
@@ -26,34 +30,63 @@ db.connect((err) => {
   }
 });
 
-app.post("/login", (req, res) => {
-  const { username, password } = req.body;
+app.post("/login", async (req, res) => {
+  try {
+    const { username, password } = req.body;
 
-  db.query(
-    "SELECT * FROM users WHERE username = $1 AND password = $2",
-    [username, password],
-    (err, result) => {
-      if (err) {
-        res.send({
-          message:
-            "Не удалось войти в систему. Проверьте правильность написания логина или пароля",
-          status: 400,
-        });
-      }
-      if (result.rows.length > 0) {
-        res.send({ message: "Успешная авторизация", status: 200 });
-      } else {
-        res.send({
-          message:
-            "Не удалось войти в систему. Проверьте правильность логина или пароля",
-          status: 400,
-        });
-      }
+    const result = await new Promise((resolve, reject) => {
+      db.query(
+        "SELECT * FROM users WHERE username = $1",
+        [username],
+        (err, result) => {
+          if (err) return reject(err);
+          resolve(result);
+        }
+      );
+    });
+
+    if (result.rows.length === 0) {
+      return res
+        .status(401)
+        .json({ message: "Ошибка: неверный логин или пароль" });
     }
-  );
+
+    const user = result.rows[0];
+
+    const passwordCompare  = await bcrypt.compare(password, user.password);
+
+    if (!passwordCompare ) {
+      return res
+        .status(401)
+        .json({ message: "Ошибка: неверный логин или пароль" });
+    }
+
+    const token = jwt.sign(
+      {
+        id: user.user_id,
+        username: user.username,
+      },
+      process.env.JWT_SECRET_KEY,
+      { expiresIn: "4h" }
+    );
+
+    return res.status(200).json({
+      message: "Успешная авторизация",
+      token,
+      user: {
+        id: user.user_id,
+        username: user.username,
+        password: user.password,
+      },
+    });
+  } catch (err) {
+    return res
+      .status(500)
+      .json({ message: err.message || "Ошибка сервера при попытке входа" });
+  }
 });
 
-app.post("/furniture", (req, res) => {
+app.post("/furniture", verifyJwtToken, (req, res) => {
   const { name, model, price, location, status } = req.body;
 
   db.query(
@@ -69,7 +102,7 @@ app.post("/furniture", (req, res) => {
   );
 });
 
-app.post("/ventilation", (req, res) => {
+app.post("/ventilation", verifyJwtToken, (req, res) => {
   const { model, filter, warm, price, location, status } = req.body;
 
   db.query(
@@ -87,7 +120,7 @@ app.post("/ventilation", (req, res) => {
   );
 });
 
-app.post("/add-employee", (req, res) => {
+app.post("/add-employee", verifyJwtToken, (req, res) => {
   const { name, surname, patronymic, email, phone } = req.body;
 
   db.query(
@@ -103,7 +136,7 @@ app.post("/add-employee", (req, res) => {
   );
 });
 
-app.post("/laptop", (req, res) => {
+app.post("/laptop", verifyJwtToken, (req, res) => {
   const {
     model,
     systems,
@@ -138,7 +171,7 @@ app.post("/laptop", (req, res) => {
   );
 });
 
-app.get("/select_laptop", (_, res) => {
+app.get("/select_laptop", verifyJwtToken, (_, res) => {
   db.query("SELECT * FROM laptop_description", (err, result) => {
     if (err) {
       res.send({ err: err });
@@ -168,7 +201,7 @@ app.get("/main_laptop", (_, res) => {
   );
 });
 
-app.get("/sklad_laptop", (_, res) => {
+app.get("/sklad_laptop", verifyJwtToken, (_, res) => {
   db.query(
     "SELECT * FROM laptop_description WHERE location = 'Склад'",
     (err, result) => {
@@ -181,7 +214,7 @@ app.get("/sklad_laptop", (_, res) => {
   );
 });
 
-app.post("/scanner", (req, res) => {
+app.post("/scanner", verifyJwtToken, (req, res) => {
   const { nam, color, speed, price, location, status } = req.body;
 
   db.query(
@@ -197,7 +230,7 @@ app.post("/scanner", (req, res) => {
   );
 });
 
-app.get("/select_scanner", (_, res) => {
+app.get("/select_scanner", verifyJwtToken, (_, res) => {
   db.query("SELECT * FROM scanner_description", (err, result) => {
     if (err) {
       res.send({ err: err });
@@ -207,7 +240,7 @@ app.get("/select_scanner", (_, res) => {
   });
 });
 
-app.get("/main_scanner", (_, res) => {
+app.get("/main_scanner", verifyJwtToken, (_, res) => {
   db.query(
     `SELECT scanner_id, nam, color, speed, price, scanner_description.location, status, 
       COALESCE(employee.name, '.') AS name, 
@@ -225,7 +258,7 @@ app.get("/main_scanner", (_, res) => {
   );
 });
 
-app.get("/sklad_scanner", (_, res) => {
+app.get("/sklad_scanner", verifyJwtToken, (_, res) => {
   db.query(
     "SELECT * FROM scanner_description WHERE location = 'Склад'",
     (err, result) => {
@@ -238,7 +271,7 @@ app.get("/sklad_scanner", (_, res) => {
   );
 });
 
-app.post("/screen", (req, res) => {
+app.post("/screen", verifyJwtToken, (req, res) => {
   const { model, diagonal, rate, type, price, location, status } = req.body;
 
   db.query(
@@ -254,7 +287,7 @@ app.post("/screen", (req, res) => {
   );
 });
 
-app.get("/select_screen", (_, res) => {
+app.get("/select_screen", verifyJwtToken, (_, res) => {
   db.query("SELECT * FROM screen_description", (err, result) => {
     if (err) {
       res.send({ err: err });
@@ -264,7 +297,7 @@ app.get("/select_screen", (_, res) => {
   });
 });
 
-app.get("/main_screen", (_, res) => {
+app.get("/main_screen", verifyJwtToken, (_, res) => {
   db.query(
     `SELECT screen_id, model, diagonal, rate, type, price, screen_description.location, status, 
       COALESCE(employee.name, '.') AS name, 
@@ -282,7 +315,7 @@ app.get("/main_screen", (_, res) => {
   );
 });
 
-app.get("/sklad_screen", (_, res) => {
+app.get("/sklad_screen", verifyJwtToken, (_, res) => {
   db.query(
     "SELECT * FROM screen_description WHERE location = 'Склад'",
     (err, result) => {
@@ -295,7 +328,7 @@ app.get("/sklad_screen", (_, res) => {
   );
 });
 
-app.post("/camera", (req, res) => {
+app.post("/camera", verifyJwtToken, (req, res) => {
   const { model, resolution, angle, bracing, price, location, status } =
     req.body;
 
@@ -312,7 +345,7 @@ app.post("/camera", (req, res) => {
   );
 });
 
-app.get("/select_camera", (_, res) => {
+app.get("/select_camera", verifyJwtToken, (_, res) => {
   db.query("SELECT * FROM camera_description", (err, result) => {
     if (err) {
       res.send({ err: err });
@@ -322,7 +355,7 @@ app.get("/select_camera", (_, res) => {
   });
 });
 
-app.get("/main_camera", (_, res) => {
+app.get("/main_camera", verifyJwtToken, (_, res) => {
   db.query(
     `SELECT camera_id, model, resolution, angle, price, camera_description.location, status, 
       COALESCE(employee.name, '.') AS name, 
@@ -340,7 +373,7 @@ app.get("/main_camera", (_, res) => {
   );
 });
 
-app.get("/sklad_camera", (_, res) => {
+app.get("/sklad_camera", verifyJwtToken, (_, res) => {
   db.query(
     "SELECT * FROM camera_description WHERE location = 'Склад'",
     (err, result) => {
@@ -353,7 +386,7 @@ app.get("/sklad_camera", (_, res) => {
   );
 });
 
-app.get("/select_employee", (_, res) => {
+app.get("/select_employee", verifyJwtToken, (_, res) => {
   db.query("SELECT * FROM employee", (err, result) => {
     if (err) {
       res.send({ err: err });
@@ -363,7 +396,7 @@ app.get("/select_employee", (_, res) => {
   });
 });
 
-app.get("/select_furniture", (_, res) => {
+app.get("/select_furniture", verifyJwtToken, (_, res) => {
   db.query("SELECT * FROM furniture_description", (err, result) => {
     if (err) {
       res.send({ err: err });
@@ -373,7 +406,7 @@ app.get("/select_furniture", (_, res) => {
   });
 });
 
-app.get("/main_furniture", (_, res) => {
+app.get("/main_furniture", verifyJwtToken, (_, res) => {
   db.query(
     `SELECT furniture_id, furniture_description.name AS name, model, price, furniture_description.location, status, 
       COALESCE(employee.name, '.') AS names, 
@@ -391,7 +424,7 @@ app.get("/main_furniture", (_, res) => {
   );
 });
 
-app.get("/sklad_furniture", (_, res) => {
+app.get("/sklad_furniture", verifyJwtToken, (_, res) => {
   db.query(
     "SELECT * FROM furniture_description WHERE location = 'Склад'",
     (err, result) => {
@@ -404,7 +437,7 @@ app.get("/sklad_furniture", (_, res) => {
   );
 });
 
-app.get("/select_ventilation", (_, res) => {
+app.get("/select_ventilation", verifyJwtToken, (_, res) => {
   db.query("SELECT * FROM ventilation_description", (err, result) => {
     if (err) {
       res.send({ err: err });
@@ -414,7 +447,7 @@ app.get("/select_ventilation", (_, res) => {
   });
 });
 
-app.get("/main_ventilation", (_, res) => {
+app.get("/main_ventilation", verifyJwtToken, (_, res) => {
   db.query(
     `SELECT ventilation_id, model, price, ventilation_description.location, status, 
       COALESCE(employee.name, '.') AS name, 
@@ -432,7 +465,7 @@ app.get("/main_ventilation", (_, res) => {
   );
 });
 
-app.get("/sklad_ventilation", (_, res) => {
+app.get("/sklad_ventilation", verifyJwtToken, (_, res) => {
   db.query(
     "SELECT * FROM ventilation_description WHERE location = 'Склад'",
     (err, result) => {
@@ -445,7 +478,7 @@ app.get("/sklad_ventilation", (_, res) => {
   );
 });
 
-app.get("/videocard", (_, res) => {
+app.get("/videocard", verifyJwtToken, (_, res) => {
   db.query(
     "SELECT * FROM videocard WHERE location = 'Склад'",
     (err, result) => {
@@ -458,7 +491,7 @@ app.get("/videocard", (_, res) => {
   );
 });
 
-app.post("/post_videocard", (_, res) => {
+app.post("/post_videocard", verifyJwtToken, (_, res) => {
   db.query("SELECT * FROM videocard", (err, result) => {
     if (err) {
       res.send({ err: err });
@@ -468,7 +501,7 @@ app.post("/post_videocard", (_, res) => {
   });
 });
 
-app.get("/processor", (_, res) => {
+app.get("/processor", verifyJwtToken, (_, res) => {
   db.query(
     "SELECT * FROM processor WHERE location = 'Склад'",
     (err, result) => {
@@ -481,7 +514,7 @@ app.get("/processor", (_, res) => {
   );
 });
 
-app.get("/mothercard", (_, res) => {
+app.get("/mothercard", verifyJwtToken, (_, res) => {
   db.query(
     "SELECT * FROM mothercard WHERE location = 'Склад'",
     (err, result) => {
@@ -494,7 +527,7 @@ app.get("/mothercard", (_, res) => {
   );
 });
 
-app.get("/memory", (_, res) => {
+app.get("/memory", verifyJwtToken, (_, res) => {
   db.query("SELECT * FROM memory WHERE location = 'Склад'", (err, result) => {
     if (err) {
       res.send({ err: err });
@@ -504,7 +537,7 @@ app.get("/memory", (_, res) => {
   });
 });
 
-app.get("/disk", (_, res) => {
+app.get("/disk", verifyJwtToken, (_, res) => {
   db.query("SELECT * FROM disk WHERE location = 'Склад'", (err, result) => {
     if (err) {
       res.send({ err: err });
@@ -514,7 +547,7 @@ app.get("/disk", (_, res) => {
   });
 });
 
-app.get("/computer", (_, res) => {
+app.get("/computer", verifyJwtToken, (_, res) => {
   db.query(
     `SELECT id_computer, computer.employee, computer.location, computer.status, name, 
       videocard.model AS videocards, processor.model AS processors, 
@@ -536,7 +569,7 @@ app.get("/computer", (_, res) => {
   );
 });
 
-app.get("/main_computer", (_, res) => {
+app.get("/main_computer", verifyJwtToken, (_, res) => {
   db.query(
     `SELECT id_computer, computer.location AS location, computer.status AS status, computer.name AS name, 
       videocard.model AS videocards, processor.model AS processors, mothercard.model AS mothercards, 
@@ -561,7 +594,7 @@ app.get("/main_computer", (_, res) => {
   );
 });
 
-app.get("/sklad_computer", (_, res) => {
+app.get("/sklad_computer", verifyJwtToken, (_, res) => {
   db.query(
     `SELECT id_computer, videocard_id AS id_videocard, processor_id AS id_processor, mothercard_id AS id_mothercard, 
       memory_id AS id_memory, disk_id AS id_disk, name, videocard.model AS videocards, processor.model AS processors, 
@@ -582,7 +615,7 @@ app.get("/sklad_computer", (_, res) => {
   );
 });
 
-app.post("/add_computer", (req, res) => {
+app.post("/add_computer", verifyJwtToken, (req, res) => {
   const {
     name,
     videocard,
@@ -607,7 +640,7 @@ app.post("/add_computer", (req, res) => {
   );
 });
 
-app.post("/add_videocard", (req, res) => {
+app.post("/add_videocard", verifyJwtToken, (req, res) => {
   const { model, price, location } = req.body;
 
   db.query(
@@ -623,7 +656,7 @@ app.post("/add_videocard", (req, res) => {
   );
 });
 
-app.post("/add_processor", (req, res) => {
+app.post("/add_processor", verifyJwtToken, (req, res) => {
   const { model, rate, price, location } = req.body;
 
   db.query(
@@ -639,7 +672,7 @@ app.post("/add_processor", (req, res) => {
   );
 });
 
-app.post("/add_mothercard", (req, res) => {
+app.post("/add_mothercard", verifyJwtToken, (req, res) => {
   const { model, type, rate, price, location } = req.body;
 
   db.query(
@@ -655,7 +688,7 @@ app.post("/add_mothercard", (req, res) => {
   );
 });
 
-app.post("/add_memory", (req, res) => {
+app.post("/add_memory", verifyJwtToken, (req, res) => {
   const { model, type, volume, price, location } = req.body;
 
   db.query(
@@ -671,7 +704,7 @@ app.post("/add_memory", (req, res) => {
   );
 });
 
-app.post("/add_disk", (req, res) => {
+app.post("/add_disk", verifyJwtToken, (req, res) => {
   const { model, volume, price, location } = req.body;
 
   db.query(
@@ -687,7 +720,7 @@ app.post("/add_disk", (req, res) => {
   );
 });
 
-app.post("/pinning-employee", (req, res) => {
+app.post("/pinning-employee", verifyJwtToken, (req, res) => {
   const { date, category, type, unit, employee } = req.body;
 
   db.query(
@@ -703,7 +736,7 @@ app.post("/pinning-employee", (req, res) => {
   );
 });
 
-app.get("/select_pinning", (_, res) => {
+app.get("/select_pinning", verifyJwtToken, (_, res) => {
   db.query(
     "SELECT id_pinning, date, category, type, unit, employee.name AS name, employee.surname AS surname, employee.patronymic AS patronymic FROM pinning_employee INNER JOIN employee ON pinning_employee.employee = employee.employee_id",
     (err, result) => {
@@ -716,7 +749,7 @@ app.get("/select_pinning", (_, res) => {
   );
 });
 
-app.get("/cabinet", (_, res) => {
+app.get("/cabinet", verifyJwtToken, (_, res) => {
   db.query("SELECT * FROM cabinet", (err, result) => {
     if (err) {
       res.send({ err: err });
@@ -726,7 +759,7 @@ app.get("/cabinet", (_, res) => {
   });
 });
 
-app.get("/not_sklad_cabinet", (_, res) => {
+app.get("/not_sklad_cabinet", verifyJwtToken, (_, res) => {
   db.query("SELECT * FROM cabinet WHERE number <> 'Склад'", (err, result) => {
     if (err) {
       res.send({ err: err });
@@ -736,7 +769,7 @@ app.get("/not_sklad_cabinet", (_, res) => {
   });
 });
 
-app.post("/update_ventilation", (req, res) => {
+app.post("/update_ventilation", verifyJwtToken, (req, res) => {
   const { employee, id } = req.body;
 
   db.query(
@@ -752,7 +785,7 @@ app.post("/update_ventilation", (req, res) => {
   );
 });
 
-app.post("/update_furniture", (req, res) => {
+app.post("/update_furniture", verifyJwtToken, (req, res) => {
   const { employee, id } = req.body;
 
   db.query(
@@ -768,7 +801,7 @@ app.post("/update_furniture", (req, res) => {
   );
 });
 
-app.post("/update_computer", (req, res) => {
+app.post("/update_computer", verifyJwtToken, (req, res) => {
   const { employee, id } = req.body;
 
   db.query(
@@ -784,7 +817,7 @@ app.post("/update_computer", (req, res) => {
   );
 });
 
-app.post("/update_laptop", (req, res) => {
+app.post("/update_laptop", verifyJwtToken, (req, res) => {
   const { employee, id } = req.body;
 
   db.query(
@@ -800,7 +833,7 @@ app.post("/update_laptop", (req, res) => {
   );
 });
 
-app.post("/update_screen", (req, res) => {
+app.post("/update_screen", verifyJwtToken, (req, res) => {
   const { employee, id } = req.body;
 
   db.query(
@@ -816,7 +849,7 @@ app.post("/update_screen", (req, res) => {
   );
 });
 
-app.post("/update_scanner", (req, res) => {
+app.post("/update_scanner", verifyJwtToken, (req, res) => {
   const { employee, id } = req.body;
 
   db.query(
@@ -832,7 +865,7 @@ app.post("/update_scanner", (req, res) => {
   );
 });
 
-app.post("/update_camera", (req, res) => {
+app.post("/update_camera", verifyJwtToken, (req, res) => {
   const { employee, id } = req.body;
 
   db.query(
@@ -848,7 +881,7 @@ app.post("/update_camera", (req, res) => {
   );
 });
 
-app.post("/pinning-cabinet", (req, res) => {
+app.post("/pinning-cabinet", verifyJwtToken, (req, res) => {
   const { date, category, type, reason, unit, start, end } = req.body;
 
   db.query(
@@ -864,7 +897,7 @@ app.post("/pinning-cabinet", (req, res) => {
   );
 });
 
-app.get("/history-cabinet", (_, res) => {
+app.get("/history-cabinet", verifyJwtToken, (_, res) => {
   db.query("SELECT * FROM pinning_cabinet", (err, result) => {
     if (err) {
       res.send({ err: err });
@@ -874,7 +907,7 @@ app.get("/history-cabinet", (_, res) => {
   });
 });
 
-app.patch("/location_computer", (req, res) => {
+app.patch("/location_computer", verifyJwtToken, (req, res) => {
   const { location, status, id } = req.body;
 
   db.query(
@@ -890,7 +923,7 @@ app.patch("/location_computer", (req, res) => {
   );
 });
 
-app.patch("/location_laptop", (req, res) => {
+app.patch("/location_laptop", verifyJwtToken, (req, res) => {
   const { location, status, id } = req.body;
 
   db.query(
@@ -906,7 +939,7 @@ app.patch("/location_laptop", (req, res) => {
   );
 });
 
-app.patch("/location_screen", (req, res) => {
+app.patch("/location_screen", verifyJwtToken, (req, res) => {
   const { location, status, id } = req.body;
 
   db.query(
@@ -922,7 +955,7 @@ app.patch("/location_screen", (req, res) => {
   );
 });
 
-app.patch("/location_scanner", (req, res) => {
+app.patch("/location_scanner", verifyJwtToken, (req, res) => {
   const { location, status, id } = req.body;
 
   db.query(
@@ -938,7 +971,7 @@ app.patch("/location_scanner", (req, res) => {
   );
 });
 
-app.patch("/location_camera", (req, res) => {
+app.patch("/location_camera", verifyJwtToken, (req, res) => {
   const { location, status, id } = req.body;
 
   db.query(
@@ -954,7 +987,7 @@ app.patch("/location_camera", (req, res) => {
   );
 });
 
-app.patch("/location_furniture", (req, res) => {
+app.patch("/location_furniture", verifyJwtToken, (req, res) => {
   const { location, status, id } = req.body;
 
   db.query(
@@ -970,7 +1003,7 @@ app.patch("/location_furniture", (req, res) => {
   );
 });
 
-app.patch("/location_ventilation", (req, res) => {
+app.patch("/location_ventilation", verifyJwtToken, (req, res) => {
   const { location, status, id } = req.body;
 
   db.query(
@@ -986,7 +1019,7 @@ app.patch("/location_ventilation", (req, res) => {
   );
 });
 
-app.patch("/update_videocard", (req, res) => {
+app.patch("/update_videocard", verifyJwtToken, (req, res) => {
   const { location, id } = req.body;
 
   db.query(
@@ -1002,7 +1035,7 @@ app.patch("/update_videocard", (req, res) => {
   );
 });
 
-app.patch("/update_processor", (req, res) => {
+app.patch("/update_processor", verifyJwtToken, (req, res) => {
   const { location, id } = req.body;
 
   db.query(
@@ -1018,7 +1051,7 @@ app.patch("/update_processor", (req, res) => {
   );
 });
 
-app.patch("/update_mothercard", (req, res) => {
+app.patch("/update_mothercard", verifyJwtToken, (req, res) => {
   const { location, id } = req.body;
 
   db.query(
@@ -1034,7 +1067,7 @@ app.patch("/update_mothercard", (req, res) => {
   );
 });
 
-app.patch("/update_memory", (req, res) => {
+app.patch("/update_memory", verifyJwtToken, (req, res) => {
   const { location, id } = req.body;
 
   db.query(
@@ -1050,7 +1083,7 @@ app.patch("/update_memory", (req, res) => {
   );
 });
 
-app.patch("/update_disk", (req, res) => {
+app.patch("/update_disk", verifyJwtToken, (req, res) => {
   const { location, id } = req.body;
 
   db.query(
@@ -1066,7 +1099,7 @@ app.patch("/update_disk", (req, res) => {
   );
 });
 
-app.get("/computer_movement", (_, res) => {
+app.get("/computer_movement", verifyJwtToken, (_, res) => {
   db.query(
     "SELECT * FROM computer WHERE location <> 'Склад' AND location <> '-'",
     (err, result) => {
@@ -1079,7 +1112,7 @@ app.get("/computer_movement", (_, res) => {
   );
 });
 
-app.get("/laptop_movement", (_, res) => {
+app.get("/laptop_movement", verifyJwtToken, (_, res) => {
   db.query(
     "SELECT * FROM laptop_description WHERE location <> 'Склад' AND location <> '-'",
     (err, result) => {
@@ -1092,7 +1125,7 @@ app.get("/laptop_movement", (_, res) => {
   );
 });
 
-app.get("/screen_movement", (_, res) => {
+app.get("/screen_movement", verifyJwtToken, (_, res) => {
   db.query(
     "SELECT * FROM screen_description WHERE location <> 'Склад' AND location <> '-'",
     (err, result) => {
@@ -1105,7 +1138,7 @@ app.get("/screen_movement", (_, res) => {
   );
 });
 
-app.get("/scanner_movement", (_, res) => {
+app.get("/scanner_movement", verifyJwtToken, (_, res) => {
   db.query(
     "SELECT * FROM scanner_description WHERE location <> 'Склад' AND location <> '-'",
     (err, result) => {
@@ -1118,7 +1151,7 @@ app.get("/scanner_movement", (_, res) => {
   );
 });
 
-app.get("/camera_movement", (_, res) => {
+app.get("/camera_movement", verifyJwtToken, (_, res) => {
   db.query(
     "SELECT * FROM camera_description WHERE location <> 'Склад' AND location <> '-'",
     (err, result) => {
@@ -1131,7 +1164,7 @@ app.get("/camera_movement", (_, res) => {
   );
 });
 
-app.get("/furniture_movement", (_, res) => {
+app.get("/furniture_movement", verifyJwtToken, (_, res) => {
   db.query(
     "SELECT * FROM furniture_description WHERE location <> 'Склад' AND location <> '-'",
     (err, result) => {
@@ -1144,7 +1177,7 @@ app.get("/furniture_movement", (_, res) => {
   );
 });
 
-app.delete("/delete-employee/:id", (req, res) => {
+app.delete("/delete-employee/:id", verifyJwtToken, (req, res) => {
   const id = req.params.id;
   db.query(
     "DELETE FROM employee WHERE employee_id = $1",
@@ -1159,7 +1192,7 @@ app.delete("/delete-employee/:id", (req, res) => {
   );
 });
 
-app.delete("/delete-computer", (req, res) => {
+app.delete("/delete-computer", verifyJwtToken, (req, res) => {
   const id = req.body.id;
   db.query(
     "DELETE FROM computer WHERE id_computer = $1",
@@ -1174,7 +1207,7 @@ app.delete("/delete-computer", (req, res) => {
   );
 });
 
-app.delete("/delete-laptop", (req, res) => {
+app.delete("/delete-laptop", verifyJwtToken, (req, res) => {
   const id = req.body.id;
   db.query(
     "DELETE FROM laptop_description WHERE laptop_id = $1",
@@ -1189,7 +1222,7 @@ app.delete("/delete-laptop", (req, res) => {
   );
 });
 
-app.delete("/delete-screen", (req, res) => {
+app.delete("/delete-screen", verifyJwtToken, (req, res) => {
   const id = req.body.id;
   db.query(
     "DELETE FROM screen_description WHERE screen_id = $1",
@@ -1204,7 +1237,7 @@ app.delete("/delete-screen", (req, res) => {
   );
 });
 
-app.delete("/delete-scanner", (req, res) => {
+app.delete("/delete-scanner", verifyJwtToken, (req, res) => {
   const id = req.body.id;
   db.query(
     "DELETE FROM scanner_description WHERE scanner_id = $1",
@@ -1219,7 +1252,7 @@ app.delete("/delete-scanner", (req, res) => {
   );
 });
 
-app.delete("/delete-camera", (req, res) => {
+app.delete("/delete-camera", verifyJwtToken, (req, res) => {
   const id = req.body.id;
   db.query(
     "DELETE FROM camera_description WHERE camera_id = $1",
@@ -1234,7 +1267,7 @@ app.delete("/delete-camera", (req, res) => {
   );
 });
 
-app.delete("/delete-ventilation", (req, res) => {
+app.delete("/delete-ventilation", verifyJwtToken, (req, res) => {
   const id = req.body.id;
   db.query(
     "DELETE FROM ventilation_description WHERE ventilation_id = $1",
@@ -1249,7 +1282,7 @@ app.delete("/delete-ventilation", (req, res) => {
   );
 });
 
-app.delete("/delete-furniture", (req, res) => {
+app.delete("/delete-furniture", verifyJwtToken, (req, res) => {
   const id = req.body.id;
   db.query(
     "DELETE FROM furniture_description WHERE furniture_id = $1",
@@ -1264,7 +1297,7 @@ app.delete("/delete-furniture", (req, res) => {
   );
 });
 
-app.get("/computer/:id", (req, res) => {
+app.get("/computer/:id", verifyJwtToken, (req, res) => {
   const id = req.params.id;
   db.query(
     `SELECT id_computer, name, employee, status, computer.location AS location, videocard_id, 
@@ -1287,7 +1320,7 @@ app.get("/computer/:id", (req, res) => {
   );
 });
 
-app.get("/select_laptop/:id", (req, res) => {
+app.get("/select_laptop/:id", verifyJwtToken, (req, res) => {
   const id = req.params.id;
   db.query(
     "SELECT * FROM laptop_description WHERE laptop_id = $1",
@@ -1302,7 +1335,7 @@ app.get("/select_laptop/:id", (req, res) => {
   );
 });
 
-app.get("/select_screen/:id", (req, res) => {
+app.get("/select_screen/:id", verifyJwtToken, (req, res) => {
   const id = req.params.id;
   db.query(
     "SELECT * FROM screen_description WHERE screen_id = $1",
@@ -1317,7 +1350,7 @@ app.get("/select_screen/:id", (req, res) => {
   );
 });
 
-app.get("/select_scanner/:id", (req, res) => {
+app.get("/select_scanner/:id", verifyJwtToken, (req, res) => {
   const id = req.params.id;
   db.query(
     "SELECT * FROM scanner_description WHERE scanner_id = $1",
@@ -1332,7 +1365,7 @@ app.get("/select_scanner/:id", (req, res) => {
   );
 });
 
-app.get("/select_camera/:id", (req, res) => {
+app.get("/select_camera/:id", verifyJwtToken, (req, res) => {
   const id = req.params.id;
   db.query(
     "SELECT * FROM camera_description WHERE camera_id = $1",
@@ -1347,7 +1380,7 @@ app.get("/select_camera/:id", (req, res) => {
   );
 });
 
-app.get("/select_furniture/:id", (req, res) => {
+app.get("/select_furniture/:id", verifyJwtToken, (req, res) => {
   const id = req.params.id;
   db.query(
     "SELECT * FROM furniture_description WHERE furniture_id = $1",
@@ -1362,7 +1395,7 @@ app.get("/select_furniture/:id", (req, res) => {
   );
 });
 
-app.get("/select_ventilation/:id", (req, res) => {
+app.get("/select_ventilation/:id", verifyJwtToken, (req, res) => {
   const id = req.params.id;
   db.query(
     "SELECT * FROM ventilation_description WHERE ventilation_id = $1",
@@ -1377,7 +1410,7 @@ app.get("/select_ventilation/:id", (req, res) => {
   );
 });
 
-app.post("/utilization", (req, res) => {
+app.post("/utilization", verifyJwtToken, (req, res) => {
   const { date, category, type, number, model, reason } = req.body;
 
   db.query(
@@ -1393,7 +1426,7 @@ app.post("/utilization", (req, res) => {
   );
 });
 
-app.get("/select_utilization", (_, res) => {
+app.get("/select_utilization", verifyJwtToken, (_, res) => {
   db.query("SELECT * FROM utilization", (err, result) => {
     if (err) {
       res.send({ err: err });
@@ -1403,7 +1436,7 @@ app.get("/select_utilization", (_, res) => {
   });
 });
 
-app.delete("/delete-disk/:id", (req, res) => {
+app.delete("/delete-disk/:id", verifyJwtToken, (req, res) => {
   const id = req.params.id;
   db.query("DELETE FROM disk WHERE id_disk = $1", [id], (err, result) => {
     if (err) {
@@ -1414,7 +1447,7 @@ app.delete("/delete-disk/:id", (req, res) => {
   });
 });
 
-app.delete("/delete-memory/:id", (req, res) => {
+app.delete("/delete-memory/:id", verifyJwtToken, (req, res) => {
   const id = req.params.id;
   db.query("DELETE FROM memory WHERE id_memory = $1", [id], (err, result) => {
     if (err) {
@@ -1425,7 +1458,7 @@ app.delete("/delete-memory/:id", (req, res) => {
   });
 });
 
-app.delete("/delete-mothercard/:id", (req, res) => {
+app.delete("/delete-mothercard/:id", verifyJwtToken, (req, res) => {
   const id = req.params.id;
   db.query(
     "DELETE FROM mothercard WHERE id_mothercard = $1",
@@ -1440,7 +1473,7 @@ app.delete("/delete-mothercard/:id", (req, res) => {
   );
 });
 
-app.delete("/delete-processor/:id", (req, res) => {
+app.delete("/delete-processor/:id", verifyJwtToken, (req, res) => {
   const id = req.params.id;
   db.query(
     "DELETE FROM processor WHERE id_processor = $1",
@@ -1455,7 +1488,7 @@ app.delete("/delete-processor/:id", (req, res) => {
   );
 });
 
-app.delete("/delete-videocard/:id", (req, res) => {
+app.delete("/delete-videocard/:id", verifyJwtToken, (req, res) => {
   const id = req.params.id;
   db.query(
     "DELETE FROM videocard WHERE id_videocard = $1",
@@ -1470,7 +1503,7 @@ app.delete("/delete-videocard/:id", (req, res) => {
   );
 });
 
-app.post("/repair", (req, res) => {
+app.post("/repair", verifyJwtToken, (req, res) => {
   const { date, category, type, model, number, end, description } = req.body;
 
   db.query(
@@ -1486,7 +1519,7 @@ app.post("/repair", (req, res) => {
   );
 });
 
-app.post("/repair_ventilation", (req, res) => {
+app.post("/repair_ventilation", verifyJwtToken, (req, res) => {
   const { status, location, id } = req.body;
   db.query(
     "UPDATE ventilation_description SET status = $1, location = $2 WHERE ventilation_id = $3",
@@ -1501,7 +1534,7 @@ app.post("/repair_ventilation", (req, res) => {
   );
 });
 
-app.post("/repair_furniture", (req, res) => {
+app.post("/repair_furniture", verifyJwtToken, (req, res) => {
   const { status, location, id } = req.body;
   db.query(
     "UPDATE furniture_description SET status = $1, location = $2 WHERE furniture_id = $3",
@@ -1516,7 +1549,7 @@ app.post("/repair_furniture", (req, res) => {
   );
 });
 
-app.post("/repair_computer", (req, res) => {
+app.post("/repair_computer", verifyJwtToken, (req, res) => {
   const { status, location, id } = req.body;
   db.query(
     "UPDATE computer SET status = $1, location = $2 WHERE id_computer = $3",
@@ -1531,7 +1564,7 @@ app.post("/repair_computer", (req, res) => {
   );
 });
 
-app.post("/repair_laptop", (req, res) => {
+app.post("/repair_laptop", verifyJwtToken, (req, res) => {
   const { status, location, id } = req.body;
   db.query(
     "UPDATE laptop_description SET status = $1, location = $2 WHERE laptop_id = $3",
@@ -1546,7 +1579,7 @@ app.post("/repair_laptop", (req, res) => {
   );
 });
 
-app.post("/repair_screen", (req, res) => {
+app.post("/repair_screen", verifyJwtToken, (req, res) => {
   const { status, location, id } = req.body;
 
   db.query(
@@ -1562,7 +1595,7 @@ app.post("/repair_screen", (req, res) => {
   );
 });
 
-app.post("/repair_scanner", (req, res) => {
+app.post("/repair_scanner", verifyJwtToken, (req, res) => {
   const { status, location, id } = req.body;
 
   db.query(
@@ -1578,7 +1611,7 @@ app.post("/repair_scanner", (req, res) => {
   );
 });
 
-app.post("/repair_camera", (req, res) => {
+app.post("/repair_camera", verifyJwtToken, (req, res) => {
   const { status, location, id } = req.body;
 
   db.query(
@@ -1594,7 +1627,7 @@ app.post("/repair_camera", (req, res) => {
   );
 });
 
-app.get("/select_repair", (_, res) => {
+app.get("/select_repair", verifyJwtToken, (_, res) => {
   db.query("SELECT * FROM repair", (err, result) => {
     if (err) {
       res.send({ err: err });
@@ -1604,7 +1637,7 @@ app.get("/select_repair", (_, res) => {
   });
 });
 
-app.get("/select_repair_computer", (_, res) => {
+app.get("/select_repair_computer", verifyJwtToken, (_, res) => {
   db.query("SELECT * FROM repair WHERE type = 'Компьютер'", (err, result) => {
     if (err) {
       res.send({ err: err });
@@ -1614,7 +1647,7 @@ app.get("/select_repair_computer", (_, res) => {
   });
 });
 
-app.get("/select_repair_laptop", (_, res) => {
+app.get("/select_repair_laptop", verifyJwtToken, (_, res) => {
   db.query("SELECT * FROM repair WHERE type = 'Ноутбук'", (err, result) => {
     if (err) {
       res.send({ err: err });
@@ -1624,7 +1657,7 @@ app.get("/select_repair_laptop", (_, res) => {
   });
 });
 
-app.get("/select_repair_screen", (_, res) => {
+app.get("/select_repair_screen", verifyJwtToken, (_, res) => {
   db.query("SELECT * FROM repair WHERE type = 'Монитор'", (err, result) => {
     if (err) {
       res.send({ err: err });
@@ -1634,7 +1667,7 @@ app.get("/select_repair_screen", (_, res) => {
   });
 });
 
-app.get("/select_repair_scanner", (_, res) => {
+app.get("/select_repair_scanner", verifyJwtToken, (_, res) => {
   db.query("SELECT * FROM repair WHERE type = 'МФУ'", (err, result) => {
     if (err) {
       res.send({ err: err });
@@ -1644,7 +1677,7 @@ app.get("/select_repair_scanner", (_, res) => {
   });
 });
 
-app.get("/select_repair_camera", (_, res) => {
+app.get("/select_repair_camera", verifyJwtToken, (_, res) => {
   db.query("SELECT * FROM repair WHERE type = 'Камера'", (err, result) => {
     if (err) {
       res.send({ err: err });
@@ -1654,7 +1687,7 @@ app.get("/select_repair_camera", (_, res) => {
   });
 });
 
-app.get("/select_repair_ventilation", (_, res) => {
+app.get("/select_repair_ventilation", verifyJwtToken, (_, res) => {
   db.query(
     "SELECT * FROM repair WHERE category = 'Система вентиляции'",
     (err, result) => {
@@ -1667,7 +1700,7 @@ app.get("/select_repair_ventilation", (_, res) => {
   );
 });
 
-app.get("/select_repair_furniture", (_, res) => {
+app.get("/select_repair_furniture", verifyJwtToken, (_, res) => {
   db.query("SELECT * FROM repair WHERE category = 'Мебель'", (err, result) => {
     if (err) {
       res.send({ err: err });
@@ -1677,7 +1710,7 @@ app.get("/select_repair_furniture", (_, res) => {
   });
 });
 
-app.delete("/delete-repair/:del", (req, res) => {
+app.delete("/delete-repair/:del", verifyJwtToken, (req, res) => {
   const del = req.params.del;
   db.query("DELETE FROM repair WHERE id_repair = $1", [del], (err, result) => {
     if (err) {
@@ -1688,7 +1721,7 @@ app.delete("/delete-repair/:del", (req, res) => {
   });
 });
 
-app.patch("/ventilation_from_repair/:id", (req, res) => {
+app.patch("/ventilation_from_repair/:id", verifyJwtToken, (req, res) => {
   const id = req.params.id;
   db.query(
     "UPDATE ventilation_description SET status = 'В резерве', location = 'Склад' WHERE ventilation_id = $1",
@@ -1703,7 +1736,7 @@ app.patch("/ventilation_from_repair/:id", (req, res) => {
   );
 });
 
-app.patch("/furniture_from_repair/:id", (req, res) => {
+app.patch("/furniture_from_repair/:id", verifyJwtToken, (req, res) => {
   const id = req.params.id;
   db.query(
     "UPDATE furniture_description SET status = 'В резерве', location = 'Склад' WHERE furniture_id = $1",
@@ -1718,7 +1751,7 @@ app.patch("/furniture_from_repair/:id", (req, res) => {
   );
 });
 
-app.patch("/computer_from_repair/:id", (req, res) => {
+app.patch("/computer_from_repair/:id", verifyJwtToken, (req, res) => {
   const id = req.params.id;
   db.query(
     "UPDATE computer SET status = 'В резерве', location = 'Склад' WHERE id_computer = $1",
@@ -1733,7 +1766,7 @@ app.patch("/computer_from_repair/:id", (req, res) => {
   );
 });
 
-app.patch("/laptop_from_repair/:id", (req, res) => {
+app.patch("/laptop_from_repair/:id", verifyJwtToken, (req, res) => {
   const id = req.params.id;
   db.query(
     "UPDATE laptop_description SET status = 'В резерве', location = 'Склад' WHERE laptop_id = $1",
@@ -1748,7 +1781,7 @@ app.patch("/laptop_from_repair/:id", (req, res) => {
   );
 });
 
-app.patch("/screen_from_repair/:id", (req, res) => {
+app.patch("/screen_from_repair/:id", verifyJwtToken, (req, res) => {
   const id = req.params.id;
   db.query(
     "UPDATE screen_description SET status = 'В резерве', location = 'Склад' WHERE screen_id = $1",
@@ -1763,7 +1796,7 @@ app.patch("/screen_from_repair/:id", (req, res) => {
   );
 });
 
-app.patch("/scanner_from_repair/:id", (req, res) => {
+app.patch("/scanner_from_repair/:id", verifyJwtToken, (req, res) => {
   const id = req.params.id;
   db.query(
     "UPDATE scanner_description SET status = 'В резерве', location = 'Склад' WHERE scanner_id = $1",
@@ -1778,7 +1811,7 @@ app.patch("/scanner_from_repair/:id", (req, res) => {
   );
 });
 
-app.patch("/camera_from_repair/:id", (req, res) => {
+app.patch("/camera_from_repair/:id", verifyJwtToken, (req, res) => {
   const id = req.params.id;
   db.query(
     "UPDATE camera_description SET status = 'В резерве', location = 'Склад' WHERE camera_id = $1",
@@ -1793,7 +1826,7 @@ app.patch("/camera_from_repair/:id", (req, res) => {
   );
 });
 
-app.post("/replace", (req, res) => {
+app.post("/replace", verifyJwtToken, (req, res) => {
   const { name, type, old_part, new_part, date } = req.body;
 
   db.query(
@@ -1801,11 +1834,14 @@ app.post("/replace", (req, res) => {
     [name, type, old_part, new_part, date],
     (err, result) => {
       if (err) {
-        res.send({ err: err, details: {
-          code: err.code,
-          message: err.message,
-          constraint: err.constraint,
-        } });
+        res.send({
+          err: err,
+          details: {
+            code: err.code,
+            message: err.message,
+            constraint: err.constraint,
+          },
+        });
       } else {
         res.send({ message: "Успешное добавление" });
       }
@@ -1813,7 +1849,7 @@ app.post("/replace", (req, res) => {
   );
 });
 
-app.patch("/update_computer_videocard", (req, res) => {
+app.patch("/update_computer_videocard", verifyJwtToken, (req, res) => {
   const { videocard, id } = req.body;
 
   db.query(
@@ -1829,7 +1865,7 @@ app.patch("/update_computer_videocard", (req, res) => {
   );
 });
 
-app.patch("/update_computer_processor", (req, res) => {
+app.patch("/update_computer_processor", verifyJwtToken, (req, res) => {
   const { processor, id } = req.body;
 
   db.query(
@@ -1844,7 +1880,8 @@ app.patch("/update_computer_processor", (req, res) => {
     }
   );
 });
-app.patch("/update_computer_mothercard", (req, res) => {
+
+app.patch("/update_computer_mothercard", verifyJwtToken, (req, res) => {
   const { mothercard, id } = req.body;
 
   db.query(
@@ -1859,7 +1896,8 @@ app.patch("/update_computer_mothercard", (req, res) => {
     }
   );
 });
-app.patch("/update_computer_memory", (req, res) => {
+
+app.patch("/update_computer_memory", verifyJwtToken, (req, res) => {
   const { memory, id } = req.body;
 
   db.query(
@@ -1874,7 +1912,8 @@ app.patch("/update_computer_memory", (req, res) => {
     }
   );
 });
-app.patch("/update_computer_disk", (req, res) => {
+
+app.patch("/update_computer_disk", verifyJwtToken, (req, res) => {
   const { disk, id } = req.body;
 
   db.query(
@@ -1890,7 +1929,7 @@ app.patch("/update_computer_disk", (req, res) => {
   );
 });
 
-app.get("/change", (_, res) => {
+app.get("/change", verifyJwtToken, (_, res) => {
   db.query("SELECT * FROM replacement", (err, result) => {
     if (err) {
       res.send({ err: err });
@@ -1900,7 +1939,7 @@ app.get("/change", (_, res) => {
   });
 });
 
-app.get("/chancellery", (_, res) => {
+app.get("/chancellery", verifyJwtToken, (_, res) => {
   db.query(
     "SELECT id_chancellery, type, name, unit, price, amounts, (price * amounts) AS itog_price FROM chancellery",
     (err, result) => {
@@ -1913,7 +1952,7 @@ app.get("/chancellery", (_, res) => {
   );
 });
 
-app.post("/add-chancellery", (req, res) => {
+app.post("/add-chancellery", verifyJwtToken, (req, res) => {
   const { type, name, unit, price, amounts } = req.body;
 
   db.query(
@@ -1929,7 +1968,7 @@ app.post("/add-chancellery", (req, res) => {
   );
 });
 
-app.get("/select_chancellery/:id", (req, res) => {
+app.get("/select_chancellery/:id", verifyJwtToken, (req, res) => {
   const id = req.params.id;
   db.query(
     "SELECT * FROM chancellery WHERE id_chancellery = $1",
@@ -1944,7 +1983,7 @@ app.get("/select_chancellery/:id", (req, res) => {
   );
 });
 
-app.delete("/delete-chancellery/:id", (req, res) => {
+app.delete("/delete-chancellery/:id", verifyJwtToken, (req, res) => {
   const id = req.params.id;
   db.query(
     "DELETE FROM chancellery WHERE id_chancellery = $1",
@@ -1959,7 +1998,7 @@ app.delete("/delete-chancellery/:id", (req, res) => {
   );
 });
 
-app.post("/update-chancellery", (req, res) => {
+app.post("/update-chancellery", verifyJwtToken, (req, res) => {
   const { amounts, id } = req.body;
 
   db.query(
