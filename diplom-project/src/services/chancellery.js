@@ -43,22 +43,28 @@ export const deleteChancellery = async (id) => {
 
 export const addChancellery = async (req) => {
   try {
-    const res = await instance.post('/add-chancellery', req);
-    if (res.data.message !== 'Успешное добавление') {
-      throw new Error('Ошибка при добавлении товарной группы');
+    const response = await instance.post('/add-chancellery', req);
+    if (response.status === 201) {
+      return {
+        success: true,
+        message: response.data.message,
+      };
     }
   } catch (error) {
-    throw new Error('Ошибка при добавлении товарной группы');
+    throw new Error(error.response?.data?.message);
   }
 };
 
 export const editAmounts = async (req) => {
   try {
-    const res = await instance.post('/update-chancellery', req);
-    if (res.data.message !== 'Успех') {
-      throw new Error('Ошибка при изменении количества товаров в категории');
+    const response = await instance.patch('/update-chancellery', req);
+    if (response.status === 200) {
+      return {
+        success: true,
+        message: response.data.message,
+      };
     }
   } catch (error) {
-    throw new Error('Ошибка при выполнении запроса');
+    throw new Error(error.response?.data?.message);
   }
 };

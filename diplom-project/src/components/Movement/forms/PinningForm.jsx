@@ -69,11 +69,14 @@ export default function PinningForm({
         end: selectedAudience.value,
       });
 
-      if (movementResponse.data.message !== 'Успешное добавление') {
-        throw new Error('Ошибка при создании записи о перемещении');
+      if (movementResponse.status !== 200) {
+        throw new Error(
+          movementResponse.data.message ||
+            'Ошибка при создании записи о перемещении',
+        );
       }
 
-      toast.success('Запись успешно создана');
+      toast.success(movementResponse.data.message || 'Запись успешно создана');
 
       const status =
         selectedAudience.value === 'Склад' ? 'В резерве' : 'В эксплуатации';
@@ -84,13 +87,19 @@ export default function PinningForm({
         id,
       });
 
-      if (locationResponse.data.message !== 'Успешное добавление') {
-        throw new Error('Ошибка при обновлении местоположения');
+      if (locationResponse.status !== 200) {
+        throw new Error(
+          locationResponse.data.message ||
+            'Ошибка при обновлении местоположения',
+        );
       }
 
       toast.success('Успешное закрепление за кабинетом');
     } catch (error) {
-      toast.error('Произошла ошибка при перемещении объекта');
+      toast.error(
+        error.response?.data.message ||
+          'Произошла ошибка при перемещении объекта',
+      );
       console.error('Ошибка:', error);
     }
   };

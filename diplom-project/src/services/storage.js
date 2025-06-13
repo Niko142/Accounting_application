@@ -27,11 +27,17 @@ export const fetchComponentData = async ({ component, signal }) => {
 // Запрос на удаление комплектующего
 export const deleteComponentFromStorage = async ({ component, id }) => {
   try {
-    await instance.delete(`/delete-${component}/${id}`);
-    return { success: true, message: 'Комплектующее успешно удалено' };
+    const response = await instance.delete(`/delete-${component}/${id}`);
+    return {
+      success: true,
+      message: response.data?.message || 'Комплектующее успешно удалено',
+    };
   } catch (err) {
-    console.log('Возникла ошибка при удалении комплектующего');
-    return { success: false, message: 'Не удалось удалить объект' };
+    console.log('Ошибка при удалении комплектующего');
+    return {
+      success: false,
+      message: err.response?.data?.message || 'Не удалось удалить объект',
+    };
   }
 };
 

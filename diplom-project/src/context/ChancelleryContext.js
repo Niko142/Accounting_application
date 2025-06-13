@@ -73,9 +73,9 @@ function ChancelleryProvider({ children }) {
   const addGroup = useCallback(
     async (group) => {
       try {
-        await addChancellery(group);
+        const response = await addChancellery(group);
         await updateProducts();
-        return { success: true, message: 'Новая категория успешно добавлена' };
+        return { success: true, message: response.message };
       } catch (error) {
         return { success: false, message: error.message };
       }
@@ -87,9 +87,12 @@ function ChancelleryProvider({ children }) {
   const amountChange = useCallback(
     async (updatedGroup) => {
       try {
-        await editAmounts(updatedGroup);
+        const response = await editAmounts(updatedGroup);
         await updateProducts();
-        return { success: true, message: 'Операция выполнена успешно' };
+        return {
+          success: true,
+          message: response.message,
+        };
       } catch (error) {
         return { success: false, message: error.message };
       }

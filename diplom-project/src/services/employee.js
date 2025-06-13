@@ -32,10 +32,7 @@ export async function fetchEmployee(controller) {
 
 export const addEmployee = async (req) => {
   try {
-    const res = await instance.post('/add-employee', req);
-    if (res.data.message !== 'Успешное добавление') {
-      throw new Error('Ошибка при добавлении нового сотрудника');
-    }
+    await instance.post('/add-employee', req);
   } catch (error) {
     throw new Error('Ошибка при добавлении нового сотрудника');
   }
@@ -43,8 +40,9 @@ export const addEmployee = async (req) => {
 
 export const deleteEmployee = async (id) => {
   try {
-    await instance.delete(`/delete-employee/${id}`);
-  } catch (error) {
-    throw new Error('Ошибка при удалении');
+    const response = await instance.delete(`/delete-employee/${id}`);
+    return response.data;
+  } catch (err) {
+    throw new Error(err.message || 'Ошибка при удалении сотрудника');
   }
 };

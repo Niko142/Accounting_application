@@ -70,8 +70,8 @@ export default function Chancellery() {
   // Обработчик изменения количества товаров
   const handleAmountChange = useCallback(async () => {
     try {
-      await amountChange(currentGroup);
-      toast.success('Количество успешно изменено');
+      const res = await amountChange(currentGroup);
+      toast.success(res.message || 'Количество успешно изменено');
       setOpenEditModal(false);
     } catch (error) {
       toast.error(error.message || 'Ошибка при изменении количества');

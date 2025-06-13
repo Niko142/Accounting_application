@@ -68,9 +68,12 @@ function EmployeeProvider({ children }) {
   const deleteSelectEmployee = useCallback(
     async (id) => {
       try {
-        await deleteEmployee(id);
+        const res = await deleteEmployee(id);
         await updateEmployees();
-        return { success: true, message: 'Сотрудник успешно удален' };
+        return {
+          success: true,
+          message: res.message || 'Сотрудник успешно удален',
+        };
       } catch (error) {
         return { success: false, message: error.message };
       }

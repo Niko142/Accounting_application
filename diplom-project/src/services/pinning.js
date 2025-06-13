@@ -121,23 +121,24 @@ export const pinningItem = async ({
         unit: selectedObject.label,
         employee: employee.key,
       }),
-      instance.post(`/${endpoint}`, {
+      instance.put(`/${endpoint}/${idState[itemsKey]}`, {
         employee: employee.key,
-        id: idState[itemsKey],
       }),
     ]);
 
-    // Алерты
-    if (
-      !(
-        pinningRes.data.message === 'Успешное добавление' &&
-        updateRes.data.message === 'Успешное добавление'
-      )
-    ) {
+    // Валидация результата закрепления объекта
+    if (pinningRes.status === 200 && updateRes.status === 200) {
+      console.log('Объект успешно закреплен:', updateRes.data.message);
+      return {
+        success: true,
+        pinningData: pinningRes.data,
+        updateData: updateRes.data,
+      };
+    } else {
       throw new Error('Ошибка при закреплении объекта');
     }
-    return true;
   } catch (error) {
+    console.error('Ошибка при закреплении объекта', error);
     if (error.isAxiosError) {
       throw new Error('Ошибка сервера при закреплении');
     }

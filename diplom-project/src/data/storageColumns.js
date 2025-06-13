@@ -112,7 +112,7 @@ export const diskColumns = (onDelete) => [
         <Button
           isDelete
           variant="destructive"
-          onClick={() => onDelete(row.original.id_memory)}
+          onClick={() => onDelete(row.original.id_disk)}
         >
           Удалить
         </Button>

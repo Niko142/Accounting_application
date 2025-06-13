@@ -39,14 +39,20 @@ export default function AddComponents() {
     try {
       const response = await instance.post(`/add_${category}`, payload);
 
-      if (response.data.message === 'Успешное добавление') {
-        toast.success('Успешное добавление');
+      if (response.status === 201) {
+        toast.success(response.data.message || 'Успешное добавление');
         reset();
       } else {
-        toast.error('Произошла ошибка при добавлении комплектующего');
+        toast.error(
+          response.data.message ||
+            'Произошла ошибка при добавлении комплектующего',
+        );
       }
     } catch (err) {
-      toast.error('Произошла ошибка. Попробуйте повторить позже');
+      toast.error(
+        err.response?.data?.message ||
+          'Произошла ошибка. Попробуйте повторить позже',
+      );
       console.error(err);
     }
   };

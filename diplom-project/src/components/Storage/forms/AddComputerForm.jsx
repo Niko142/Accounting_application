@@ -55,6 +55,8 @@ export default function AddComputerForm() {
     };
   }, []);
 
+  // Проверить потом
+
   const onSubmit = async (data) => {
     try {
       const requests = [
@@ -95,9 +97,7 @@ export default function AddComputerForm() {
       const responses = await Promise.all(requests);
 
       // Проверка результатов
-      const successRes = responses.every(
-        (response) => response.data.message === 'Успешное добавление',
-      );
+      const successRes = responses.every((response) => response.status === 201);
 
       if (successRes) {
         toast.success('Компьютер и компоненты успешно обновлены');

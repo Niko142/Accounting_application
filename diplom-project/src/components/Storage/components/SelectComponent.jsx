@@ -19,9 +19,18 @@ export default function SelectComponent({ componentType, columns }) {
   const handleDelete = useCallback(
     async (id) => {
       try {
-        await deleteComponentFromStorage({ component: componentType, id });
-        await loadComponents(componentType);
-        toast.success('Выбранное комплектующее удалено успешно!!!');
+        console.log(id);
+        const { success, message } = await deleteComponentFromStorage({
+          component: componentType,
+          id,
+        });
+
+        if (success) {
+          await loadComponents(componentType);
+          toast.success(message);
+        } else {
+          throw new Error(message);
+        }
       } catch (err) {
         toast.error(
           err.message || 'Не удалось удалить выбранное комплектующее',
