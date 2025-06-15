@@ -52,7 +52,7 @@ export const Header = () => {
             {/* Блок с выводом авторизированного пользователя + кнопка 'Выход'*/}
             <div className="topbar">
               <span className="topbar__user" style={{ color: '#444' }}>
-                User: {user.username}
+                User: {user?.username}
               </span>
               <button className="topbar__logout" onClick={handleLogout}>
                 Выйти

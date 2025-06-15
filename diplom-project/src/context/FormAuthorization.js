@@ -36,7 +36,7 @@ function AuthProvider({ children }) {
 
   const login = async (username, password) => {
     try {
-      const response = await instance.post('/login', {
+      const response = await instance.post('/api/auth/login', {
         username: username.trim(),
         password: password.trim(),
       });

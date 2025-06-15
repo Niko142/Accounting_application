@@ -21,14 +21,12 @@ export const useChancellery = () => useContext(ChancelleryContext);
 
 function ChancelleryProvider({ children }) {
   const abortControllerRef = useRef(null);
-  // Получаем значения от сервера
-  const [products, setProducts] = useState([]);
-  // Состояние при целевом редактировании элемента
+  const [products, setProducts] = useState([]); // Список канцелярии
   const [currentGroup, setCurrentGroup] = useState({
     name: '',
     id: '',
     amounts: '',
-  });
+  }); // Выбранный объект из имеющегося кол-ва записей о канцелярии
 
   const selectCategory = useCallback(async (id) => {
     try {

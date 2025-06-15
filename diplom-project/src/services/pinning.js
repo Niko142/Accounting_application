@@ -114,7 +114,7 @@ export const pinningItem = async ({
   try {
     // Отправка запросов
     const [pinningRes, updateRes] = await Promise.all([
-      instance.post('/pinning-employee', {
+      instance.post('/api/employee/pinning-employee', {
         date: formData.date,
         category: formData.category,
         type: formData.type,

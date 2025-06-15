@@ -1,8 +1,10 @@
 import { instance } from './api';
 
+const API_PATH = '/api/chancellery';
+
 export async function fetchData(controller) {
   try {
-    const res = await instance.get('/chancellery', {
+    const res = await instance.get(`${API_PATH}/`, {
       signal: controller.signal,
     });
     return res.data;
@@ -16,26 +18,33 @@ export async function fetchData(controller) {
 
 export const selectChancellery = async (id) => {
   try {
-    const res = await instance.get(`/select_chancellery/${id}`);
+    const res = await instance.get(`${API_PATH}/${id}`);
     const result = res.data;
-    if (result.length > 0) {
+
+    if (result.item) {
+      return {
+        name: result.item.name,
+        id: result.item.id_chancellery,
+        amounts: result.item.amounts,
+      };
+    } else if (result.length > 0) {
       return {
         name: result[0].name,
         id: result[0].id_chancellery,
         amounts: result[0].amounts,
       };
     } else {
-      console.warn('Запрашиваемый товар не найден');
+      console.error('Запрашиваемый товар не найден');
       return null;
     }
   } catch (error) {
-    throw new Error('Не удалось выбрать категорию');
+    throw new Error(error.response?.data?.message);
   }
 };
 
 export const deleteChancellery = async (id) => {
   try {
-    await instance.delete(`/delete-chancellery/${id}`);
+    await instance.delete(`${API_PATH}/delete/${id}`);
   } catch (error) {
     throw new Error('Ошибка при удалении');
   }
@@ -43,7 +52,7 @@ export const deleteChancellery = async (id) => {
 
 export const addChancellery = async (req) => {
   try {
-    const response = await instance.post('/add-chancellery', req);
+    const response = await instance.post(`${API_PATH}/add`, req);
     if (response.status === 201) {
       return {
         success: true,
@@ -57,7 +66,7 @@ export const addChancellery = async (req) => {
 
 export const editAmounts = async (req) => {
   try {
-    const response = await instance.patch('/update-chancellery', req);
+    const response = await instance.patch(`${API_PATH}/update`, req);
     if (response.status === 200) {
       return {
         success: true,

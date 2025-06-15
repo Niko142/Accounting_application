@@ -19,8 +19,6 @@ export default function AddComputerForm() {
     disk: [],
   });
 
-  // Добавить loadData в onSubmit (проверить)
-
   const loadData = async (signal) => {
     try {
       const [videocardRes, processorRes, mothercardRes, memoryRes, diskRes] =
@@ -55,8 +53,6 @@ export default function AddComputerForm() {
     };
   }, []);
 
-  // Проверить потом
-
   const onSubmit = async (data) => {
     try {
       const requests = [
@@ -72,25 +68,20 @@ export default function AddComputerForm() {
         }),
 
         // Запросы на обновление компонентов
-        instance.patch('/update_videocard', {
+        instance.put(`/update_videocard/${+data.videocard}`, {
           location: data.name,
-          id: +data.videocard,
         }),
-        instance.patch('/update_processor', {
+        instance.put(`/update_processor/${+data.processor}`, {
           location: data.name,
-          id: +data.processor,
         }),
-        instance.patch('/update_mothercard', {
+        instance.put(`/update_mothercard/${+data.mothercard}`, {
           location: data.name,
-          id: +data.mothercard,
         }),
-        instance.patch('/update_memory', {
+        instance.put(`/update_memory/${+data.memory}`, {
           location: data.name,
-          id: +data.memory,
         }),
-        instance.patch('/update_disk', {
+        instance.put(`/update_disk/${+data.disk}`, {
           location: data.name,
-          id: +data.disk,
         }),
       ];
 

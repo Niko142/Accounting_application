@@ -9,7 +9,7 @@ export const fetchCabinetInfo = async (controller) => {
     return res.data;
   } catch (error) {
     if (error.name !== 'AbortError') {
-      console.error('Ошибка при загрузке данных: ', error);
+      throw new Error('Ошибка при загрузке данных', error);
     }
     throw error;
   }

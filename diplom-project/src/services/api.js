@@ -33,7 +33,7 @@ instance.interceptors.response.use(
       localStorage.removeItem('token');
       localStorage.removeItem('user');
 
-      // window.location.href = '/';
+      window.location.href = '/';
     }
 
     return Promise.reject(error);

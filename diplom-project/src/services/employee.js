@@ -1,10 +1,11 @@
-// import Axios from 'axios';
 import { instance } from './api';
+
+const API_PATH = '/api/employee';
 
 // Запросы не напрямую передавая state
 export async function getPinningEmployee(controller) {
   try {
-    const res = await instance.get('/select_pinning', {
+    const res = await instance.get(`${API_PATH}/select_pinning`, {
       signal: controller.signal,
     });
     return Array.isArray(res.data) ? res.data : []; // Проверка, что это массив
@@ -18,7 +19,7 @@ export async function getPinningEmployee(controller) {
 
 export async function fetchEmployee(controller) {
   try {
-    const res = await instance.get('/select_employee', {
+    const res = await instance.get(`${API_PATH}/select_employee`, {
       signal: controller.signal,
     });
     return Array.isArray(res.data) ? res.data : [];
@@ -32,7 +33,7 @@ export async function fetchEmployee(controller) {
 
 export const addEmployee = async (req) => {
   try {
-    await instance.post('/add-employee', req);
+    await instance.post(`${API_PATH}/add`, req);
   } catch (error) {
     throw new Error('Ошибка при добавлении нового сотрудника');
   }
@@ -40,7 +41,7 @@ export const addEmployee = async (req) => {
 
 export const deleteEmployee = async (id) => {
   try {
-    const response = await instance.delete(`/delete-employee/${id}`);
+    const response = await instance.delete(`${API_PATH}/layoff/${id}`);
     return response.data;
   } catch (err) {
     throw new Error(err.message || 'Ошибка при удалении сотрудника');

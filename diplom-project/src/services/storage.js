@@ -70,17 +70,18 @@ export const utilizeObject = async ({
       model,
       reason,
     });
-    const deleteResponse = await instance.delete(`/delete-${object}`, {
-      data: { id: number },
-    });
+    const deleteResponse = await instance.delete(`/delete-${object}/${number}`);
     return {
       success: true,
-      message: 'Объект успешно утилизирован',
+      message: deleteResponse.data?.message || 'Объект успешно утилизирован',
       data: deleteResponse,
     };
   } catch (err) {
     console.error('Ошибка при выполнении утилизации', err);
-    return { success: false, message: 'Не удалось утилизировать объект' };
+    return {
+      success: false,
+      message: err.response?.data?.message || 'Не удалось утилизировать объект',
+    };
   }
 };
 
@@ -104,10 +105,10 @@ export const repairObject = async ({
       end,
       description,
     });
-    const repairResponse = await instance.post(`/repair_${object}`, {
+    // Проверить корректность запроса
+    const repairResponse = await instance.put(`/repair_${object}/${number}`, {
       status: 'В ремонте',
       location: '-',
-      id: number,
     });
     return {
       success: true,
@@ -140,6 +141,7 @@ export const replaceDetailsComputer = async ({
       new_part,
       date,
     });
+
     // Обновление Id компонента в таблице с компьютерами
     await instance.patch(`/${config.apiUpdate}`, {
       [config.componentKey]: +newComponentId,
@@ -147,15 +149,13 @@ export const replaceDetailsComputer = async ({
     });
 
     // Обновление местоположения замененного компонента
-    await instance.patch(`/${config.apiLocation}`, {
+    await instance.put(`/${config.apiLocation}/${oldComponentId}`, {
       location: 'Склад',
-      id: oldComponentId,
     });
 
     // Обновление местоположения нового компонента компьютера
-    await instance.patch(`/${config.apiLocation}`, {
+    await instance.put(`/${config.apiLocation}/${+newComponentId}`, {
       location: name,
-      id: +newComponentId,
     });
     return { success: true, message: 'Компонент заменён' };
   } catch (err) {
