@@ -81,10 +81,9 @@ export default function PinningForm({
       const status =
         selectedAudience.value === 'Склад' ? 'В резерве' : 'В эксплуатации';
 
-      const locationResponse = await instance.patch(patchUrl, {
+      const locationResponse = await instance.patch(`${patchUrl}/${id}`, {
         location: selectedAudience.value,
         status,
-        id,
       });
 
       if (locationResponse.status !== 200) {

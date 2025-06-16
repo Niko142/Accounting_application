@@ -8,6 +8,7 @@ const verifyJwtToken = require("./utils/verifyToken");
 const authRoutes = require("./routes/auth");
 const chancelleryRoutes = require("./routes/chancellery");
 const employeeRoutes = require("./routes/employee");
+const mainRoutes = require("./routes/mainMenu");
 
 dotenv.config();
 
@@ -21,196 +22,7 @@ app.use(cors());
 app.use("/api/auth", authRoutes);
 app.use("/api/chancellery", chancelleryRoutes);
 app.use("/api/employee", employeeRoutes);
-
-/**
- * Запросы блока "Учет"
- */
-app.get("/main_computer", verifyJwtToken, async (_, res) => {
-  try {
-    const result = await db.query(
-      `SELECT id_computer, computer.location AS location, computer.status AS status, computer.name AS name, 
-      videocard.model AS videocards, processor.model AS processors, mothercard.model AS mothercards, 
-      memory.model AS memories, disk.model AS disks, 
-      COALESCE(employee.name, '.') AS names, 
-      COALESCE(employee.surname, '.') AS surname, 
-      COALESCE(employee.patronymic, '.') AS patronymic 
-    FROM computer
-    INNER JOIN videocard ON computer.videocard_id = videocard.id_videocard 
-    INNER JOIN processor ON computer.processor_id = processor.id_processor 
-    INNER JOIN mothercard ON computer.mothercard_id = mothercard.id_mothercard 
-    INNER JOIN memory ON computer.memory_id = memory.id_memory 
-    INNER JOIN disk ON computer.disk_id = disk.id_disk 
-    LEFT JOIN employee ON computer.employee = employee.employee_id 
-    ORDER BY id_computer ASC`
-    );
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: "Данные не найдены" });
-    }
-    return res.json(result.rows);
-  } catch (err) {
-    console.error("Ошибка сервера", err);
-    return res
-      .status(500)
-      .json({ message: "Ошибка сервера при получении данных" });
-  }
-});
-
-app.get("/main_laptop", async (_, res) => {
-  try {
-    const result = await db.query(
-      `SELECT 
-      laptop_id, model, systems, videocard, processor, memory, volume, price, 
-      laptop_description.location, status, 
-      COALESCE(employee.name, '.') AS name, 
-      COALESCE(employee.surname, '.') AS surname, 
-      COALESCE(employee.patronymic, '.') AS patronymic 
-    FROM laptop_description 
-    LEFT JOIN employee ON laptop_description.employee = employee.employee_id 
-    ORDER BY laptop_id ASC`
-    );
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: "Данные не найдены" });
-    }
-    return res.json(result.rows);
-  } catch (err) {
-    console.error("Ошибка сервера", err);
-    return res
-      .status(500)
-      .json({ message: "Ошибка сервера при получении данных" });
-  }
-});
-
-app.get("/main_screen", verifyJwtToken, async (_, res) => {
-  try {
-    const result = await db.query(
-      `SELECT screen_id, model, diagonal, rate, type, price, screen_description.location, status, 
-      COALESCE(employee.name, '.') AS name, 
-      COALESCE(employee.surname, '.') AS surname, 
-      COALESCE(employee.patronymic, '.') AS patronymic 
-    FROM screen_description 
-    LEFT JOIN employee ON screen_description.employee = employee.employee_id
-    ORDER BY screen_id ASC`
-    );
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: "Данные не найдены" });
-    }
-    return res.json(result.rows);
-  } catch (err) {
-    console.error("Ошибка сервера", err);
-    return res
-      .status(500)
-      .json({ message: "Ошибка сервера при получении данных" });
-  }
-});
-
-app.get("/main_scanner", verifyJwtToken, async (_, res) => {
-  try {
-    const result = await db.query(
-      `SELECT scanner_id, nam, color, speed, price, scanner_description.location, status, 
-      COALESCE(employee.name, '.') AS name, 
-      COALESCE(employee.surname, '.') AS surname, 
-      COALESCE(employee.patronymic, '.') AS patronymic 
-    FROM scanner_description 
-    LEFT JOIN employee ON scanner_description.employee = employee.employee_id
-    ORDER BY scanner_id ASC`
-    );
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: "Данные не найдены" });
-    }
-    return res.json(result.rows);
-  } catch (err) {
-    console.error("Ошибка сервера", err);
-    return res
-      .status(500)
-      .json({ message: "Ошибка сервера при получении данных" });
-  }
-});
-
-app.get("/main_camera", verifyJwtToken, async (_, res) => {
-  try {
-    const result = await db.query(
-      `SELECT camera_id, model, resolution, angle, price, camera_description.location, status, 
-      COALESCE(employee.name, '.') AS name, 
-      COALESCE(employee.surname, '.') AS surname, 
-      COALESCE(employee.patronymic, '.') AS patronymic 
-    FROM camera_description 
-    LEFT JOIN employee ON camera_description.employee = employee.employee_id
-    ORDER BY camera_id ASC`
-    );
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: "Данные не найдены" });
-    }
-    return res.json(result.rows);
-  } catch (err) {
-    console.error("Ошибка сервера", err);
-    return res
-      .status(500)
-      .json({ message: "Ошибка сервера при получении данных" });
-  }
-});
-
-app.get("/main_furniture", verifyJwtToken, async (_, res) => {
-  try {
-    const result = await db.query(
-      `SELECT furniture_id, furniture_description.name AS name, model, price, furniture_description.location, status, 
-      COALESCE(employee.name, '.') AS names, 
-      COALESCE(employee.surname, '.') AS surname, 
-      COALESCE(employee.patronymic, '.') AS patronymic 
-    FROM furniture_description 
-    LEFT JOIN employee ON furniture_description.employee = employee.employee_id
-    ORDER BY furniture_id ASC`
-    );
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: "Данные не найдены" });
-    }
-    return res.json(result.rows);
-  } catch (err) {
-    console.error("Ошибка сервера", err);
-    return res
-      .status(500)
-      .json({ message: "Ошибка сервера при получении данных" });
-  }
-});
-
-app.get("/main_ventilation", verifyJwtToken, async (_, res) => {
-  try {
-    const result = await db.query(
-      `SELECT ventilation_id, model, price, ventilation_description.location, status, 
-      COALESCE(employee.name, '.') AS name, 
-      COALESCE(employee.surname, '.') AS surname, 
-      COALESCE(employee.patronymic, '.') AS patronymic 
-    FROM ventilation_description 
-    LEFT JOIN employee ON ventilation_description.employee = employee.employee_id
-    ORDER BY ventilation_id ASC`
-    );
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: "Данные не найдены" });
-    }
-    return res.json(result.rows);
-  } catch (err) {
-    console.error("Ошибка сервера", err);
-    return res
-      .status(500)
-      .json({ message: "Ошибка сервера при получении данных" });
-  }
-});
-
-app.get("/select_utilization", verifyJwtToken, async (_, res) => {
-  try {
-    const result = await db.query(
-      "SELECT * FROM utilization ORDER BY id_utilization ASC"
-    );
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: "Данные не найдены" });
-    }
-    return res.json(result.rows);
-  } catch (err) {
-    console.error("Ошибка сервера", err);
-    return res
-      .status(500)
-      .json({ message: "Ошибка сервера при получении данных" });
-  }
-});
+app.use("/api/main", mainRoutes);
 
 app.post("/furniture", verifyJwtToken, async (req, res) => {
   try {
@@ -233,27 +45,32 @@ app.post("/furniture", verifyJwtToken, async (req, res) => {
   }
 });
 
-app.get("/select_furniture", verifyJwtToken, (_, res) => {
-  db.query("SELECT * FROM furniture_description", (err, result) => {
-    if (err) {
-      res.send({ err: err });
-    } else {
-      res.send(result.rows);
-    }
-  });
+app.get("/select_furniture", verifyJwtToken, async (_, res) => {
+  try {
+    const result = await db.query(
+      "SELECT * FROM furniture_description ORDER BY furniture_id ASC"
+    );
+    return res.json(result.rows);
+  } catch (err) {
+    console.error("Ошибка сервера", err);
+    return res
+      .status(500)
+      .json({ message: "Ошибка сервера при получении данных" });
+  }
 });
 
-app.get("/sklad_furniture", verifyJwtToken, (_, res) => {
-  db.query(
-    "SELECT * FROM furniture_description WHERE location = 'Склад'",
-    (err, result) => {
-      if (err) {
-        res.send({ err: err });
-      } else {
-        res.send(result.rows);
-      }
-    }
-  );
+app.get("/sklad_furniture", verifyJwtToken, async (_, res) => {
+  try {
+    const result = await db.query(
+      "SELECT * FROM furniture_description WHERE location = 'Склад' ORDER BY furniture_id ASC"
+    );
+    return res.json(result.rows);
+  } catch (err) {
+    console.error("Ошибка сервера", err);
+    return res
+      .status(500)
+      .json({ message: "Ошибка сервера при получении данных" });
+  }
 });
 
 app.post("/ventilation", verifyJwtToken, async (req, res) => {
@@ -277,27 +94,32 @@ app.post("/ventilation", verifyJwtToken, async (req, res) => {
   }
 });
 
-app.get("/select_ventilation", verifyJwtToken, (_, res) => {
-  db.query("SELECT * FROM ventilation_description", (err, result) => {
-    if (err) {
-      res.send({ err: err });
-    } else {
-      res.send(result.rows);
-    }
-  });
+app.get("/select_ventilation", verifyJwtToken, async (_, res) => {
+  try {
+    const result = await db.query(
+      "SELECT * FROM ventilation_description ORDER BY ventilation_id ASC"
+    );
+    return res.json(result.rows);
+  } catch (err) {
+    console.error("Ошибка сервера", err);
+    return res
+      .status(500)
+      .json({ message: "Ошибка сервера при получении данных" });
+  }
 });
 
-app.get("/sklad_ventilation", verifyJwtToken, (_, res) => {
-  db.query(
-    "SELECT * FROM ventilation_description WHERE location = 'Склад'",
-    (err, result) => {
-      if (err) {
-        res.send({ err: err });
-      } else {
-        res.send(result.rows);
-      }
-    }
-  );
+app.get("/sklad_ventilation", verifyJwtToken, async (_, res) => {
+  try {
+    const result = await db.query(
+      "SELECT * FROM ventilation_description WHERE location = 'Склад' ORDER BY ventilation_id ASC"
+    );
+    return res.json(result.rows);
+  } catch (err) {
+    console.error("Ошибка сервера", err);
+    return res
+      .status(500)
+      .json({ message: "Ошибка сервера при получении данных" });
+  }
 });
 
 app.post("/laptop", verifyJwtToken, async (req, res) => {
@@ -342,27 +164,32 @@ app.post("/laptop", verifyJwtToken, async (req, res) => {
   }
 });
 
-app.get("/select_laptop", verifyJwtToken, (_, res) => {
-  db.query("SELECT * FROM laptop_description", (err, result) => {
-    if (err) {
-      res.send({ err: err });
-    } else {
-      res.send(result.rows);
-    }
-  });
+app.get("/select_laptop", verifyJwtToken, async (_, res) => {
+  try {
+    const result = await db.query(
+      "SELECT * FROM laptop_description ORDER BY laptop_id ASC"
+    );
+    return res.json(result.rows);
+  } catch (err) {
+    console.error("Ошибка сервера", err);
+    return res
+      .status(500)
+      .json({ message: "Ошибка сервера при получении данных" });
+  }
 });
 
-app.get("/sklad_laptop", verifyJwtToken, (_, res) => {
-  db.query(
-    "SELECT * FROM laptop_description WHERE location = 'Склад'",
-    (err, result) => {
-      if (err) {
-        res.send({ err: err });
-      } else {
-        res.send(result.rows);
-      }
-    }
-  );
+app.get("/sklad_laptop", verifyJwtToken, async (_, res) => {
+  try {
+    const result = await db.query(
+      "SELECT * FROM laptop_description WHERE location = 'Склад' ORDER BY laptop_id ASC"
+    );
+    return res.json(result.rows);
+  } catch (err) {
+    console.error("Ошибка сервера", err);
+    return res
+      .status(500)
+      .json({ message: "Ошибка сервера при получении данных" });
+  }
 });
 
 app.post("/scanner", verifyJwtToken, async (req, res) => {
@@ -386,27 +213,32 @@ app.post("/scanner", verifyJwtToken, async (req, res) => {
   }
 });
 
-app.get("/select_scanner", verifyJwtToken, (_, res) => {
-  db.query("SELECT * FROM scanner_description", (err, result) => {
-    if (err) {
-      res.send({ err: err });
-    } else {
-      res.send(result.rows);
-    }
-  });
+app.get("/select_scanner", verifyJwtToken, async (_, res) => {
+  try {
+    const result = await db.query(
+      "SELECT * FROM scanner_description ORDER BY scanner_id ASC"
+    );
+    return res.json(result.rows);
+  } catch (err) {
+    console.error("Ошибка сервера", err);
+    return res
+      .status(500)
+      .json({ message: "Ошибка сервера при получении данных" });
+  }
 });
 
-app.get("/sklad_scanner", verifyJwtToken, (_, res) => {
-  db.query(
-    "SELECT * FROM scanner_description WHERE location = 'Склад'",
-    (err, result) => {
-      if (err) {
-        res.send({ err: err });
-      } else {
-        res.send(result.rows);
-      }
-    }
-  );
+app.get("/sklad_scanner", verifyJwtToken, async (_, res) => {
+  try {
+    const result = await db.query(
+      "SELECT * FROM scanner_description WHERE location = 'Склад' ORDER BY scanner_id ASC"
+    );
+    return res.json(result.rows);
+  } catch (err) {
+    console.error("Ошибка сервера", err);
+    return res
+      .status(500)
+      .json({ message: "Ошибка сервера при получении данных" });
+  }
 });
 
 app.post("/screen", verifyJwtToken, async (req, res) => {
@@ -430,27 +262,32 @@ app.post("/screen", verifyJwtToken, async (req, res) => {
   }
 });
 
-app.get("/select_screen", verifyJwtToken, (_, res) => {
-  db.query("SELECT * FROM screen_description", (err, result) => {
-    if (err) {
-      res.send({ err: err });
-    } else {
-      res.send(result.rows);
-    }
-  });
+app.get("/select_screen", verifyJwtToken, async (_, res) => {
+  try {
+    const result = await db.query(
+      "SELECT * FROM screen_description ORDER BY screen_id ASC"
+    );
+    return res.json(result.rows);
+  } catch (err) {
+    console.error("Ошибка сервера", err);
+    return res
+      .status(500)
+      .json({ message: "Ошибка сервера при получении данных" });
+  }
 });
 
-app.get("/sklad_screen", verifyJwtToken, (_, res) => {
-  db.query(
-    "SELECT * FROM screen_description WHERE location = 'Склад'",
-    (err, result) => {
-      if (err) {
-        res.send({ err: err });
-      } else {
-        res.send(result.rows);
-      }
-    }
-  );
+app.get("/sklad_screen", verifyJwtToken, async (_, res) => {
+  try {
+    const result = await db.query(
+      "SELECT * FROM screen_description WHERE location = 'Склад' ORDER BY screen_id ASC"
+    );
+    return res.json(result.rows);
+  } catch (err) {
+    console.error("Ошибка сервера", err);
+    return res
+      .status(500)
+      .json({ message: "Ошибка сервера при получении данных" });
+  }
 });
 
 app.post("/camera", verifyJwtToken, async (req, res) => {
@@ -474,37 +311,88 @@ app.post("/camera", verifyJwtToken, async (req, res) => {
   }
 });
 
-app.get("/select_camera", verifyJwtToken, (_, res) => {
-  db.query("SELECT * FROM camera_description", (err, result) => {
-    if (err) {
-      res.send({ err: err });
-    } else {
-      res.send(result.rows);
-    }
-  });
+app.get("/select_camera", verifyJwtToken, async (_, res) => {
+  try {
+    const result = await db.query(
+      "SELECT * FROM camera_description ORDER BY camera_id ASC"
+    );
+    return res.json(result.rows);
+  } catch (err) {
+    console.error("Ошибка сервера", err);
+    return res
+      .status(500)
+      .json({ message: "Ошибка сервера при получении данных" });
+  }
 });
 
-app.get("/sklad_camera", verifyJwtToken, (_, res) => {
-  db.query(
-    "SELECT * FROM camera_description WHERE location = 'Склад'",
-    (err, result) => {
-      if (err) {
-        res.send({ err: err });
-      } else {
-        res.send(result.rows);
-      }
-    }
-  );
+app.get("/sklad_camera", verifyJwtToken, async (_, res) => {
+  try {
+    const result = await db.query(
+      "SELECT * FROM camera_description WHERE location = 'Склад' ORDER BY camera_id ASC"
+    );
+    return res.json(result.rows);
+  } catch (err) {
+    console.error("Ошибка сервера", err);
+    return res
+      .status(500)
+      .json({ message: "Ошибка сервера при получении данных" });
+  }
 });
+
+app.get("/computer", verifyJwtToken, async (_, res) => {
+  try {
+    const result = await db.query(
+      `SELECT id_computer, computer.employee, computer.location, computer.status, name, 
+      videocard.model AS videocards, processor.model AS processors, 
+      mothercard.model AS mothercards, memory.model AS memories, 
+      disk.model AS disks 
+    FROM computer 
+    INNER JOIN videocard ON computer.videocard_id = videocard.id_videocard 
+    INNER JOIN processor ON computer.processor_id = processor.id_processor 
+    INNER JOIN mothercard ON computer.mothercard_id = mothercard.id_mothercard 
+    INNER JOIN memory ON computer.memory_id = memory.id_memory 
+    INNER JOIN disk ON computer.disk_id = disk.id_disk
+    ORDER BY id_computer ASC`
+    );
+    return res.json(result.rows);
+  } catch (err) {
+    console.error("Ошибка сервера", err);
+    return res
+      .status(500)
+      .json({ message: "Ошибка сервера при получении данных" });
+  }
+});
+
+app.get("/sklad_computer", verifyJwtToken, async (_, res) => {
+  try {
+    const result = await db.query(
+      `SELECT id_computer, videocard_id AS id_videocard, processor_id AS id_processor, mothercard_id AS id_mothercard, 
+      memory_id AS id_memory, disk_id AS id_disk, name, videocard.model AS videocards, processor.model AS processors, 
+      mothercard.model AS mothercards, memory.model AS memories, disk.model AS disks, computer.location 
+    FROM computer 
+    INNER JOIN videocard ON computer.videocard_id = videocard.id_videocard 
+    INNER JOIN processor ON computer.processor_id = processor.id_processor 
+    INNER JOIN mothercard ON computer.mothercard_id = mothercard.id_mothercard 
+    INNER JOIN memory ON computer.memory_id = memory.id_memory 
+    INNER JOIN disk ON computer.disk_id = disk.id_disk AND computer.location = 'Склад'
+    ORDER BY id_computer ASC`
+    );
+    return res.json(result.rows);
+  } catch (err) {
+    console.error("Ошибка сервера", err);
+    return res
+      .status(500)
+      .json({ message: "Ошибка сервера при получении данных" });
+  }
+});
+
+// Компоненты
 
 app.get("/videocard", verifyJwtToken, async (_, res) => {
   try {
     const result = await db.query(
       "SELECT * FROM videocard WHERE location = 'Склад' ORDER BY id_videocard ASC"
     );
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: "Данные не найдены" });
-    }
     return res.json(result.rows);
   } catch (err) {
     console.log("Ошибка сервера", err);
@@ -519,9 +407,6 @@ app.get("/processor", verifyJwtToken, async (_, res) => {
     const result = await db.query(
       "SELECT * FROM processor WHERE location = 'Склад' ORDER BY id_processor ASC"
     );
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: "Данные не найдены" });
-    }
     return res.json(result.rows);
   } catch (err) {
     console.log("Ошибка сервера", err);
@@ -536,9 +421,6 @@ app.get("/mothercard", verifyJwtToken, async (_, res) => {
     const result = await db.query(
       "SELECT * FROM mothercard WHERE location = 'Склад' ORDER BY id_mothercard ASC"
     );
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: "Данные не найдены" });
-    }
     return res.json(result.rows);
   } catch (err) {
     console.log("Ошибка сервера", err);
@@ -553,9 +435,6 @@ app.get("/memory", verifyJwtToken, async (_, res) => {
     const result = await db.query(
       "SELECT * FROM memory WHERE location = 'Склад' ORDER BY id_memory ASC"
     );
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: "Данные не найдены" });
-    }
     return res.json(result.rows);
   } catch (err) {
     console.log("Ошибка сервера", err);
@@ -570,9 +449,6 @@ app.get("/disk", verifyJwtToken, async (_, res) => {
     const result = await db.query(
       "SELECT * FROM disk WHERE location = 'Склад' ORDER BY id_disk ASC"
     );
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: "Данные не найдены" });
-    }
     return res.json(result.rows);
   } catch (err) {
     console.log("Ошибка сервера", err);
@@ -580,49 +456,6 @@ app.get("/disk", verifyJwtToken, async (_, res) => {
       .status(500)
       .json({ message: "Ошибка сервера при получении данных" });
   }
-});
-
-app.get("/computer", verifyJwtToken, (_, res) => {
-  db.query(
-    `SELECT id_computer, computer.employee, computer.location, computer.status, name, 
-      videocard.model AS videocards, processor.model AS processors, 
-      mothercard.model AS mothercards, memory.model AS memories, 
-      disk.model AS disks 
-    FROM computer 
-    INNER JOIN videocard ON computer.videocard_id = videocard.id_videocard 
-    INNER JOIN processor ON computer.processor_id = processor.id_processor 
-    INNER JOIN mothercard ON computer.mothercard_id = mothercard.id_mothercard 
-    INNER JOIN memory ON computer.memory_id = memory.id_memory 
-    INNER JOIN disk ON computer.disk_id = disk.id_disk`,
-    (err, result) => {
-      if (err) {
-        res.send({ err: err });
-      } else {
-        res.send(result.rows);
-      }
-    }
-  );
-});
-
-app.get("/sklad_computer", verifyJwtToken, (_, res) => {
-  db.query(
-    `SELECT id_computer, videocard_id AS id_videocard, processor_id AS id_processor, mothercard_id AS id_mothercard, 
-      memory_id AS id_memory, disk_id AS id_disk, name, videocard.model AS videocards, processor.model AS processors, 
-      mothercard.model AS mothercards, memory.model AS memories, disk.model AS disks, computer.location 
-    FROM computer 
-    INNER JOIN videocard ON computer.videocard_id = videocard.id_videocard 
-    INNER JOIN processor ON computer.processor_id = processor.id_processor 
-    INNER JOIN mothercard ON computer.mothercard_id = mothercard.id_mothercard 
-    INNER JOIN memory ON computer.memory_id = memory.id_memory 
-    INNER JOIN disk ON computer.disk_id = disk.id_disk AND computer.location = 'Склад'`,
-    (err, result) => {
-      if (err) {
-        res.send({ err: err });
-      } else {
-        res.send(result.rows);
-      }
-    }
-  );
 });
 
 app.post("/add_computer", verifyJwtToken, async (req, res) => {
@@ -1091,9 +924,6 @@ app.get("/history-cabinet", verifyJwtToken, async (_, res) => {
     const result = await db.query(
       "SELECT * FROM pinning_cabinet ORDER BY id_pinning ASC"
     );
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: "Данные не найдены" });
-    }
     return res.json(result.rows);
   } catch (err) {
     console.log("Ошибка сервера", err);
@@ -1105,9 +935,16 @@ app.get("/history-cabinet", verifyJwtToken, async (_, res) => {
 
 // Подумать - исправить ли id
 
-app.patch("/location_computer", verifyJwtToken, async (req, res) => {
+app.patch("/location_computer/:id", verifyJwtToken, async (req, res) => {
   try {
-    const { location, status, id } = req.body;
+    const { id } = req.params;
+    const { location, status } = req.body;
+
+    if (!id || isNaN(id)) {
+      return res.status(400).json({
+        message: "Некорректный ID компьютера",
+      });
+    }
 
     const result = await db.query(
       "UPDATE computer SET location = $1, status = $2 WHERE id_computer = $3 RETURNING *",
@@ -1132,9 +969,16 @@ app.patch("/location_computer", verifyJwtToken, async (req, res) => {
   }
 });
 
-app.patch("/location_laptop", verifyJwtToken, async (req, res) => {
+app.patch("/location_laptop/:id", verifyJwtToken, async (req, res) => {
   try {
-    const { location, status, id } = req.body;
+    const { id } = req.params;
+    const { location, status } = req.body;
+
+    if (!id || isNaN(id)) {
+      return res.status(400).json({
+        message: "Некорректный ID ноутбука",
+      });
+    }
 
     const result = await db.query(
       "UPDATE laptop_description SET location = $1, status = $2 WHERE laptop_id = $3 RETURNING *",
@@ -1159,9 +1003,16 @@ app.patch("/location_laptop", verifyJwtToken, async (req, res) => {
   }
 });
 
-app.patch("/location_screen", verifyJwtToken, async (req, res) => {
+app.patch("/location_screen/:id", verifyJwtToken, async (req, res) => {
   try {
-    const { location, status, id } = req.body;
+    const { id } = req.params;
+    const { location, status } = req.body;
+
+    if (!id || isNaN(id)) {
+      return res.status(400).json({
+        message: "Некорректный ID монитора",
+      });
+    }
 
     const result = await db.query(
       "UPDATE screen_description SET location = $1, status = $2 WHERE screen_id = $3 RETURNING *",
@@ -1186,9 +1037,16 @@ app.patch("/location_screen", verifyJwtToken, async (req, res) => {
   }
 });
 
-app.patch("/location_scanner", verifyJwtToken, async (req, res) => {
+app.patch("/location_scanner/:id", verifyJwtToken, async (req, res) => {
   try {
-    const { location, status, id } = req.body;
+    const { id } = req.params;
+    const { location, status } = req.body;
+
+    if (!id || isNaN(id)) {
+      return res.status(400).json({
+        message: "Некорректный ID МФУ",
+      });
+    }
 
     const result = await db.query(
       "UPDATE scanner_description SET location = $1, status = $2 WHERE scanner_id = $3 RETURNING *",
@@ -1213,9 +1071,16 @@ app.patch("/location_scanner", verifyJwtToken, async (req, res) => {
   }
 });
 
-app.patch("/location_camera", verifyJwtToken, async (req, res) => {
+app.patch("/location_camera/:id", verifyJwtToken, async (req, res) => {
   try {
-    const { location, status, id } = req.body;
+    const { id } = req.params;
+    const { location, status } = req.body;
+
+    if (!id || isNaN(id)) {
+      return res.status(400).json({
+        message: "Некорректный ID камеры",
+      });
+    }
 
     const result = await db.query(
       "UPDATE camera_description SET location = $1, status = $2 WHERE camera_id = $3 RETURNING *",
@@ -1240,9 +1105,16 @@ app.patch("/location_camera", verifyJwtToken, async (req, res) => {
   }
 });
 
-app.patch("/location_furniture", verifyJwtToken, async (req, res) => {
+app.patch("/location_furniture/:id", verifyJwtToken, async (req, res) => {
   try {
-    const { location, status, id } = req.body;
+    const { id } = req.params;
+    const { location, status } = req.body;
+
+    if (!id || isNaN(id)) {
+      return res.status(400).json({
+        message: "Некорректный ID мебели",
+      });
+    }
 
     const result = await db.query(
       "UPDATE furniture_description SET location = $1, status = $2 WHERE furniture_id = $3 RETURNING *",
@@ -1267,9 +1139,16 @@ app.patch("/location_furniture", verifyJwtToken, async (req, res) => {
   }
 });
 
-app.patch("/location_ventilation", verifyJwtToken, async (req, res) => {
+app.patch("/location_ventilation/:id", verifyJwtToken, async (req, res) => {
   try {
-    const { location, status, id } = req.body;
+    const { id } = req.params;
+    const { location, status } = req.body;
+
+    if (!id || isNaN(id)) {
+      return res.status(400).json({
+        message: "Некорректный ID вентиляции",
+      });
+    }
 
     const result = await db.query(
       "UPDATE ventilation_description SET location = $1, status = $2 WHERE ventilation_id = $3 RETURNING *",
@@ -1495,6 +1374,8 @@ app.put("/update_disk/:id", verifyJwtToken, async (req, res) => {
   }
 });
 
+// Исправил
+
 app.get("/computer_movement", verifyJwtToken, async (_, res) => {
   try {
     const result = await db.query(
@@ -1502,9 +1383,6 @@ app.get("/computer_movement", verifyJwtToken, async (_, res) => {
       WHERE location <> 'Склад' AND location <> '-'
       ORDER BY id_computer ASC`
     );
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: "Данные не найдены" });
-    }
     return res.json(result.rows);
   } catch (err) {
     console.log("Ошибка сервера", err);
@@ -1521,9 +1399,6 @@ app.get("/laptop_movement", verifyJwtToken, async (_, res) => {
       WHERE location <> 'Склад' AND location <> '-'
       ORDER BY laptop_id ASC`
     );
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: "Данные не найдены" });
-    }
     return res.json(result.rows);
   } catch (err) {
     console.log("Ошибка сервера", err);
@@ -1540,9 +1415,6 @@ app.get("/screen_movement", verifyJwtToken, async (_, res) => {
       WHERE location <> 'Склад' AND location <> '-'
       ORDER BY screen_id ASC`
     );
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: "Данные не найдены" });
-    }
     return res.json(result.rows);
   } catch (err) {
     console.log("Ошибка сервера", err);
@@ -1559,9 +1431,6 @@ app.get("/scanner_movement", verifyJwtToken, async (_, res) => {
       WHERE location <> 'Склад' AND location <> '-'
       ORDER BY scanner_id ASC`
     );
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: "Данные не найдены" });
-    }
     return res.json(result.rows);
   } catch (err) {
     console.log("Ошибка сервера", err);
@@ -1578,9 +1447,6 @@ app.get("/camera_movement", verifyJwtToken, async (_, res) => {
       WHERE location <> 'Склад' AND location <> '-'
       ORDER BY camera_id ASC`
     );
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: "Данные не найдены" });
-    }
     return res.json(result.rows);
   } catch (err) {
     console.log("Ошибка сервера", err);
@@ -1597,9 +1463,6 @@ app.get("/furniture_movement", verifyJwtToken, async (_, res) => {
       WHERE location <> 'Склад' AND location <> '-'
       ORDER BY furniture_id ASC`
     );
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: "Данные не найдены" });
-    }
     return res.json(result.rows);
   } catch (err) {
     console.log("Ошибка сервера", err);
@@ -2001,7 +1864,7 @@ app.post("/repair", verifyJwtToken, async (req, res) => {
     );
 
     return res
-      .status(200)
+      .status(201)
       .json({ message: "Объект успешно отправлен в ремонт" });
   } catch (err) {
     console.error(err);
@@ -2010,21 +1873,6 @@ app.post("/repair", verifyJwtToken, async (req, res) => {
     });
   }
 });
-
-// app.post("/repair_ventilation", verifyJwtToken, (req, res) => {
-//   const { status, location, id } = req.body;
-//   db.query(
-//     "UPDATE ventilation_description SET status = $1, location = $2 WHERE ventilation_id = $3",
-//     [status, location, id],
-//     (err, result) => {
-//       if (err) {
-//         res.send({ err: err });
-//       } else {
-//         res.send({ message: "Успешное добавление" });
-//       }
-//     }
-//   );
-// });
 
 app.put("/repair_ventilation/:id", verifyJwtToken, async (req, res) => {
   try {
@@ -2057,21 +1905,6 @@ app.put("/repair_ventilation/:id", verifyJwtToken, async (req, res) => {
   }
 });
 
-// app.post("/repair_furniture", verifyJwtToken, (req, res) => {
-//   const { status, location, id } = req.body;
-//   db.query(
-//     "UPDATE furniture_description SET status = $1, location = $2 WHERE furniture_id = $3",
-//     [status, location, id],
-//     (err, result) => {
-//       if (err) {
-//         res.send({ err: err });
-//       } else {
-//         res.send({ message: "Успешное добавление" });
-//       }
-//     }
-//   );
-// });
-
 app.put("/repair_furniture/:id", verifyJwtToken, async (req, res) => {
   try {
     const { id } = req.params;
@@ -2102,21 +1935,6 @@ app.put("/repair_furniture/:id", verifyJwtToken, async (req, res) => {
     });
   }
 });
-
-// app.post("/repair_computer", verifyJwtToken, (req, res) => {
-//   const { status, location, id } = req.body;
-//   db.query(
-//     "UPDATE computer SET status = $1, location = $2 WHERE id_computer = $3",
-//     [status, location, id],
-//     (err, result) => {
-//       if (err) {
-//         res.send({ err: err });
-//       } else {
-//         res.send({ message: "Успешное добавление" });
-//       }
-//     }
-//   );
-// });
 
 app.put("/repair_computer/:id", verifyJwtToken, async (req, res) => {
   try {
@@ -2149,21 +1967,6 @@ app.put("/repair_computer/:id", verifyJwtToken, async (req, res) => {
   }
 });
 
-// app.post("/repair_laptop", verifyJwtToken, (req, res) => {
-//   const { status, location, id } = req.body;
-//   db.query(
-//     "UPDATE laptop_description SET status = $1, location = $2 WHERE laptop_id = $3",
-//     [status, location, id],
-//     (err, result) => {
-//       if (err) {
-//         res.send({ err: err });
-//       } else {
-//         res.send({ message: "Успешное добавление" });
-//       }
-//     }
-//   );
-// });
-
 app.put("/repair_laptop/:id", verifyJwtToken, async (req, res) => {
   try {
     const { id } = req.params;
@@ -2194,22 +1997,6 @@ app.put("/repair_laptop/:id", verifyJwtToken, async (req, res) => {
     });
   }
 });
-
-// app.post("/repair_screen", verifyJwtToken, (req, res) => {
-//   const { status, location, id } = req.body;
-
-//   db.query(
-//     "UPDATE screen_description SET status = $1, location = $2 WHERE screen_id = $3",
-//     [status, location, id],
-//     (err, result) => {
-//       if (err) {
-//         res.send({ err: err });
-//       } else {
-//         res.send({ message: "Успешное добавление" });
-//       }
-//     }
-//   );
-// });
 
 app.put("/repair_screen/:id", verifyJwtToken, async (req, res) => {
   try {
@@ -2242,22 +2029,6 @@ app.put("/repair_screen/:id", verifyJwtToken, async (req, res) => {
   }
 });
 
-// app.post("/repair_scanner", verifyJwtToken, (req, res) => {
-//   const { status, location, id } = req.body;
-
-//   db.query(
-//     "UPDATE scanner_description SET status = $1, location = $2 WHERE scanner_id = $3",
-//     [status, location, id],
-//     (err, result) => {
-//       if (err) {
-//         res.send({ err: err });
-//       } else {
-//         res.send({ message: "Успешное добавление" });
-//       }
-//     }
-//   );
-// });
-
 app.put("/repair_scanner/:id", verifyJwtToken, async (req, res) => {
   try {
     const { id } = req.params;
@@ -2288,22 +2059,6 @@ app.put("/repair_scanner/:id", verifyJwtToken, async (req, res) => {
     });
   }
 });
-
-// app.post("/repair_camera", verifyJwtToken, (req, res) => {
-//   const { status, location, id } = req.body;
-
-//   db.query(
-//     "UPDATE camera_description SET status = $1, location = $2 WHERE camera_id = $3",
-//     [status, location, id],
-//     (err, result) => {
-//       if (err) {
-//         res.send({ err: err });
-//       } else {
-//         res.send({ message: "Успешное добавление" });
-//       }
-//     }
-//   );
-// });
 
 app.put("/repair_camera/:id", verifyJwtToken, async (req, res) => {
   try {
@@ -2336,308 +2091,499 @@ app.put("/repair_camera/:id", verifyJwtToken, async (req, res) => {
   }
 });
 
-app.get("/select_repair", verifyJwtToken, (_, res) => {
-  db.query("SELECT * FROM repair", (err, result) => {
-    if (err) {
-      res.send({ err: err });
-    } else {
-      res.send(result.rows);
-    }
-  });
+app.get("/select_repair", verifyJwtToken, async (_, res) => {
+  try {
+    const result = await db.query(
+      "SELECT * FROM repair ORDER BY id_repair ASC"
+    );
+    return res.json(result.rows);
+  } catch (err) {
+    console.error("Ошибка сервера", err);
+    return res
+      .status(500)
+      .json({ message: "Ошибка сервера при получении данных" });
+  }
 });
 
-app.get("/select_repair_computer", verifyJwtToken, (_, res) => {
-  db.query("SELECT * FROM repair WHERE type = 'Компьютер'", (err, result) => {
-    if (err) {
-      res.send({ err: err });
-    } else {
-      res.send(result.rows);
-    }
-  });
+app.get("/select_repair_computer", verifyJwtToken, async (_, res) => {
+  try {
+    const result = await db.query(
+      "SELECT * FROM repair WHERE type = 'Компьютер'"
+    );
+    return res.json(result.rows);
+  } catch (err) {
+    console.error("Ошибка сервера", err);
+    return res
+      .status(500)
+      .json({ message: "Ошибка сервера при получении данных" });
+  }
 });
 
-app.get("/select_repair_laptop", verifyJwtToken, (_, res) => {
-  db.query("SELECT * FROM repair WHERE type = 'Ноутбук'", (err, result) => {
-    if (err) {
-      res.send({ err: err });
-    } else {
-      res.send(result.rows);
-    }
-  });
+app.get("/select_repair_laptop", verifyJwtToken, async (_, res) => {
+  try {
+    const result = await db.query(
+      "SELECT * FROM repair WHERE type = 'Ноутбук'"
+    );
+    return res.json(result.rows);
+  } catch (err) {
+    console.error("Ошибка сервера", err);
+    return res
+      .status(500)
+      .json({ message: "Ошибка сервера при получении данных" });
+  }
 });
 
-app.get("/select_repair_screen", verifyJwtToken, (_, res) => {
-  db.query("SELECT * FROM repair WHERE type = 'Монитор'", (err, result) => {
-    if (err) {
-      res.send({ err: err });
-    } else {
-      res.send(result.rows);
-    }
-  });
+app.get("/select_repair_screen", verifyJwtToken, async (_, res) => {
+  try {
+    const result = await db.query(
+      "SELECT * FROM repair WHERE type = 'Монитор'"
+    );
+    return res.json(result.rows);
+  } catch (err) {
+    console.error("Ошибка сервера", err);
+    return res
+      .status(500)
+      .json({ message: "Ошибка сервера при получении данных" });
+  }
 });
 
-app.get("/select_repair_scanner", verifyJwtToken, (_, res) => {
-  db.query("SELECT * FROM repair WHERE type = 'МФУ'", (err, result) => {
-    if (err) {
-      res.send({ err: err });
-    } else {
-      res.send(result.rows);
-    }
-  });
+app.get("/select_repair_scanner", verifyJwtToken, async (_, res) => {
+  try {
+    const result = await db.query("SELECT * FROM repair WHERE type = 'МФУ'");
+    return res.json(result.rows);
+  } catch (err) {
+    console.error("Ошибка сервера", err);
+    return res
+      .status(500)
+      .json({ message: "Ошибка сервера при получении данных" });
+  }
 });
 
-app.get("/select_repair_camera", verifyJwtToken, (_, res) => {
-  db.query("SELECT * FROM repair WHERE type = 'Камера'", (err, result) => {
-    if (err) {
-      res.send({ err: err });
-    } else {
-      res.send(result.rows);
-    }
-  });
+app.get("/select_repair_camera", verifyJwtToken, async (_, res) => {
+  try {
+    const result = await db.query("SELECT * FROM repair WHERE type = 'Камера'");
+    return res.json(result.rows);
+  } catch (err) {
+    console.error("Ошибка сервера", err);
+    return res
+      .status(500)
+      .json({ message: "Ошибка сервера при получении данных" });
+  }
 });
 
-app.get("/select_repair_ventilation", verifyJwtToken, (_, res) => {
-  db.query(
-    "SELECT * FROM repair WHERE category = 'Система вентиляции'",
-    (err, result) => {
-      if (err) {
-        res.send({ err: err });
-      } else {
-        res.send(result.rows);
-      }
-    }
-  );
+app.get("/select_repair_ventilation", verifyJwtToken, async (_, res) => {
+  try {
+    const result = await db.query(
+      "SELECT * FROM repair WHERE category = 'Система вентиляции'"
+    );
+    return res.json(result.rows);
+  } catch (err) {
+    console.error("Ошибка сервера", err);
+    return res
+      .status(500)
+      .json({ message: "Ошибка сервера при получении данных" });
+  }
 });
 
-app.get("/select_repair_furniture", verifyJwtToken, (_, res) => {
-  db.query("SELECT * FROM repair WHERE category = 'Мебель'", (err, result) => {
-    if (err) {
-      res.send({ err: err });
-    } else {
-      res.send(result.rows);
-    }
-  });
+app.get("/select_repair_furniture", verifyJwtToken, async (_, res) => {
+  try {
+    const result = await db.query("SELECT * FROM repair WHERE type = 'Мебель'");
+    return res.json(result.rows);
+  } catch (err) {
+    console.error("Ошибка сервера", err);
+    return res
+      .status(500)
+      .json({ message: "Ошибка сервера при получении данных" });
+  }
 });
 
-app.delete("/delete-repair/:del", verifyJwtToken, (req, res) => {
-  const del = req.params.del;
-  db.query("DELETE FROM repair WHERE id_repair = $1", [del], (err, result) => {
-    if (err) {
-      res.send({ err: err });
-    } else {
-      res.send(result.rows);
+app.delete("/delete-repair/:id", verifyJwtToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!id || isNaN(id)) {
+      return res.status(400).json({
+        message: "Некорректный ID записи",
+      });
     }
-  });
+    const result = await db.query(
+      "DELETE FROM repair WHERE id_repair = $1 RETURNING *",
+      [id]
+    );
+    if (result.rowCount === 0) {
+      return res.status(404).json({
+        message: "Не удалось найти запись объекта",
+      });
+    }
+    return res.status(200).json({
+      message: "Запись об объекте в ремонте успешно удалена",
+      deleteItem: result.rows[0],
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({
+      message: "Ошибка сервера при удалении записи об объекте в ремонте",
+    });
+  }
 });
 
-app.patch("/ventilation_from_repair/:id", verifyJwtToken, (req, res) => {
-  const id = req.params.id;
-  db.query(
-    "UPDATE ventilation_description SET status = 'В резерве', location = 'Склад' WHERE ventilation_id = $1",
-    [id],
-    (err, result) => {
-      if (err) {
-        res.send({ err: err });
-      } else {
-        res.send({ message: "Успех" });
-      }
+app.patch("/ventilation_from_repair/:id", verifyJwtToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!id || isNaN(id)) {
+      return res.status(400).json({
+        message: "Некорректный ID вентиляции",
+      });
     }
-  );
+    const result = await db.query(
+      "UPDATE ventilation_description SET status = 'В резерве', location = 'Склад' WHERE ventilation_id = $1 RETURNING *",
+      [id]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({
+        message: "Вентиляция не найдена",
+      });
+    }
+    res.status(200).json({
+      message: "Вентиляция успешно возвращена на склад",
+      returnItem: result.rows[0],
+    });
+  } catch (err) {
+    console.error("Ошибка сервера:", err);
+    return res.status(500).json({
+      message: "Ошибка сервера при возврате вентиляции на склад",
+    });
+  }
 });
 
-app.patch("/furniture_from_repair/:id", verifyJwtToken, (req, res) => {
-  const id = req.params.id;
-  db.query(
-    "UPDATE furniture_description SET status = 'В резерве', location = 'Склад' WHERE furniture_id = $1",
-    [id],
-    (err, result) => {
-      if (err) {
-        res.send({ err: err });
-      } else {
-        res.send({ message: "Успех" });
-      }
+app.patch("/furniture_from_repair/:id", verifyJwtToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!id || isNaN(id)) {
+      return res.status(400).json({
+        message: "Некорректный ID мебели",
+      });
     }
-  );
+    const result = await db.query(
+      "UPDATE furniture_description SET status = 'В резерве', location = 'Склад' WHERE furniture_id = $1 RETURNING *",
+      [id]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({
+        message: "Мебель не найдена",
+      });
+    }
+    res.status(200).json({
+      message: "Вентиляция успешно возвращена на склад",
+      returnItem: result.rows[0],
+    });
+  } catch (err) {
+    console.error("Ошибка сервера:", err);
+    return res.status(500).json({
+      message: "Ошибка сервера при возврате мебели на склад",
+    });
+  }
 });
 
-app.patch("/computer_from_repair/:id", verifyJwtToken, (req, res) => {
-  const id = req.params.id;
-  db.query(
-    "UPDATE computer SET status = 'В резерве', location = 'Склад' WHERE id_computer = $1",
-    [id],
-    (err, result) => {
-      if (err) {
-        res.send({ err: err });
-      } else {
-        res.send({ message: "Успех" });
-      }
+app.patch("/computer_from_repair/:id", verifyJwtToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!id || isNaN(id)) {
+      return res.status(400).json({
+        message: "Некорректный ID компьютера",
+      });
     }
-  );
+    const result = await db.query(
+      "UPDATE computer SET status = 'В резерве', location = 'Склад' WHERE id_computer = $1 RETURNING *",
+      [id]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({
+        message: "Компьютер не найден",
+      });
+    }
+    res.status(200).json({
+      message: "Компьютер успешно возвращен на склад",
+      returnItem: result.rows[0],
+    });
+  } catch (err) {
+    console.error("Ошибка сервера:", err);
+    return res.status(500).json({
+      message: "Ошибка сервера при возврате компьютера на склад",
+    });
+  }
 });
 
-app.patch("/laptop_from_repair/:id", verifyJwtToken, (req, res) => {
-  const id = req.params.id;
-  db.query(
-    "UPDATE laptop_description SET status = 'В резерве', location = 'Склад' WHERE laptop_id = $1",
-    [id],
-    (err, result) => {
-      if (err) {
-        res.send({ err: err });
-      } else {
-        res.send({ message: "Успех" });
-      }
+app.patch("/laptop_from_repair/:id", verifyJwtToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!id || isNaN(id)) {
+      return res.status(400).json({
+        message: "Некорректный ID ноутбука",
+      });
     }
-  );
+    const result = await db.query(
+      "UPDATE laptop_description SET status = 'В резерве', location = 'Склад' WHERE laptop_id = $1 RETURNING *",
+      [id]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({
+        message: "Ноутбук не найден",
+      });
+    }
+    res.status(200).json({
+      message: "Ноутбук успешно возвращен на склад",
+      returnItem: result.rows[0],
+    });
+  } catch (err) {
+    console.error("Ошибка сервера:", err);
+    return res.status(500).json({
+      message: "Ошибка сервера при возврате ноутбука на склад",
+    });
+  }
 });
 
-app.patch("/screen_from_repair/:id", verifyJwtToken, (req, res) => {
-  const id = req.params.id;
-  db.query(
-    "UPDATE screen_description SET status = 'В резерве', location = 'Склад' WHERE screen_id = $1",
-    [id],
-    (err, result) => {
-      if (err) {
-        res.send({ err: err });
-      } else {
-        res.send({ message: "Успех" });
-      }
+app.patch("/screen_from_repair/:id", verifyJwtToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!id || isNaN(id)) {
+      return res.status(400).json({
+        message: "Некорректный ID монитора",
+      });
     }
-  );
+    const result = await db.query(
+      "UPDATE screen_description SET status = 'В резерве', location = 'Склад' WHERE screen_id = $1 RETURNING *",
+      [id]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({
+        message: "Монитор не найден",
+      });
+    }
+    res.status(200).json({
+      message: "Монитор успешно возвращен на склад",
+      returnItem: result.rows[0],
+    });
+  } catch (err) {
+    console.error("Ошибка сервера:", err);
+    return res.status(500).json({
+      message: "Ошибка сервера при возврате монитора на склад",
+    });
+  }
 });
 
-app.patch("/scanner_from_repair/:id", verifyJwtToken, (req, res) => {
-  const id = req.params.id;
-  db.query(
-    "UPDATE scanner_description SET status = 'В резерве', location = 'Склад' WHERE scanner_id = $1",
-    [id],
-    (err, result) => {
-      if (err) {
-        res.send({ err: err });
-      } else {
-        res.send({ message: "Успех" });
-      }
+app.patch("/scanner_from_repair/:id", verifyJwtToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!id || isNaN(id)) {
+      return res.status(400).json({
+        message: "Некорректный ID МФУ",
+      });
     }
-  );
+    const result = await db.query(
+      "UPDATE scanner_description SET status = 'В резерве', location = 'Склад' WHERE scanner_id = $1 RETURNING *",
+      [id]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({
+        message: "МФУ не найдено",
+      });
+    }
+    res.status(200).json({
+      message: "МФУ успешно возвращено на склад",
+      returnItem: result.rows[0],
+    });
+  } catch (err) {
+    console.error("Ошибка сервера:", err);
+    return res.status(500).json({
+      message: "Ошибка сервера при возврате МФУ на склад",
+    });
+  }
 });
 
-app.patch("/camera_from_repair/:id", verifyJwtToken, (req, res) => {
-  const id = req.params.id;
-  db.query(
-    "UPDATE camera_description SET status = 'В резерве', location = 'Склад' WHERE camera_id = $1",
-    [id],
-    (err, result) => {
-      if (err) {
-        res.send({ err: err });
-      } else {
-        res.send({ message: "Успех" });
-      }
+app.patch("/camera_from_repair/:id", verifyJwtToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!id || isNaN(id)) {
+      return res.status(400).json({
+        message: "Некорректный ID камеры",
+      });
     }
-  );
+    const result = await db.query(
+      "UPDATE camera_description SET status = 'В резерве', location = 'Склад' WHERE camera_id = $1 RETURNING *",
+      [id]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({
+        message: "Камера не найдена",
+      });
+    }
+    res.status(200).json({
+      message: "Камера успешно возвращена на склад",
+      returnItem: result.rows[0],
+    });
+  } catch (err) {
+    console.error("Ошибка сервера:", err);
+    return res.status(500).json({
+      message: "Ошибка сервера при возврате камеры на склад",
+    });
+  }
 });
 
-app.post("/replace", verifyJwtToken, (req, res) => {
-  const { name, type, old_part, new_part, date } = req.body;
+app.post("/replace", verifyJwtToken, async (req, res) => {
+  try {
+    const { name, type, old_part, new_part, date } = req.body;
 
-  db.query(
-    "INSERT INTO replacement (name, type, old_part, new_part, date) VALUES ($1, $2, $3, $4, $5)",
-    [name, type, old_part, new_part, date],
-    (err, result) => {
-      if (err) {
-        res.send({
-          err: err,
-          details: {
-            code: err.code,
-            message: err.message,
-            constraint: err.constraint,
-          },
-        });
-      } else {
-        res.send({ message: "Успешное добавление" });
-      }
-    }
-  );
+    const result = await db.query(
+      "INSERT INTO replacement (name, type, old_part, new_part, date) VALUES ($1, $2, $3, $4, $5)",
+      [name, type, old_part, new_part, date]
+    );
+    return res.status(201).json({
+      message: "Комплектующее компьютера успешно заменено",
+      replaceItem: result.rows,
+    });
+  } catch (err) {
+    console.error("Ошибка сервера", err);
+    return res.status(500).json({
+      message: "Ошибка сервера при добавлении записи о замене",
+    });
+  }
 });
 
-// Подумать насчет этого
+app.put("/update_computer_videocard/:id", verifyJwtToken, async (req, res) => {
+  const { id } = req.params;
+  const { videocard } = req.body;
 
-app.patch("/update_computer_videocard", verifyJwtToken, (req, res) => {
-  const { videocard, id } = req.body;
-
-  db.query(
-    "UPDATE computer SET videocard_id = $1 WHERE id_computer = $2",
-    [videocard, id],
-    (err, result) => {
-      if (err) {
-        res.send({ err: err });
-      } else {
-        res.send({ message: "Успешное добавление" });
-      }
+  try {
+    if (!id || isNaN(id)) {
+      return res.status(400).json({
+        message: "Некорректный ID видеокарты",
+      });
     }
-  );
+    const result = await db.query(
+      "UPDATE computer SET videocard_id = $1 WHERE id_computer = $2 RETURNING *",
+      [videocard, id]
+    );
+    if (result.rowCount === 0) {
+      return res.status(404).json({ message: "Компьютер не найден" });
+    }
+    return res.status(200).json({ message: "Видеокарта успешно обновлена" });
+  } catch (err) {
+    console.error("Ошибка при обновлении видеокарты:", err);
+    res.status(500).json({ message: "Внутренняя ошибка сервера" });
+  }
 });
 
-app.patch("/update_computer_processor", verifyJwtToken, (req, res) => {
-  const { processor, id } = req.body;
+app.put("/update_computer_processor/:id", verifyJwtToken, async (req, res) => {
+  const { id } = req.params;
+  const { processor } = req.body;
 
-  db.query(
-    "UPDATE computer SET processor_id = $1 WHERE id_computer = $2",
-    [processor, id],
-    (err, result) => {
-      if (err) {
-        res.send({ err: err });
-      } else {
-        res.send({ message: "Успешное добавление" });
-      }
+  try {
+    if (!id || isNaN(id)) {
+      return res.status(400).json({
+        message: "Некорректный ID процессора",
+      });
     }
-  );
+    const result = await db.query(
+      "UPDATE computer SET processor_id = $1 WHERE id_computer = $2 RETURNING *",
+      [processor, id]
+    );
+    if (result.rowCount === 0) {
+      return res.status(404).json({ message: "Компьютер не найден" });
+    }
+    return res.status(200).json({ message: "Процессор успешно обновлен" });
+  } catch (err) {
+    console.error("Ошибка при обновлении процессора:", err);
+    res.status(500).json({ message: "Внутренняя ошибка сервера" });
+  }
 });
 
-app.patch("/update_computer_mothercard", verifyJwtToken, (req, res) => {
-  const { mothercard, id } = req.body;
+app.put("/update_computer_mothercard/:id", verifyJwtToken, async (req, res) => {
+  const { id } = req.params;
+  const { mothercard } = req.body;
 
-  db.query(
-    "UPDATE computer SET mothercard_id = $1 WHERE id_computer = $2",
-    [mothercard, id],
-    (err, result) => {
-      if (err) {
-        res.send({ err: err });
-      } else {
-        res.send({ message: "Успешное добавление" });
-      }
+  try {
+    if (!id || isNaN(id)) {
+      return res.status(400).json({
+        message: "Некорректный ID материнской карты",
+      });
     }
-  );
+    const result = await db.query(
+      "UPDATE computer SET mothercard_id = $1 WHERE id_computer = $2 RETURNING *",
+      [mothercard, id]
+    );
+    if (result.rowCount === 0) {
+      return res.status(404).json({ message: "Компьютер не найден" });
+    }
+    return res
+      .status(200)
+      .json({ message: "Материнская плата успешно обновлена" });
+  } catch (err) {
+    console.error("Ошибка при обновлении материнской платы:", err);
+    res.status(500).json({ message: "Внутренняя ошибка сервера" });
+  }
 });
 
-app.patch("/update_computer_memory", verifyJwtToken, (req, res) => {
-  const { memory, id } = req.body;
+app.put("/update_computer_memory/:id", verifyJwtToken, async (req, res) => {
+  const { id } = req.params;
+  const { memory } = req.body;
 
-  db.query(
-    "UPDATE computer SET memory_id = $1 WHERE id_computer = $2",
-    [memory, id],
-    (err, result) => {
-      if (err) {
-        res.send({ err: err });
-      } else {
-        res.send({ message: "Успешное добавление" });
-      }
+  try {
+    if (!id || isNaN(id)) {
+      return res.status(400).json({
+        message: "Некорректный ID ОЗУ",
+      });
     }
-  );
+    const result = await db.query(
+      "UPDATE computer SET memory_id = $1 WHERE id_computer = $2 RETURNING *",
+      [memory, id]
+    );
+    if (result.rowCount === 0) {
+      return res.status(404).json({ message: "Компьютер не найден" });
+    }
+    return res.status(200).json({ message: "Память успешно обновлена" });
+  } catch (err) {
+    console.error("Ошибка при обновлении памяти:", err);
+    res.status(500).json({ message: "Внутренняя ошибка сервера" });
+  }
 });
 
-app.patch("/update_computer_disk", verifyJwtToken, (req, res) => {
-  const { disk, id } = req.body;
+app.put("/update_computer_disk/:id", verifyJwtToken, async (req, res) => {
+  const { id } = req.params;
+  const { disk } = req.body;
 
-  db.query(
-    "UPDATE computer SET disk_id = $1 WHERE id_computer = $2",
-    [disk, id],
-    (err, result) => {
-      if (err) {
-        res.send({ err: err });
-      } else {
-        res.send({ message: "Успешное добавление" });
-      }
+  try {
+    if (!id || isNaN(id)) {
+      return res.status(400).json({
+        message: "Некорректный ID диска",
+      });
     }
-  );
+    const result = await db.query(
+      "UPDATE computer SET disk_id = $1 WHERE id_computer = $2 RETURNING *",
+      [disk, id]
+    );
+    if (result.rowCount === 0) {
+      return res.status(404).json({ message: "Компьютер не найден" });
+    }
+    return res.status(200).json({ message: "Диск успешно обновлен" });
+  } catch (err) {
+    console.error("Ошибка при обновлении диска:", err);
+    res.status(500).json({ message: "Внутренняя ошибка сервера" });
+  }
 });
 
 app.get("/change", verifyJwtToken, async (_, res) => {

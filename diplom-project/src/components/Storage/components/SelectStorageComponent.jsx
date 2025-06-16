@@ -127,7 +127,9 @@ const SelectStorageComponent = ({ objectType, columns, idField }) => {
 
             if (response.success) {
               await updateObjectData();
-              toast.success('Объект успешно отправлен в ремонт');
+              toast.success(
+                response?.data?.message || 'Объект успешно отправлен в ремонт',
+              );
               closeModal();
             } else {
               toast.error(

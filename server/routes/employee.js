@@ -54,7 +54,6 @@ router.post("/add", async (req, res) => {
       "INSERT INTO employee (name, surname, patronymic, email, phone) VALUES ($1, $2, $3, $4, $5)",
       [name, surname, patronymic, email, phone]
     );
-
     return res.status(201).json({
       message: "Сотрудник успешно назначен",
     });
@@ -75,18 +74,15 @@ router.delete("/layoff/:id", async (req, res) => {
         message: "Некорректный ID материального лица",
       });
     }
-
     const result = await db.query(
       "DELETE FROM employee WHERE employee_id = $1 RETURNING *",
       [id]
     );
-
     if (result.rowCount === 0) {
       return res.status(404).json({
         message: "Запись о материальном лице не найдена",
       });
     }
-
     return res.status(200).json({
       message: "Запись о материальном лице успешно удалена",
       employee: result.rows[0],
@@ -107,7 +103,6 @@ router.post("/pinning-employee", async (req, res) => {
       "INSERT INTO pinning_employee (date, category, type, unit, employee) VALUES ($1, $2, $3, $4, $5)",
       [date, category, type, unit, employee]
     );
-
     return res.status(200).json({
       message: "Объект успешно закреплен за материальным лицом",
     });

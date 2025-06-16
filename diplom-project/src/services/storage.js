@@ -134,7 +134,7 @@ export const replaceDetailsComputer = async ({
 }) => {
   try {
     // Формирование записи истории замены
-    await instance.post('/replace', {
+    const response = await instance.post('/replace', {
       name,
       type,
       old_part,
@@ -143,9 +143,8 @@ export const replaceDetailsComputer = async ({
     });
 
     // Обновление Id компонента в таблице с компьютерами
-    await instance.patch(`/${config.apiUpdate}`, {
+    await instance.put(`/${config.apiUpdate}/${computerId}`, {
       [config.componentKey]: +newComponentId,
-      id: computerId,
     });
 
     // Обновление местоположения замененного компонента
@@ -157,7 +156,10 @@ export const replaceDetailsComputer = async ({
     await instance.put(`/${config.apiLocation}/${+newComponentId}`, {
       location: name,
     });
-    return { success: true, message: 'Компонент заменён' };
+    return {
+      success: true,
+      message: response.data?.message || 'Компонент заменён',
+    };
   } catch (err) {
     console.error('Ошибка при замене комплектующего', err);
     return { success: false, message: 'Не удалось заменить комплектующее' };

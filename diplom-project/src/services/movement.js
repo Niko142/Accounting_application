@@ -23,7 +23,7 @@ export const fetchHistoryMovement = async (controller) => {
     return res.data;
   } catch (error) {
     if (error.name !== 'AbortError') {
-      console.error('Ошибка при загрузке данных: ', error);
+      throw new Error('Ошибка при загрузке данных', error);
     }
     throw error;
   }
@@ -56,7 +56,7 @@ export const fetchRepairData = async (controller) => {
     return data;
   } catch (error) {
     if (error.name !== 'AbortError') {
-      console.error('Ошибка при загрузке данных: ', error);
+      throw new Error('Ошибка при загрузке данных', error);
     }
     throw error;
   }
@@ -137,7 +137,7 @@ export const fetchAllStorageItems = async (setItems, controller) => {
     },
   ];
 
-  const results = await Promise.all(
+  const results = await Promise.allSettled(
     endpoints.map(async ({ key, endpoint, valueKey, idKey }) => {
       const items = await fetchStorageData(
         endpoint,
@@ -195,10 +195,9 @@ export const pinningItemForAudience = async ({
         start: 'Склад',
         end: audience.value,
       }),
-      instance.patch(`/${endpoint}`, {
+      instance.patch(`/${endpoint}/${idState[itemsKey]}`, {
         location: audience.value,
         status: 'В эксплуатации',
-        id: idState[itemsKey],
       }),
     ]);
 

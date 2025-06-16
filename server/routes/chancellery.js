@@ -14,9 +14,6 @@ router.get("/", async (_, res) => {
     const result = await db.query(
       "SELECT id_chancellery, type, name, unit, price, amounts, (price * amounts) AS itog_price FROM chancellery ORDER BY id_chancellery ASC"
     );
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: "Данные не найдены" });
-    }
     return res.json(result.rows);
   } catch (err) {
     console.log("Ошибка сервера", err);
@@ -34,7 +31,6 @@ router.post("/add", async (req, res) => {
       "INSERT INTO chancellery (type, name, unit, price, amounts) VALUES ($1, $2, $3, $4, $5)",
       [type, name, unit, price, amounts]
     );
-
     return res.status(201).json({
       message: "Категория канцелярской техники успешно добавлена",
       chancellery: result.rows[0],
@@ -56,12 +52,10 @@ router.get("/:id", async (req, res) => {
         message: "Неверный ID категории",
       });
     }
-
     const result = await db.query(
       "SELECT * FROM chancellery WHERE id_chancellery = $1",
       [id]
     );
-
     return res.status(200).json({
       message: "Объект успешно выбран",
       item: result.rows[0],
@@ -84,18 +78,15 @@ router.delete("/delete/:id", async (req, res) => {
         message: "Некорректный ID категории",
       });
     }
-
     const result = await db.query(
       "DELETE FROM chancellery WHERE id_chancellery = $1 RETURNING *",
       [id]
     );
-
     if (result.rowCount === 0) {
       return res.status(404).json({
         message: "Категория не найдена",
       });
     }
-
     return res.status(200).json({
       message: "Категория успешно успешно удалена",
       deleteItem: result.rows[0],
@@ -116,13 +107,11 @@ router.patch("/update", async (req, res) => {
       "UPDATE chancellery SET amounts = $1 WHERE id_chancellery = $2 RETURNING *",
       [amounts, id]
     );
-
     if (result.rowCount === 0) {
       return res.status(404).json({
         message: "Канцелярский предмет не найден",
       });
     }
-
     return res.status(200).json({
       message: "Количество объектов канцеляции обновлено!!!",
       updateItem: result.rows[0],

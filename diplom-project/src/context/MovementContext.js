@@ -127,13 +127,14 @@ function MovementProvider({ children }) {
       };
       try {
         const response = await instance.patch(`/${endpoints[type]}/${id}`);
-        if (response.data.message === 'Успех') {
+        if (response.status === 200) {
           await instance.delete(`/delete-repair/${del}`);
           await updateRepairData();
 
           return {
             success: true,
-            message: 'Возврат объект с ремонта произошел успешно',
+            message:
+              response?.data?.message || 'Возврат объекта произошел успешно',
           };
         } else {
           return {

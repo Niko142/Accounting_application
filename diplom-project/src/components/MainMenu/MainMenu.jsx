@@ -29,6 +29,7 @@ export default function MainMenu() {
     camera: [],
   });
   const [loading, setLoading] = useState(false);
+
   const loadData = async (endpoint, key) => {
     const abortController = new AbortController();
     setLoading(true);
@@ -45,23 +46,23 @@ export default function MainMenu() {
 
   useEffect(() => {
     if (type === 'furniture' && data.furniture.length === 0) {
-      loadData('main_furniture', 'furniture');
+      loadData('furnitures', 'furniture');
     } else if (type === 'ventilation' && data.ventilation.length === 0) {
-      loadData('main_ventilation', 'ventilation');
+      loadData('ventilations', 'ventilation');
     }
   }, [type, data]);
 
   useEffect(() => {
     if (category === 'Компьютер' && data.computer.length === 0) {
-      loadData('main_computer', 'computer');
+      loadData(`computers`, 'computer');
     } else if (category === 'Ноутбук' && data.laptop.length === 0) {
-      loadData('main_laptop', 'laptop');
+      loadData('laptops', 'laptop');
     } else if (category === 'Монитор' && data.screen.length === 0) {
-      loadData('main_screen', 'screen');
+      loadData('screens', 'screen');
     } else if (category === 'МФУ' && data.scanner.length === 0) {
-      loadData('main_scanner', 'scanner');
+      loadData('scanners', 'scanner');
     } else if (category === 'Камера' && data.camera.length === 0) {
-      loadData('main_camera', 'camera');
+      loadData('cameras', 'camera');
     }
   }, [category, data]);
 
