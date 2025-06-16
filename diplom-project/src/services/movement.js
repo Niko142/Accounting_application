@@ -137,7 +137,7 @@ export const fetchAllStorageItems = async (setItems, controller) => {
     },
   ];
 
-  const results = await Promise.allSettled(
+  const results = await Promise.all(
     endpoints.map(async ({ key, endpoint, valueKey, idKey }) => {
       const items = await fetchStorageData(
         endpoint,
