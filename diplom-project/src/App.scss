@@ -15,7 +15,7 @@ html {
 }
 
 body {
-  background: v.$bg-body;
+  background: v.$white;
 }
 
 .App {
@@ -23,11 +23,15 @@ body {
 }
 
 p {
-  color: v.$text;
+  color: v.$black;
 }
 
 textarea {
   resize: none;
+}
+
+:where(h1, h2, h3, h4, h5, h6) {
+  color: v.$text;
 }
 
 .err {
@@ -42,7 +46,7 @@ textarea {
 .main__input {
   width: 100%;
   outline: 0;
-  border: 2px solid v.$border-input;
+  border: 2px solid v.$gray;
   border-radius: 5px;
   padding: 8px;
   font: {
@@ -55,7 +59,7 @@ textarea {
 
   &:focus {
     border-color: v.$blue;
-    box-shadow: 0 0 8px 0 v.$blue;
+    box-shadow: 0 0 8px 0 v.$input-sh;
   }
 }
 
@@ -108,7 +112,7 @@ textarea {
     font-size: 1.1rem;
 
     &.success {
-      color: v.$btn-active;
+      color: v.$green;
     }
 
     &.error {

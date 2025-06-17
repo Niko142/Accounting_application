@@ -133,6 +133,7 @@ export default function PinningEmployee() {
               />
               <label htmlFor="category">Категория:</label>
               <Select
+                inputId="category"
                 classNamePrefix="pinning-select"
                 isClearable
                 placeholder="Выберите категорию объекта"
@@ -143,6 +144,7 @@ export default function PinningEmployee() {
                 <>
                   <label htmlFor="type">Тип:</label>
                   <Select
+                    inputId="type"
                     classNamePrefix="pinning-select"
                     isClearable
                     placeholder="Выберите тип оргтехники"

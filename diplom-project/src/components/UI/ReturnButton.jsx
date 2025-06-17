@@ -11,6 +11,7 @@ const ReturnButton = ({ stretch = false }) => {
       className="navigate-back"
       style={{ marginBottom: stretch && '0' }}
       icon={faArrowLeft}
+      role="Вернуться назад"
       onClick={() => navigate(-1)}
     />
   );

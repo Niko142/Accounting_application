@@ -15,7 +15,7 @@
     height: 320px;
     position: absolute;
     border-radius: 40px;
-    background-color: v.$box;
+    background-color: v.$square;
     rotate: 45deg;
 
     &.box-up {
@@ -35,7 +35,7 @@ button.form__submit {
   border: 1px solid transparent;
   text-align: center;
   color: v.$white;
-  background-color: v.$btn-bg;
+  background-color: v.$green;
   font: {
     family: 'Montserrat';
     size: 22px;
@@ -48,7 +48,7 @@ button.form__submit {
   border-radius: 15px;
 
   &:hover {
-    background-color: v.$btn-bg-hover;
+    background-color: v.$green-hover;
   }
 }
 
@@ -69,7 +69,7 @@ button.form__submit {
   &__title {
     font-size: 2.25rem;
     line-height: 130%;
-    color: v.$heading;
+    color: v.$black;
     margin-bottom: 4px;
   }
 
@@ -84,7 +84,7 @@ button.form__submit {
     padding: 18px 22px;
     border-radius: 10px;
     outline: 0;
-    border: 1px solid v.$border;
+    border: 1px solid v.$gray;
     font-size: 1rem;
     line-height: 120%;
 
@@ -94,7 +94,7 @@ button.form__submit {
   }
 
   ::placeholder {
-    color: v.$placeholder;
+    color: v.$text;
   }
 
   &__error {

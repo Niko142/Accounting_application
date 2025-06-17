@@ -5,8 +5,9 @@ const ObjectSelect = ({ label, options, setState, selectedKey }) => {
   const selectedOption = options.find((opt) => opt.key === selectedKey) || null;
   return (
     <>
-      <label htmlFor="">{label}:</label>
+      <label htmlFor="item">{label}:</label>
       <Select
+        inputId="item"
         classNamePrefix="pinning-select"
         options={options}
         value={selectedOption}

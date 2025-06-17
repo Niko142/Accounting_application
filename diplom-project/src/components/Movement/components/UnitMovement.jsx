@@ -40,12 +40,16 @@ export default function UnitMovement() {
       <TableContainer Lg>
         <header className="unit-movement__header">
           <button
+            aria-label="Раскрыть меню для выбора категории"
             className="unit-movement__burger-menu"
             onClick={() => setOpen(!open)}
           >
             <FontAwesomeIcon icon={faBars} />
           </button>
-          <button className="unit-movement__close-icon">
+          <button
+            className="unit-movement__close-icon"
+            aria-label="Закрыть форму и стереть введенные данные"
+          >
             <FontAwesomeIcon
               size="xl"
               icon={faXmark}

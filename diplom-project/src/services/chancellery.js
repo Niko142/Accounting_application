@@ -10,7 +10,7 @@ export async function fetchData(controller) {
     return res.data;
   } catch (err) {
     if (err.name !== 'AbortError') {
-      console.error('Ошибка при загрузке данных:', err);
+      throw new Error('Ошибка при загрузке данных', err);
     }
     throw err;
   }

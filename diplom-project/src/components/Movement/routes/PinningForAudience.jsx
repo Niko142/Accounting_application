@@ -144,6 +144,7 @@ export default function PinningForAudience() {
               />
               <label htmlFor="category">Категория:</label>
               <Select
+                inputId="category"
                 classNamePrefix="pinning-select"
                 isClearable
                 options={category}
@@ -154,6 +155,7 @@ export default function PinningForAudience() {
                 <>
                   <label htmlFor="type">Тип:</label>
                   <Select
+                    inputId="type"
                     classNamePrefix="pinning-select"
                     isClearable
                     options={type}

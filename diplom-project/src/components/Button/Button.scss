@@ -3,19 +3,23 @@
 .btn {
   box-sizing: border-box;
   padding: 0.8rem 1rem;
-  background-color: #ddd;
+  background-color: v.$btn-no-active;
+  color: v.$black;
   border: 1px solid transparent;
   border-radius: 10px;
   outline: 0;
   cursor: pointer;
   transition: all 0.3s;
-  font-size: 0.9rem;
-  letter-spacing: 1px;
-  font-weight: bold;
+  font-size: 1.1rem;
+  font-weight: 700;
 
   &.btn-active {
-    background: v.$btn-active;
+    background: v.$green-hover;
     color: v.$white;
+  }
+
+  &:where(.btn-edit, .btn-move, .btn-delete) {
+    font-size: 1rem;
   }
 
   &.btn-edit {

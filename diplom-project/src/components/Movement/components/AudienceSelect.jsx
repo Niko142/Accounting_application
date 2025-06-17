@@ -13,8 +13,9 @@ const AudienceSelect = ({ options, setState, selectedAudience }) => {
 
   return (
     <>
-      <label htmlFor="">Куда:</label>
+      <label htmlFor="audience">Куда:</label>
       <Select
+        inputId="audience"
         classNamePrefix="pinning-select"
         maxMenuHeight={150}
         options={formattedOptions}

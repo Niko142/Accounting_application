@@ -34,7 +34,7 @@ export const videocardColumns = (onDelete) => [
 export const processorColumns = (onDelete) => [
   { Header: 'ID', accessor: 'id_processor' },
   { Header: 'Модель', accessor: 'model' },
-  { Header: 'Частота', accessor: 'rate' },
+  { Header: 'Частота', accessor: 'rate', Cell: ({ value }) => `${value} ГГц` },
   { Header: 'Стоимость', accessor: 'price', Cell: getPriceColumn() },
   {
     Header: 'Действия',
@@ -57,7 +57,7 @@ export const mothercardColumns = (onDelete) => [
   { Header: 'ID', accessor: 'id_mothercard' },
   { Header: 'Модель', accessor: 'model' },
   { Header: 'Тип памяти', accessor: 'type' },
-  { Header: 'Частота', accessor: 'rate' },
+  { Header: 'Частота', accessor: 'rate', Cell: ({ value }) => `${value} МГц` },
   { Header: 'Стоимость', accessor: 'price', Cell: getPriceColumn() },
   {
     Header: 'Действия',
@@ -80,7 +80,7 @@ export const memoryColumns = (onDelete) => [
   { Header: 'ID', accessor: 'id_memory' },
   { Header: 'Модель', accessor: 'model' },
   { Header: 'Тип памяти', accessor: 'type' },
-  { Header: 'Объем', accessor: 'volume' },
+  { Header: 'Объем', accessor: 'volume', Cell: ({ value }) => `${value} Гб` },
   { Header: 'Стоимость', accessor: 'price', Cell: getPriceColumn() },
   {
     Header: 'Действия',

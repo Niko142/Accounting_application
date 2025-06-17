@@ -87,6 +87,7 @@ const DataTable = ({ head, mockData, size, disabledPagination = false }) => {
           </span>
           <select
             className="pagination__select"
+            aria-label="Сортировка по количеству одновременно показываемых записей"
             value={pageSize}
             onChange={(e) => setPageSize(Number(e.target.value))}
           >

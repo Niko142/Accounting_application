@@ -17,6 +17,7 @@ const EmployeeSelect = ({ options, setState, selectedEmployee }) => {
         Выберите сотрудника, который будет закреплен за объектом:
       </label>
       <Select
+        inputId="employee"
         classNamePrefix="pinning-select"
         maxMenuHeight={150}
         options={formattedOptions}

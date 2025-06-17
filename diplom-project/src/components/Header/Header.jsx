@@ -50,14 +50,14 @@ export const Header = () => {
               </Link>
             </li>
             {/* Блок с выводом авторизированного пользователя + кнопка 'Выход'*/}
-            <div className="topbar">
-              <span className="topbar__user" style={{ color: '#444' }}>
-                User: {user?.username}
-              </span>
-              <button className="topbar__logout" onClick={handleLogout}>
-                Выйти
-              </button>
-            </div>
+            <li>
+              <div className="topbar">
+                <span className="topbar__user">User: {user?.username}</span>
+                <button className="topbar__logout" onClick={handleLogout}>
+                  Выйти
+                </button>
+              </div>
+            </li>
           </ul>
         </div>
       </nav>

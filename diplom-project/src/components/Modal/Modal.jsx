@@ -15,7 +15,11 @@ const CustomModal = ({ isOpen, onClose, title, children, onComplete }) => {
     >
       <div className="modal__header">
         <h2>{title}</h2>
-        <button className="btn-close" onClick={() => onClose()}>
+        <button
+          className="btn-close"
+          aria-label="Закрыть модальное окно"
+          onClick={() => onClose()}
+        >
           <FontAwesomeIcon icon={faXmark} />
         </button>
       </div>
