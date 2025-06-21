@@ -1,14 +1,16 @@
 const express = require("express");
-const db = require("../db/database");
-const verifyJwtToken = require("../utils/verifyToken");
+const db = require("@/db/database");
+const verifyJwtToken = require("@/utils/verifyToken");
 
 const router = express.Router();
 
 router.use(verifyJwtToken);
 
-// Добавить запрос pinning
+/*
+ * Запросы, связанные с материально-ответственными лицамиз
+ */
 
-// Запросы, связанные с материально-ответственными лицами
+// Запрос для получения информации о материальных лицах
 router.get("/select_employee", async (_, res) => {
   try {
     const result = await db.query(
@@ -26,6 +28,8 @@ router.get("/select_employee", async (_, res) => {
   }
 });
 
+// Запрос для получения истории закрепления объектов 
+// за материальными лицами
 router.get("/select_pinning", async (_, res) => {
   try {
     const result = await db.query(
@@ -46,6 +50,7 @@ router.get("/select_pinning", async (_, res) => {
   }
 });
 
+// Запрос для добавления нового сотрудника
 router.post("/add", async (req, res) => {
   try {
     const { name, surname, patronymic, email, phone } = req.body;
@@ -65,6 +70,7 @@ router.post("/add", async (req, res) => {
   }
 });
 
+// Запрос для удаления записи о сотруднике в случае увольнения
 router.delete("/layoff/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -95,6 +101,8 @@ router.delete("/layoff/:id", async (req, res) => {
   }
 });
 
+// Запрос для формирования записи о закреплении объекта 
+// за конкретным материальным лицом
 router.post("/pinning-employee", async (req, res) => {
   try {
     const { date, category, type, unit, employee } = req.body;

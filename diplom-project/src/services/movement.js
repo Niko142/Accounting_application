@@ -1,9 +1,10 @@
 import Axios from 'axios';
 import { instance } from './api';
+import { MOVEMENT_PATH } from 'constants/path';
 
 export const fetchCabinetInfo = async (controller) => {
   try {
-    const res = await instance.get('/cabinet', {
+    const res = await instance.get(`${MOVEMENT_PATH}/audiences`, {
       signal: controller.signal,
     });
     return res.data;
@@ -17,7 +18,7 @@ export const fetchCabinetInfo = async (controller) => {
 
 export const fetchHistoryMovement = async (controller) => {
   try {
-    const res = await instance.get('/history-cabinet', {
+    const res = await instance.get(`${MOVEMENT_PATH}/history-pinning`, {
       signal: controller.signal,
     });
     return res.data;
@@ -186,7 +187,7 @@ export const pinningItemForAudience = async ({
   try {
     // Отправка запросов
     const [pinningRes, updateRes] = await Promise.all([
-      instance.post('/pinning-cabinet', {
+      instance.post(`${MOVEMENT_PATH}/pinning-audience`, {
         date: formData.date,
         category: formData.category,
         type: formData.type,

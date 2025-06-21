@@ -1,10 +1,9 @@
 import { instance } from './api';
-
-const API_PATH = '/api/chancellery';
+import { CHANCELLERY_PATH } from 'constants/path';
 
 export async function fetchData(controller) {
   try {
-    const res = await instance.get(`${API_PATH}/`, {
+    const res = await instance.get(`${CHANCELLERY_PATH}/`, {
       signal: controller.signal,
     });
     return res.data;
@@ -18,7 +17,7 @@ export async function fetchData(controller) {
 
 export const selectChancellery = async (id) => {
   try {
-    const res = await instance.get(`${API_PATH}/${id}`);
+    const res = await instance.get(`${CHANCELLERY_PATH}/${id}`);
     const result = res.data;
 
     if (result.item) {
@@ -44,7 +43,7 @@ export const selectChancellery = async (id) => {
 
 export const deleteChancellery = async (id) => {
   try {
-    await instance.delete(`${API_PATH}/delete/${id}`);
+    await instance.delete(`${CHANCELLERY_PATH}/delete/${id}`);
   } catch (error) {
     throw new Error('Ошибка при удалении');
   }
@@ -52,7 +51,7 @@ export const deleteChancellery = async (id) => {
 
 export const addChancellery = async (req) => {
   try {
-    const response = await instance.post(`${API_PATH}/add`, req);
+    const response = await instance.post(`${CHANCELLERY_PATH}/add`, req);
     if (response.status === 201) {
       return {
         success: true,
@@ -66,7 +65,7 @@ export const addChancellery = async (req) => {
 
 export const editAmounts = async (req) => {
   try {
-    const response = await instance.patch(`${API_PATH}/update`, req);
+    const response = await instance.patch(`${CHANCELLERY_PATH}/update`, req);
     if (response.status === 200) {
       return {
         success: true,

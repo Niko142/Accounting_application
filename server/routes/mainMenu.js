@@ -1,6 +1,6 @@
 const express = require("express");
-const db = require("../db/database");
-const verifyJwtToken = require("../utils/verifyToken");
+const db = require("@/db/database");
+const verifyJwtToken = require("@/utils/verifyToken");
 
 const router = express.Router();
 
@@ -178,6 +178,7 @@ router.get("/ventilations", async (_, res) => {
   }
 });
 
+// Запрос для получения истории утилизации объектов в организации
 router.get("/utilization-history", async (_, res) => {
   try {
     const result = await db.query(

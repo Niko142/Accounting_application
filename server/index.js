@@ -1,14 +1,18 @@
+require("module-alias/register");
+
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
-const db = require("./db/database");
-const verifyJwtToken = require("./utils/verifyToken");
+const db = require("@db/database");
+const verifyJwtToken = require("@utils/verifyToken");
 
-// Импорт маршрутов
-const authRoutes = require("./routes/auth");
-const chancelleryRoutes = require("./routes/chancellery");
-const employeeRoutes = require("./routes/employee");
-const mainRoutes = require("./routes/mainMenu");
+// Подключение основных маршрутов
+const authRoutes = require("@routes/auth");
+const chancelleryRoutes = require("@routes/chancellery");
+const employeeRoutes = require("@routes/employee");
+const mainRoutes = require("@routes/mainMenu");
+const movementRoutes = require("@routes/movement");
+const storageRoutes = require("@routes/storage");
 
 dotenv.config();
 
@@ -18,11 +22,13 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// Маршрутизация запросов
-app.use("/api/auth", authRoutes);
-app.use("/api/chancellery", chancelleryRoutes);
-app.use("/api/employee", employeeRoutes);
-app.use("/api/main", mainRoutes);
+// Применение запросов
+app.use("/api/auth", authRoutes); // Запросы об авторизации в системе
+app.use("/api/chancellery", chancelleryRoutes); // Запросы по части канцелярии
+app.use("/api/employee", employeeRoutes); // Запросы, связанные с материальными лицами
+app.use("/api/main", mainRoutes); // Запросы блока "Учет" - главный раздел
+app.use("/api/movement", movementRoutes); // Запросы, связанные с перемещением объектов
+app.use("/api/storage", storageRoutes); // Запросы, связанные со складом
 
 app.post("/furniture", verifyJwtToken, async (req, res) => {
   try {
@@ -602,23 +608,6 @@ app.post("/add_disk", verifyJwtToken, async (req, res) => {
   }
 });
 
-app.get("/cabinet", verifyJwtToken, async (_, res) => {
-  try {
-    const result = await db.query(
-      "SELECT * FROM cabinet ORDER BY cabinet_id ASC"
-    );
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: "Данные не найдены" });
-    }
-    return res.json(result.rows);
-  } catch (err) {
-    console.log("Ошибка сервера", err);
-    return res
-      .status(500)
-      .json({ message: "Ошибка сервера при получении данных" });
-  }
-});
-
 app.put("/update_ventilation/:id", verifyJwtToken, async (req, res) => {
   try {
     const { id } = req.params;
@@ -898,42 +887,6 @@ app.put("/update_camera/:id", verifyJwtToken, async (req, res) => {
     });
   }
 });
-
-app.post("/pinning-cabinet", verifyJwtToken, async (req, res) => {
-  try {
-    const { date, category, type, reason, unit, start, end } = req.body;
-
-    await db.query(
-      "INSERT INTO pinning_cabinet (date, category, type, reason, unit, start_location, end_location) VALUES ($1, $2, $3, $4, $5, $6, $7)",
-      [date, category, type, reason, unit, start, end]
-    );
-
-    return res.status(200).json({
-      message: "Объект успешно закреплен за аудиторией",
-    });
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({
-      message: err.message || "Ошибка сервера при закреплении объекта",
-    });
-  }
-});
-
-app.get("/history-cabinet", verifyJwtToken, async (_, res) => {
-  try {
-    const result = await db.query(
-      "SELECT * FROM pinning_cabinet ORDER BY id_pinning ASC"
-    );
-    return res.json(result.rows);
-  } catch (err) {
-    console.log("Ошибка сервера", err);
-    return res
-      .status(500)
-      .json({ message: "Ошибка сервера при получении данных" });
-  }
-});
-
-// Подумать - исправить ли id
 
 app.patch("/location_computer/:id", verifyJwtToken, async (req, res) => {
   try {
@@ -1374,8 +1327,6 @@ app.put("/update_disk/:id", verifyJwtToken, async (req, res) => {
   }
 });
 
-// Исправил
-
 app.get("/computer_movement", verifyJwtToken, async (_, res) => {
   try {
     const result = await db.query(
@@ -1675,24 +1626,6 @@ app.delete("/delete-ventilation/:id", verifyJwtToken, async (req, res) => {
   }
 });
 
-app.post("/utilization", verifyJwtToken, async (req, res) => {
-  try {
-    const { date, category, type, number, model, reason } = req.body;
-
-    await db.query(
-      "INSERT INTO utilization (date, category, type, number, model, reason) VALUES ($1, $2, $3, $4, $5, $6)",
-      [date, category, type, number, model, reason]
-    );
-
-    return res.status(200).json({ message: "Запись успешно сформирована" });
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({
-      message: err.message || "Ошибка сервера при создании записи утилизации",
-    });
-  }
-});
-
 app.delete("/delete-disk/:id", verifyJwtToken, async (req, res) => {
   try {
     const { id } = req.params;
@@ -1850,26 +1783,6 @@ app.delete("/delete-videocard/:id", verifyJwtToken, async (req, res) => {
     console.error(err);
     return res.status(500).json({
       message: "Ошибка сервера при утилизации видеокарты",
-    });
-  }
-});
-
-app.post("/repair", verifyJwtToken, async (req, res) => {
-  try {
-    const { date, category, type, model, number, end, description } = req.body;
-
-    await db.query(
-      "INSERT INTO repair (date, category, type, model, number, end_date, description) VALUES ($1, $2, $3, $4, $5, $6, $7)",
-      [date, category, type, model, number, end, description]
-    );
-
-    return res
-      .status(201)
-      .json({ message: "Объект успешно отправлен в ремонт" });
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({
-      message: err.message || "Ошибка сервера при отправке объекта в ремонт",
     });
   }
 });
@@ -2197,36 +2110,6 @@ app.get("/select_repair_furniture", verifyJwtToken, async (_, res) => {
   }
 });
 
-app.delete("/delete-repair/:id", verifyJwtToken, async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    if (!id || isNaN(id)) {
-      return res.status(400).json({
-        message: "Некорректный ID записи",
-      });
-    }
-    const result = await db.query(
-      "DELETE FROM repair WHERE id_repair = $1 RETURNING *",
-      [id]
-    );
-    if (result.rowCount === 0) {
-      return res.status(404).json({
-        message: "Не удалось найти запись объекта",
-      });
-    }
-    return res.status(200).json({
-      message: "Запись об объекте в ремонте успешно удалена",
-      deleteItem: result.rows[0],
-    });
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({
-      message: "Ошибка сервера при удалении записи об объекте в ремонте",
-    });
-  }
-});
-
 app.patch("/ventilation_from_repair/:id", verifyJwtToken, async (req, res) => {
   try {
     const { id } = req.params;
@@ -2444,26 +2327,6 @@ app.patch("/camera_from_repair/:id", verifyJwtToken, async (req, res) => {
   }
 });
 
-app.post("/replace", verifyJwtToken, async (req, res) => {
-  try {
-    const { name, type, old_part, new_part, date } = req.body;
-
-    const result = await db.query(
-      "INSERT INTO replacement (name, type, old_part, new_part, date) VALUES ($1, $2, $3, $4, $5)",
-      [name, type, old_part, new_part, date]
-    );
-    return res.status(201).json({
-      message: "Комплектующее компьютера успешно заменено",
-      replaceItem: result.rows,
-    });
-  } catch (err) {
-    console.error("Ошибка сервера", err);
-    return res.status(500).json({
-      message: "Ошибка сервера при добавлении записи о замене",
-    });
-  }
-});
-
 app.put("/update_computer_videocard/:id", verifyJwtToken, async (req, res) => {
   const { id } = req.params;
   const { videocard } = req.body;
@@ -2583,23 +2446,6 @@ app.put("/update_computer_disk/:id", verifyJwtToken, async (req, res) => {
   } catch (err) {
     console.error("Ошибка при обновлении диска:", err);
     res.status(500).json({ message: "Внутренняя ошибка сервера" });
-  }
-});
-
-app.get("/change", verifyJwtToken, async (_, res) => {
-  try {
-    const result = await db.query(
-      "SELECT * FROM replacement ORDER BY date ASC"
-    );
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: "Данные не найдены" });
-    }
-    return res.json(result.rows);
-  } catch (err) {
-    console.error("Ошибка сервера", err);
-    return res
-      .status(500)
-      .json({ message: "Ошибка сервера при получении данных" });
   }
 });
 

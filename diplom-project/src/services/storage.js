@@ -1,9 +1,12 @@
 import { instance } from './api';
+import { STORAGE_PATH } from 'constants/path';
 
 // Запрос на получение истории замен комплектующих ПК
 export const fetchChangeDetailsHistory = async (signal) => {
   try {
-    const res = await instance.get('/change', { signal });
+    const res = await instance.get(`${STORAGE_PATH}/history-change`, {
+      signal,
+    });
     return res.data;
   } catch (error) {
     if (error.name !== 'AbortError') {
@@ -62,7 +65,7 @@ export const utilizeObject = async ({
   object,
 }) => {
   try {
-    await instance.post('/utilization', {
+    await instance.post(`${STORAGE_PATH}/utilization`, {
       date,
       category,
       type,
@@ -96,7 +99,7 @@ export const repairObject = async ({
   object,
 }) => {
   try {
-    await instance.post('/repair', {
+    await instance.post(`${STORAGE_PATH}/repair`, {
       date,
       category,
       type,
@@ -134,7 +137,7 @@ export const replaceDetailsComputer = async ({
 }) => {
   try {
     // Формирование записи истории замены
-    const response = await instance.post('/replace', {
+    const response = await instance.post(`${STORAGE_PATH}/replace`, {
       name,
       type,
       old_part,

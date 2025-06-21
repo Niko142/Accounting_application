@@ -1,10 +1,9 @@
 import { instance } from './api';
-
-const API_PATH = '/api/main';
+import { ACC_PATH } from 'constants/path';
 
 export async function fetchData(endpoint, controller) {
   try {
-    const res = await instance.get(`${API_PATH}/${endpoint}`, {
+    const res = await instance.get(`${ACC_PATH}/${endpoint}`, {
       signal: controller.signal,
     });
     return res.data;
@@ -17,7 +16,7 @@ export async function fetchData(endpoint, controller) {
 
 export async function fetchUtilization(controller) {
   try {
-    const res = await instance.get(`${API_PATH}/utilization-history`, {
+    const res = await instance.get(`${ACC_PATH}/utilization-history`, {
       signal: controller.signal,
     });
     return res.data;

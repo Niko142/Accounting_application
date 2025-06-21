@@ -1,10 +1,11 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const db = require("../db/database");
+const db = require("@/db/database");
 
 const router = express.Router();
 
+// Запрос для авторизации в системе
 router.post("/login", async (req, res) => {
   try {
     const { username, password } = req.body;

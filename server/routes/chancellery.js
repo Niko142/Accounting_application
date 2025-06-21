@@ -1,14 +1,16 @@
 const express = require("express");
-const db = require("../db/database");
-const verifyJwtToken = require("../utils/verifyToken");
+const db = require("@/db/database");
+const verifyJwtToken = require("@/utils/verifyToken");
 
 const router = express.Router();
 
 router.use(verifyJwtToken);
 
 /*
- * Запросы по части канцелярии
+ * Запросы по части отдела канцелярии
  */
+
+// Запрос для вывода всех групп канцелярии
 router.get("/", async (_, res) => {
   try {
     const result = await db.query(
@@ -23,6 +25,7 @@ router.get("/", async (_, res) => {
   }
 });
 
+// Запрос для добавления новой категории
 router.post("/add", async (req, res) => {
   try {
     const { type, name, unit, price, amounts } = req.body;
@@ -43,6 +46,7 @@ router.post("/add", async (req, res) => {
   }
 });
 
+// Запрос для вывода информации о выбранной категории
 router.get("/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -69,6 +73,7 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+// Запрос для удаления группы
 router.delete("/delete/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -99,6 +104,7 @@ router.delete("/delete/:id", async (req, res) => {
   }
 });
 
+// Запрос для частичного обновления полей (количество в единицах измерения)
 router.patch("/update", async (req, res) => {
   try {
     const { amounts, id } = req.body;

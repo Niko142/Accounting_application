@@ -13,6 +13,7 @@ import {
   fetchHistoryMovement,
   fetchRepairData,
 } from 'services/movement';
+import { MOVEMENT_PATH } from 'constants/path';
 
 const MovementContext = createContext();
 export const useMovement = () => useContext(MovementContext);
@@ -128,7 +129,7 @@ function MovementProvider({ children }) {
       try {
         const response = await instance.patch(`/${endpoints[type]}/${id}`);
         if (response.status === 200) {
-          await instance.delete(`/delete-repair/${del}`);
+          await instance.delete(`${MOVEMENT_PATH}/delete-repair/${del}`);
           await updateRepairData();
 
           return {
