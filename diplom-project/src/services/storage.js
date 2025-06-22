@@ -1,5 +1,5 @@
 import { instance } from './api';
-import { STORAGE_PATH } from 'constants/path';
+import { STORAGE_PATH, COMPUTER_PATH } from 'constants/path';
 
 // Запрос на получение истории замен комплектующих ПК
 export const fetchChangeDetailsHistory = async (signal) => {
@@ -19,7 +19,9 @@ export const fetchChangeDetailsHistory = async (signal) => {
 // Запрос на получение данных о комплектующих
 export const fetchComponentData = async ({ component, signal }) => {
   try {
-    const res = await instance.get(`/${component}`, { signal });
+    const res = await instance.get(`${COMPUTER_PATH}/${component}/`, {
+      signal,
+    });
     return res.data;
   } catch (error) {
     console.log('Ошибка при выполнении запроса: ', error);
@@ -30,7 +32,9 @@ export const fetchComponentData = async ({ component, signal }) => {
 // Запрос на удаление комплектующего
 export const deleteComponentFromStorage = async ({ component, id }) => {
   try {
-    const response = await instance.delete(`/delete-${component}/${id}`);
+    const response = await instance.delete(
+      `${COMPUTER_PATH}/${component}/${id}`,
+    );
     return {
       success: true,
       message: response.data?.message || 'Комплектующее успешно удалено',
@@ -146,19 +150,25 @@ export const replaceDetailsComputer = async ({
     });
 
     // Обновление Id компонента в таблице с компьютерами
-    await instance.put(`/${config.apiUpdate}/${computerId}`, {
+    await instance.put(`${COMPUTER_PATH}/${config.apiUpdate}/${computerId}`, {
       [config.componentKey]: +newComponentId,
     });
 
     // Обновление местоположения замененного компонента
-    await instance.put(`/${config.apiLocation}/${oldComponentId}`, {
-      location: 'Склад',
-    });
+    await instance.put(
+      `${COMPUTER_PATH}/${config.apiLocation}/${oldComponentId}`,
+      {
+        location: 'Склад',
+      },
+    );
 
     // Обновление местоположения нового компонента компьютера
-    await instance.put(`/${config.apiLocation}/${+newComponentId}`, {
-      location: name,
-    });
+    await instance.put(
+      `${COMPUTER_PATH}/${config.apiLocation}/${+newComponentId}`,
+      {
+        location: name,
+      },
+    );
     return {
       success: true,
       message: response.data?.message || 'Компонент заменён',

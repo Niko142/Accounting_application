@@ -7,7 +7,7 @@ import Button from 'components/Button/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
-import { COMPONENT_CONFIG } from '../config/config';
+import { COMPONENT_CONFIG, componentMap } from '../config/config';
 
 export default function ComponentsMenu() {
   const navigate = useNavigate();
@@ -38,7 +38,7 @@ export default function ComponentsMenu() {
         {/* Обработка выбранного типа комплектующего */}
         {type && (
           <SelectComponent
-            componentType={type}
+            componentType={componentMap[type]}
             columns={COMPONENT_CONFIG[type].columns}
           />
         )}

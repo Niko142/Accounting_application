@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.use(verifyJwtToken);
 
-router.get("/mothercard", async (_, res) => {
+router.get("/", async (_, res) => {
   try {
     const result = await db.query(
       "SELECT * FROM mothercard WHERE location = 'Склад' ORDER BY id_mothercard ASC"
@@ -20,7 +20,7 @@ router.get("/mothercard", async (_, res) => {
   }
 });
 
-router.post("/add_mothercard", async (req, res) => {
+router.post("/add", async (req, res) => {
   try {
     const { model, type, rate, price, location } = req.body;
 
@@ -41,7 +41,7 @@ router.post("/add_mothercard", async (req, res) => {
   }
 });
 
-router.put("/update_mothercard/:id", async (req, res) => {
+router.put("/location/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const { location } = req.body;
@@ -81,7 +81,7 @@ router.put("/update_mothercard/:id", async (req, res) => {
   }
 });
 
-router.delete("/delete-mothercard/:id", async (req, res) => {
+router.delete("/:id", async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -113,7 +113,7 @@ router.delete("/delete-mothercard/:id", async (req, res) => {
   }
 });
 
-router.put("/update_computer_mothercard/:id", async (req, res) => {
+router.put("/computer/:id", async (req, res) => {
   const { id } = req.params;
   const { mothercard } = req.body;
 

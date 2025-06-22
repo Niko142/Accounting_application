@@ -3,6 +3,8 @@ import { instance } from 'services/api';
 import { useForm } from 'react-hook-form';
 import { toast, ToastContainer } from 'react-toastify';
 import { componentCategories, ddrOptions, memoryOptions } from 'data/data';
+import { COMPUTER_PATH } from 'constants/path';
+import { componentMap } from '../config/config';
 
 import Button from 'components/Button/Button';
 import Header from 'components/Header/Header';
@@ -37,7 +39,10 @@ export default function AddComponents() {
     };
 
     try {
-      const response = await instance.post(`/add_${category}`, payload);
+      const response = await instance.post(
+        `${COMPUTER_PATH}/${componentMap[category]}/add`,
+        payload,
+      );
 
       if (response.status === 201) {
         toast.success(response.data.message || 'Успешное добавление');
@@ -169,7 +174,7 @@ export default function AddComponents() {
                 <input
                   type="text"
                   className="main__input"
-                  placeholder="Частота"
+                  placeholder="Частота (в ГГц)"
                   {...register('rate', {
                     required: 'Частота не указана',
                     pattern: {
@@ -257,7 +262,7 @@ export default function AddComponents() {
                 <input
                   type="text"
                   className="main__input"
-                  placeholder="Частота"
+                  placeholder="Частота (в МГц)"
                   {...register('rate', {
                     required: 'Частота не указана',
                     pattern: {

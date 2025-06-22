@@ -6,9 +6,7 @@ const router = express.Router();
 
 router.use(verifyJwtToken);
 
-// Подумать как назвать endpoint
-
-router.get("/videocard", async (_, res) => {
+router.get("/", async (_, res) => {
   try {
     const result = await db.query(
       "SELECT * FROM videocard WHERE location = 'Склад' ORDER BY id_videocard ASC"
@@ -22,7 +20,7 @@ router.get("/videocard", async (_, res) => {
   }
 });
 
-router.post("/add_videocard", async (req, res) => {
+router.post("/add", async (req, res) => {
   try {
     const { model, price, location } = req.body;
 
@@ -43,7 +41,7 @@ router.post("/add_videocard", async (req, res) => {
   }
 });
 
-router.put("/update_videocard/:id", async (req, res) => {
+router.put("/location/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const { location } = req.body;
@@ -83,7 +81,7 @@ router.put("/update_videocard/:id", async (req, res) => {
   }
 });
 
-router.delete("/delete-videocard/:id", async (req, res) => {
+router.delete("/:id", async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -116,7 +114,7 @@ router.delete("/delete-videocard/:id", async (req, res) => {
   }
 });
 
-router.put("/update_computer_videocard/:id", async (req, res) => {
+router.put("/computer/:id", async (req, res) => {
   const { id } = req.params;
   const { videocard } = req.body;
 

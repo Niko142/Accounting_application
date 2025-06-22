@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.use(verifyJwtToken);
 
-app.get("/disk", verifyJwtToken, async (_, res) => {
+router.get("/", async (_, res) => {
   try {
     const result = await db.query(
       "SELECT * FROM disk WHERE location = 'Склад' ORDER BY id_disk ASC"
@@ -20,7 +20,7 @@ app.get("/disk", verifyJwtToken, async (_, res) => {
   }
 });
 
-app.post("/add_disk", verifyJwtToken, async (req, res) => {
+router.post("/add", async (req, res) => {
   try {
     const { model, volume, price, location } = req.body;
 
@@ -41,7 +41,7 @@ app.post("/add_disk", verifyJwtToken, async (req, res) => {
   }
 });
 
-app.put("/update_disk/:id", verifyJwtToken, async (req, res) => {
+router.put("/location/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const { location } = req.body;
@@ -81,7 +81,7 @@ app.put("/update_disk/:id", verifyJwtToken, async (req, res) => {
   }
 });
 
-app.delete("/delete-disk/:id", verifyJwtToken, async (req, res) => {
+router.delete("/:id", async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -113,7 +113,7 @@ app.delete("/delete-disk/:id", verifyJwtToken, async (req, res) => {
   }
 });
 
-app.put("/update_computer_disk/:id", verifyJwtToken, async (req, res) => {
+router.put("/computer/:id", async (req, res) => {
   const { id } = req.params;
   const { disk } = req.body;
 

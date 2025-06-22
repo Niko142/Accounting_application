@@ -16,3 +16,5 @@ export const CHANCELLERY_PATH = '/api/chancellery';
 
 // Путь к API для запросов, связанных с материальными лицами
 export const EMPLOYEE_PATH = '/api/employee';
+
+export const COMPUTER_PATH = '/api/computers';

@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.use(verifyJwtToken);
 
-app.get("/memory", verifyJwtToken, async (_, res) => {
+router.get("/", async (_, res) => {
   try {
     const result = await db.query(
       "SELECT * FROM memory WHERE location = 'Склад' ORDER BY id_memory ASC"
@@ -20,7 +20,7 @@ app.get("/memory", verifyJwtToken, async (_, res) => {
   }
 });
 
-app.post("/add_memory", verifyJwtToken, async (req, res) => {
+router.post("/add", async (req, res) => {
   try {
     const { model, type, volume, price, location } = req.body;
 
@@ -41,7 +41,7 @@ app.post("/add_memory", verifyJwtToken, async (req, res) => {
   }
 });
 
-app.put("/update_memory/:id", verifyJwtToken, async (req, res) => {
+router.put("/location/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const { location } = req.body;
@@ -81,7 +81,7 @@ app.put("/update_memory/:id", verifyJwtToken, async (req, res) => {
   }
 });
 
-app.delete("/delete-memory/:id", verifyJwtToken, async (req, res) => {
+router.delete("/:id", async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -113,7 +113,7 @@ app.delete("/delete-memory/:id", verifyJwtToken, async (req, res) => {
   }
 });
 
-app.put("/update_computer_memory/:id", verifyJwtToken, async (req, res) => {
+router.put("/computer/:id", async (req, res) => {
   const { id } = req.params;
   const { memory } = req.body;
 

@@ -24,8 +24,8 @@ export default function ChangeDetailsForm({
   useEffect(() => {
     const abortController = new AbortController();
 
-    Object.values(COMPUTER_COMPONENTS_CONFIG).forEach(({ componentKey }) => {
-      loadComponents(componentKey, abortController.signal);
+    Object.values(COMPUTER_COMPONENTS_CONFIG).forEach(({ path }) => {
+      loadComponents(path, abortController.signal);
     });
 
     return () => abortController.abort();
@@ -37,7 +37,7 @@ export default function ChangeDetailsForm({
   };
 
   // Получение текущих данных о выбранном компоненте
-  const availableOptions = components?.[currentConfig?.componentKey] || [];
+  const availableOptions = components?.[currentConfig?.path] || [];
 
   // Получение наименования текущего компонента для отображения
   const componentKey = componentMap[currentConfig?.componentKey];
@@ -94,6 +94,7 @@ export default function ChangeDetailsForm({
           <label htmlFor="currentComponent">Текущий компонент:</label>
           <input
             type="text"
+            id="currentComponent"
             className="main__input"
             value={currentComponent}
             disabled

@@ -32,36 +32,43 @@ export const OBJECT_CONFIG = {
   ventilation: { id: 'ventilation_id', columns: ventilationStorageColumns },
 };
 
+// Вот тут сделать замену
+
 export const COMPUTER_COMPONENTS_CONFIG = {
   Видеокарта: {
     id: 'id_videocard',
     componentKey: 'videocard',
-    apiUpdate: 'update_computer_videocard',
-    apiLocation: 'update_videocard',
+    path: 'videocards',
+    apiUpdate: 'videocards/computer',
+    apiLocation: 'videocards/location',
   },
   Процессор: {
     id: 'id_processor',
     componentKey: 'processor',
-    apiUpdate: 'update_computer_processor',
-    apiLocation: 'update_processor',
+    path: 'processors',
+    apiUpdate: 'processors/computer',
+    apiLocation: 'processors/location',
   },
   'Материнская плата': {
     id: 'id_mothercard',
     componentKey: 'mothercard',
-    apiUpdate: 'update_computer_mothercard',
-    apiLocation: 'update_mothercard',
+    path: 'mothercards',
+    apiUpdate: 'mothercards/computer',
+    apiLocation: 'mothercards/location',
   },
   'Оперативная память': {
     id: 'id_memory',
     componentKey: 'memory',
-    apiUpdate: 'update_computer_memory',
-    apiLocation: 'update_memory',
+    path: 'memories',
+    apiUpdate: 'memories/computer',
+    apiLocation: 'memories/location',
   },
   'Жесткий диск': {
     id: 'id_disk',
     componentKey: 'disk',
-    apiUpdate: 'update_computer_disk',
-    apiLocation: 'update_disk',
+    path: 'disks',
+    apiUpdate: 'disks/computer',
+    apiLocation: 'disks/location',
   },
 };
 
