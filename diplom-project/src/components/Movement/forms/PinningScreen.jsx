@@ -7,8 +7,8 @@ export default function PinningScreen() {
       title="Монитор"
       category="Оргтехника"
       type="Монитор"
-      fetchUrl="/screen_movement"
-      patchUrl="/location_screen"
+      fetchUrl="screens/screens-deployed"
+      patchUrl="screens/location"
       unitKeyId="laptop_id"
       getUnitLabel={(item) => item.model}
     />

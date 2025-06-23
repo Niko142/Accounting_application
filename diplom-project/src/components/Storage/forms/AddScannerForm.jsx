@@ -15,7 +15,7 @@ export default function AddScannerForm() {
 
   const onSubmit = async (data) => {
     try {
-      await instance.post('/scanner', {
+      await instance.post('/api/scanners/', {
         nam: data.model,
         color: data.color,
         speed: data.speed,

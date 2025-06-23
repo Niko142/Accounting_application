@@ -7,8 +7,8 @@ export default function PinningCamera() {
       title="Камера"
       category="Оргтехника"
       type="Камера"
-      fetchUrl="/camera_movement"
-      patchUrl="/location_camera"
+      fetchUrl="cameras/cameras-deployed"
+      patchUrl="cameras/location"
       unitKeyId="camera_id"
       getUnitLabel={(item) => item.model}
     />

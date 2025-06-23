@@ -30,21 +30,25 @@ export const fetchHistoryMovement = async (controller) => {
   }
 };
 
+// Отредактировать
+
 const categoriesEndpoints = [
-  { key: 'Все', endpoint: 'select_repair' },
-  { key: 'Компьютер', endpoint: 'select_repair_computer' },
-  { key: 'Ноутбук', endpoint: 'select_repair_laptop' },
-  { key: 'Монитор', endpoint: 'select_repair_screen' },
-  { key: 'МФУ', endpoint: 'select_repair_scanner' },
-  { key: 'Камера', endpoint: 'select_repair_camera' },
-  { key: 'Мебель', endpoint: 'select_repair_furniture' },
-  { key: 'Система вентиляции', endpoint: 'select_repair_ventilation' },
+  { key: 'Все', endpoint: 'repairs' },
+  { key: 'Компьютер', endpoint: 'repairs-computers' },
+  { key: 'Ноутбук', endpoint: 'repairs-laptops' },
+  { key: 'Монитор', endpoint: 'repairs-screens' },
+  { key: 'МФУ', endpoint: 'repairs-scanners' },
+  { key: 'Камера', endpoint: 'repairs-cameras' },
+  { key: 'Мебель', endpoint: 'repairs-furniture' },
+  { key: 'Система вентиляции', endpoint: 'repairs-ventilations' },
 ];
 
 export const fetchRepairData = async (controller) => {
   try {
     const requests = categoriesEndpoints.map(({ endpoint }) =>
-      instance.get(`/${endpoint}`, { signal: controller.signal }),
+      instance.get(`${MOVEMENT_PATH}/${endpoint}`, {
+        signal: controller.signal,
+      }),
     );
 
     const results = await Promise.all(requests);
@@ -70,7 +74,7 @@ export const fetchStorageData = async (
   controller,
 ) => {
   try {
-    const res = await instance.get(`/${endpoint}`, {
+    const res = await instance.get(`/api/${endpoint}/warehouse`, {
       signal: controller.signal,
     });
 
@@ -96,43 +100,43 @@ export const fetchAllStorageItems = async (setItems, controller) => {
   const endpoints = [
     {
       key: 'computers',
-      endpoint: 'sklad_computer',
+      endpoint: 'computers',
       valueKey: 'name',
       idKey: 'id_computer',
     },
     {
       key: 'laptops',
-      endpoint: 'sklad_laptop',
+      endpoint: 'laptops',
       valueKey: 'model',
       idKey: 'laptop_id',
     },
     {
       key: 'screens',
-      endpoint: 'sklad_screen',
+      endpoint: 'screens',
       valueKey: 'model',
       idKey: 'screen_id',
     },
     {
       key: 'scanners',
-      endpoint: 'sklad_scanner',
+      endpoint: 'scanners',
       valueKey: 'nam',
       idKey: 'scanner_id',
     },
     {
       key: 'cameras',
-      endpoint: 'sklad_camera',
+      endpoint: 'cameras',
       valueKey: 'model',
       idKey: 'camera_id',
     },
     {
       key: 'furniture',
-      endpoint: 'sklad_furniture',
+      endpoint: 'furniture',
       valueKey: 'name',
       idKey: 'furniture_id',
     },
     {
       key: 'ventilation',
-      endpoint: 'sklad_ventilation',
+      endpoint: 'ventilations',
       valueKey: 'model',
       idKey: 'ventilation_id',
     },

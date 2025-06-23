@@ -118,16 +118,18 @@ function MovementProvider({ children }) {
   const ReturnRepairedObject = useCallback(
     async (id, del, type) => {
       const endpoints = {
-        Мебель: 'furniture_from_repair',
-        'Система вентиляции': 'ventilation_from_repair',
-        Компьютер: 'computer_from_repair',
-        Ноутбук: 'laptop_from_repair',
-        Монитор: 'screen_from_repair',
-        МФУ: 'scanner_from_repair',
-        Камера: 'camera_from_repair',
+        Мебель: 'furniture',
+        'Система вентиляции': 'ventilations',
+        Компьютер: 'computers',
+        Ноутбук: 'laptops',
+        Монитор: 'screens',
+        МФУ: 'scanners',
+        Камера: 'cameras',
       };
       try {
-        const response = await instance.patch(`/${endpoints[type]}/${id}`);
+        const response = await instance.patch(
+          `/api/${endpoints[type]}/${id}/return-to-storage`,
+        );
         if (response.status === 200) {
           await instance.delete(`${MOVEMENT_PATH}/delete-repair/${del}`);
           await updateRepairData();

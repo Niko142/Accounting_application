@@ -7,8 +7,8 @@ export default function PinningComputer() {
       title="Компьютер"
       category="Оргтехника"
       type="Компьютер"
-      fetchUrl="/computer_movement"
-      patchUrl="/location_computer"
+      fetchUrl="computers/computers-deployed"
+      patchUrl="computers/location"
       unitKeyId="id_computer"
       getUnitLabel={(item) => item.name}
     />

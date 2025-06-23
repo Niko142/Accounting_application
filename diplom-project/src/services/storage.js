@@ -1,3 +1,4 @@
+import { categoryPathMap } from 'components/Storage/config/config';
 import { instance } from './api';
 import { STORAGE_PATH, COMPUTER_PATH } from 'constants/path';
 
@@ -51,7 +52,10 @@ export const deleteComponentFromStorage = async ({ component, id }) => {
 // Запрос на получение данных об объектах разной категории и типов
 export const fetchObjectData = async ({ object, signal }) => {
   try {
-    const res = await instance.get(`/sklad_${object}`, { signal });
+    const res = await instance.get(
+      `/api/${categoryPathMap[object]}/warehouse`,
+      { signal },
+    );
     return res.data;
   } catch (error) {
     console.error('Ошибка при выполнении запроса: ', error);
@@ -77,7 +81,9 @@ export const utilizeObject = async ({
       model,
       reason,
     });
-    const deleteResponse = await instance.delete(`/delete-${object}/${number}`);
+    const deleteResponse = await instance.delete(
+      `/api/${categoryPathMap[object]}/${number}`,
+    );
     return {
       success: true,
       message: deleteResponse.data?.message || 'Объект успешно утилизирован',
@@ -113,10 +119,13 @@ export const repairObject = async ({
       description,
     });
     // Проверить корректность запроса
-    const repairResponse = await instance.put(`/repair_${object}/${number}`, {
-      status: 'В ремонте',
-      location: '-',
-    });
+    const repairResponse = await instance.put(
+      `/api/${categoryPathMap[object]}/${number}/repair-status`,
+      {
+        status: 'В ремонте',
+        location: '-',
+      },
+    );
     return {
       success: true,
       message: 'Объект успешно отправлен в ремонт',

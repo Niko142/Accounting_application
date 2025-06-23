@@ -14,7 +14,7 @@ export default function AddFurnitureForm() {
 
   const onSubmit = async (data) => {
     try {
-      await instance.post('/furniture', {
+      await instance.post('/api/furniture/', {
         name: data.name,
         model: data.model,
         price: data.price,

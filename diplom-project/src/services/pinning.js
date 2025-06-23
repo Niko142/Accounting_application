@@ -1,9 +1,10 @@
 import Axios from 'axios';
 import { instance } from './api';
+import { EMPLOYEE_PATH } from 'constants/path';
 
 const fetchItems = async (endpoint, valueKey = 'model', idKey, controller) => {
   try {
-    const res = await instance.get(`/${endpoint}`, {
+    const res = await instance.get(`/api/${endpoint}/`, {
       signal: controller?.signal,
     });
 
@@ -28,43 +29,43 @@ export const fetchAllItems = async (setItems, controller) => {
   const endpoints = [
     {
       key: 'computers',
-      endpoint: 'computer',
+      endpoint: 'computers',
       valueKey: 'name',
       idKey: 'id_computer',
     },
     {
       key: 'laptops',
-      endpoint: 'select_laptop',
+      endpoint: 'laptops',
       valueKey: 'model',
       idKey: 'laptop_id',
     },
     {
       key: 'screens',
-      endpoint: 'select_screen',
+      endpoint: 'screens',
       valueKey: 'model',
       idKey: 'screen_id',
     },
     {
       key: 'scanners',
-      endpoint: 'select_scanner',
+      endpoint: 'scanners',
       valueKey: 'nam',
       idKey: 'scanner_id',
     },
     {
       key: 'cameras',
-      endpoint: 'select_camera',
+      endpoint: 'cameras',
       valueKey: 'model',
       idKey: 'camera_id',
     },
     {
       key: 'furniture',
-      endpoint: 'select_furniture',
+      endpoint: 'furniture',
       valueKey: 'name',
       idKey: 'furniture_id',
     },
     {
       key: 'ventilation',
-      endpoint: 'select_ventilation',
+      endpoint: 'ventilations',
       valueKey: 'model',
       idKey: 'ventilation_id',
     },
@@ -114,7 +115,7 @@ export const pinningItem = async ({
   try {
     // Отправка запросов
     const [pinningRes, updateRes] = await Promise.all([
-      instance.post('/api/employee/pinning-employee', {
+      instance.post(`${EMPLOYEE_PATH}/pinning-employee`, {
         date: formData.date,
         category: formData.category,
         type: formData.type,

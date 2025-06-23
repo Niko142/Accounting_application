@@ -6,6 +6,7 @@ import { reason } from 'data/data';
 import { instance } from 'services/api';
 import AudienceSelect from '../components/AudienceSelect';
 import { useMovement } from 'context/MovementContext';
+import { MOVEMENT_PATH } from 'constants/path';
 
 export default function PinningForm({
   title,
@@ -33,7 +34,7 @@ export default function PinningForm({
 
     const fetchData = async () => {
       try {
-        const res = await instance.get(fetchUrl, {
+        const res = await instance.get(`/api/${fetchUrl}`, {
           signal: abortController.signal,
         });
         const mapped = res.data.map((item) => ({
@@ -59,15 +60,18 @@ export default function PinningForm({
 
   const handleSubmit = async () => {
     try {
-      const movementResponse = await instance.post('/pinning-cabinet', {
-        date,
-        category,
-        type,
-        reason: selectedReason,
-        unit,
-        start: currentAudience,
-        end: selectedAudience.value,
-      });
+      const movementResponse = await instance.post(
+        `${MOVEMENT_PATH}/pinning-audience`,
+        {
+          date,
+          category,
+          type,
+          reason: selectedReason,
+          unit,
+          start: currentAudience,
+          end: selectedAudience.value,
+        },
+      );
 
       if (movementResponse.status !== 200) {
         throw new Error(
@@ -81,7 +85,7 @@ export default function PinningForm({
       const status =
         selectedAudience.value === 'Склад' ? 'В резерве' : 'В эксплуатации';
 
-      const locationResponse = await instance.patch(`${patchUrl}/${id}`, {
+      const locationResponse = await instance.patch(`/api/${patchUrl}/${id}`, {
         location: selectedAudience.value,
         status,
       });

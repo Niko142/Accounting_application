@@ -15,7 +15,7 @@ export default function AddCameraForm() {
 
   const onSubmit = async (data) => {
     try {
-      await instance.post('/camera', {
+      await instance.post('/api/cameras/', {
         model: data.model,
         resolution: data.resolution,
         angle: data.angle,

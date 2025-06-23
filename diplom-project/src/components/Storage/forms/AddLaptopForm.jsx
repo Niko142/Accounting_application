@@ -18,7 +18,7 @@ export default function AddLaptopForm() {
 
   const onSubmit = async (data) => {
     try {
-      await instance.post('/laptop', {
+      await instance.post('/api/laptops/', {
         model: data.model,
         systems: data.system,
         videocard: data.videocard,

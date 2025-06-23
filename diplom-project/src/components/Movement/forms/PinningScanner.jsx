@@ -7,8 +7,8 @@ export default function PinningScanner() {
       title="МФУ"
       category="Оргтехника"
       type="МФУ"
-      fetchUrl="/scanner_movement"
-      patchUrl="/location_scanner"
+      fetchUrl="scanners/scanners-deployed"
+      patchUrl="scanners/location"
       unitKeyId="scanner_id"
       getUnitLabel={(item) => item.nam}
     />

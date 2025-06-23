@@ -107,7 +107,7 @@ export default function PinningEmployee() {
     items,
     setId,
     handlePinningItem,
-    'update',
+    'employee',
   );
 
   return (

@@ -32,8 +32,6 @@ export const OBJECT_CONFIG = {
   ventilation: { id: 'ventilation_id', columns: ventilationStorageColumns },
 };
 
-// Вот тут сделать замену
-
 export const COMPUTER_COMPONENTS_CONFIG = {
   Видеокарта: {
     id: 'id_videocard',
@@ -90,6 +88,16 @@ export const categoryMap = {
   camera: 'Камера',
   furniture: 'Мебель',
   ventilation: 'Система вентиляции',
+};
+
+export const categoryPathMap = {
+  computer: 'computers',
+  laptop: 'laptops',
+  screen: 'screens',
+  scanner: 'scanners',
+  camera: 'cameras',
+  furniture: 'furniture',
+  ventilation: 'ventilations',
 };
 
 // Вывод имени объекта в зависимости от его name в БД

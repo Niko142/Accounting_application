@@ -7,8 +7,8 @@ export default function PinningFurniture() {
       title="Мебель"
       category="Мебель"
       type="-"
-      fetchUrl="/furniture_movement"
-      patchUrl="/location_furniture"
+      fetchUrl="furniture/furniture-deployed"
+      patchUrl="furniture/location"
       unitKeyId="furniture_id"
       getUnitLabel={(item) => `${item.name} ${item.model}`}
     />

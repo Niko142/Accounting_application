@@ -39,6 +39,120 @@ router.get("/history-pinning", async (_, res) => {
   }
 });
 
+// Запрос на получение информации о всех объектах в ремонте
+router.get("/repairs", async (_, res) => {
+  try {
+    const result = await db.query(
+      "SELECT * FROM repair ORDER BY id_repair ASC"
+    );
+    return res.json(result.rows);
+  } catch (err) {
+    console.error("Ошибка сервера", err);
+    return res
+      .status(500)
+      .json({ message: "Ошибка сервера при получении данных" });
+  }
+});
+
+// Запрос на получение информации о компьютерах в ремонте
+router.get("/repairs-computers", async (_, res) => {
+  try {
+    const result = await db.query(
+      "SELECT * FROM repair WHERE type = 'Компьютер'"
+    );
+    return res.json(result.rows);
+  } catch (err) {
+    console.error("Ошибка сервера", err);
+    return res
+      .status(500)
+      .json({ message: "Ошибка сервера при получении данных" });
+  }
+});
+
+// Запрос на получение информации о ноутбуках в ремонте
+router.get("/repairs-laptops", async (_, res) => {
+  try {
+    const result = await db.query(
+      "SELECT * FROM repair WHERE type = 'Ноутбук'"
+    );
+    return res.json(result.rows);
+  } catch (err) {
+    console.error("Ошибка сервера", err);
+    return res
+      .status(500)
+      .json({ message: "Ошибка сервера при получении данных" });
+  }
+});
+
+// Запрос на получение информации о мониторах в ремонте
+router.get("/repairs-screens", async (_, res) => {
+  try {
+    const result = await db.query(
+      "SELECT * FROM repair WHERE type = 'Монитор'"
+    );
+    return res.json(result.rows);
+  } catch (err) {
+    console.error("Ошибка сервера", err);
+    return res
+      .status(500)
+      .json({ message: "Ошибка сервера при получении данных" });
+  }
+});
+
+// Запрос на получение информации о МФУ в ремонте
+router.get("/repairs-scanners", async (_, res) => {
+  try {
+    const result = await db.query("SELECT * FROM repair WHERE type = 'МФУ'");
+    return res.json(result.rows);
+  } catch (err) {
+    console.error("Ошибка сервера", err);
+    return res
+      .status(500)
+      .json({ message: "Ошибка сервера при получении данных" });
+  }
+});
+
+// Запрос на получение информации о камерах в ремонте
+router.get("/repairs-cameras", async (_, res) => {
+  try {
+    const result = await db.query("SELECT * FROM repair WHERE type = 'Камера'");
+    return res.json(result.rows);
+  } catch (err) {
+    console.error("Ошибка сервера", err);
+    return res
+      .status(500)
+      .json({ message: "Ошибка сервера при получении данных" });
+  }
+});
+
+// Запрос на получение информации о мебели в ремонте
+router.get("/repairs-furniture", async (_, res) => {
+  try {
+    const result = await db.query("SELECT * FROM repair WHERE type = 'Мебель'");
+    return res.json(result.rows);
+  } catch (err) {
+    console.error("Ошибка сервера", err);
+    return res
+      .status(500)
+      .json({ message: "Ошибка сервера при получении данных" });
+  }
+});
+
+// Запрос на получение информации о сплит-системах в ремонте
+router.get("/repairs-ventilations", async (_, res) => {
+  try {
+    const result = await db.query(
+      "SELECT * FROM repair WHERE category = 'Система вентиляции'"
+    );
+    return res.json(result.rows);
+  } catch (err) {
+    console.error("Ошибка сервера", err);
+    return res
+      .status(500)
+      .json({ message: "Ошибка сервера при получении данных" });
+  }
+});
+
 // Запрос на добавление записи о закрепленном объекте
 // за конкретным объектом
 router.post("/pinning-audience", async (req, res) => {

@@ -15,7 +15,7 @@ export default function AddScreenForm() {
 
   const onSubmit = async (data) => {
     try {
-      await instance.post('/screen', {
+      await instance.post('/api/screens/', {
         model: data.model,
         diagonal: data.diagonal,
         rate: data.rate,

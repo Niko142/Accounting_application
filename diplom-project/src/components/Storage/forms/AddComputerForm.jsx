@@ -3,6 +3,8 @@ import Button from 'components/Button/Button';
 import { toast, ToastContainer } from 'react-toastify';
 import { useForm } from 'react-hook-form';
 import { instance } from 'services/api';
+import { COMPUTER_PATH } from 'constants/path';
+
 export default function AddComputerForm() {
   const {
     register,
@@ -21,14 +23,22 @@ export default function AddComputerForm() {
 
   const loadData = async (signal) => {
     try {
+      // Перебор path под каждый их компонентов
+      const componentMap = [
+        'videocards',
+        'processors',
+        'mothercards',
+        'memories',
+        'disks',
+      ];
+
+      // Выполняем параллельные запросы по каждому из компонентов
+      const requests = componentMap.map((path) =>
+        instance.get(`${COMPUTER_PATH}/${path}/`, signal),
+      );
+
       const [videocardRes, processorRes, mothercardRes, memoryRes, diskRes] =
-        await Promise.all([
-          instance.get('/videocard', signal),
-          instance.get('/processor', signal),
-          instance.get('/mothercard', signal),
-          instance.get('/memory', signal),
-          instance.get('/disk', signal),
-        ]);
+        await Promise.all(requests);
 
       setComponents({
         videocard: videocardRes.data,
@@ -56,7 +66,7 @@ export default function AddComputerForm() {
   const onSubmit = async (data) => {
     try {
       const requests = [
-        instance.post('/add_computer', {
+        instance.post(`${COMPUTER_PATH}/`, {
           name: data.name,
           videocard_id: +data.videocard,
           processor_id: +data.processor,
@@ -67,20 +77,29 @@ export default function AddComputerForm() {
           status: 'В резерве',
         }),
 
-        // Запросы на обновление компонентов
-        instance.put(`/update_videocard/${+data.videocard}`, {
+        // Запросы на обновление компонентов (чуть поменять)
+        instance.put(
+          `${COMPUTER_PATH}/videocards/location/${+data.videocard}`,
+          {
+            location: data.name,
+          },
+        ),
+        instance.put(
+          `${COMPUTER_PATH}/processors/location/${+data.processor}`,
+          {
+            location: data.name,
+          },
+        ),
+        instance.put(
+          `${COMPUTER_PATH}/mothercards/location/${+data.mothercard}`,
+          {
+            location: data.name,
+          },
+        ),
+        instance.put(`${COMPUTER_PATH}/memories/location/${+data.memory}`, {
           location: data.name,
         }),
-        instance.put(`/update_processor/${+data.processor}`, {
-          location: data.name,
-        }),
-        instance.put(`/update_mothercard/${+data.mothercard}`, {
-          location: data.name,
-        }),
-        instance.put(`/update_memory/${+data.memory}`, {
-          location: data.name,
-        }),
-        instance.put(`/update_disk/${+data.disk}`, {
+        instance.put(`${COMPUTER_PATH}/disks/location/${+data.disk}`, {
           location: data.name,
         }),
       ];

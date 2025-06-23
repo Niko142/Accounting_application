@@ -15,7 +15,7 @@ export default function AddVentilationForm() {
 
   const onSubmit = async (data) => {
     try {
-      await instance.post('/ventilation', {
+      await instance.post('/api/ventilations/', {
         model: data.model,
         filter: data.filter,
         warm: data.warm,
