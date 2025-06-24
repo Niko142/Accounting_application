@@ -1,4 +1,3 @@
-import Axios from 'axios';
 import { instance } from './api';
 import { MOVEMENT_PATH } from 'constants/path';
 
@@ -9,7 +8,7 @@ export const fetchCabinetInfo = async (controller) => {
     });
     return res.data;
   } catch (error) {
-    if (error.name !== 'AbortError') {
+    if (error.name !== 'CanceledError') {
       throw new Error('Ошибка при загрузке данных', error);
     }
     throw error;
@@ -18,19 +17,17 @@ export const fetchCabinetInfo = async (controller) => {
 
 export const fetchHistoryMovement = async (controller) => {
   try {
-    const res = await instance.get(`${MOVEMENT_PATH}/history-pinning`, {
+    const res = await instance.get(`${MOVEMENT_PATH}/pinning-history`, {
       signal: controller.signal,
     });
     return res.data;
   } catch (error) {
-    if (error.name !== 'AbortError') {
+    if (error.name !== 'CanceledError') {
       throw new Error('Ошибка при загрузке данных', error);
     }
     throw error;
   }
 };
-
-// Отредактировать
 
 const categoriesEndpoints = [
   { key: 'Все', endpoint: 'repairs' },
@@ -60,7 +57,7 @@ export const fetchRepairData = async (controller) => {
 
     return data;
   } catch (error) {
-    if (error.name !== 'AbortError') {
+    if (error.name !== 'CanceledError') {
       throw new Error('Ошибка при загрузке данных', error);
     }
     throw error;
@@ -85,12 +82,11 @@ export const fetchStorageData = async (
       [idKey]: item[idKey], // Динамическое свойство
     }));
   } catch (error) {
-    if (Axios.isCancel(error)) {
-      console.log(`Запрос ${endpoint} отменен`);
-    } else {
+    if (error.name !== 'CanceledError') {
       console.error(`Ошибка при загрузке ${endpoint}:`, error.message);
       throw new Error(`Не удалось загрузить ${endpoint}`);
     }
+    throw error;
   }
 };
 

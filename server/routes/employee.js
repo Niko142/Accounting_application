@@ -10,10 +10,8 @@ router.use(verifyJwtToken);
  * Запросы, связанные с материально-ответственными лицамиз
  */
 
-// Поправить наименования endpoint для соответствия restful
-
 // Запрос для получения информации о материальных лицах
-router.get("/select_employee", async (_, res) => {
+router.get("/employees", async (_, res) => {
   try {
     const result = await db.query(
       "SELECT * FROM employee ORDER BY employee_id"
@@ -32,7 +30,7 @@ router.get("/select_employee", async (_, res) => {
 
 // Запрос для получения истории закрепления объектов 
 // за материальными лицами
-router.get("/select_pinning", async (_, res) => {
+router.get("/pinning-history", async (_, res) => {
   try {
     const result = await db.query(
       `SELECT id_pinning, date, category, type, unit, employee.name AS name, employee.surname AS surname, employee.patronymic AS patronymic 
@@ -53,7 +51,7 @@ router.get("/select_pinning", async (_, res) => {
 });
 
 // Запрос для добавления нового сотрудника
-router.post("/add", async (req, res) => {
+router.post("/employees", async (req, res) => {
   try {
     const { name, surname, patronymic, email, phone } = req.body;
 

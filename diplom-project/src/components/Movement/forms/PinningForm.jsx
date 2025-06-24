@@ -45,10 +45,9 @@ export default function PinningForm({
         }));
         setOptions(mapped);
       } catch (error) {
-        if (error.name !== 'AbortError') {
-          console.log('Запрос был отменён');
-        } else {
-          console.error('Ошибка загрузки:', error);
+        if (error.name !== 'CanceledError') {
+          console.error('Ошибка отправки запроса', error.message);
+          throw new Error('Ошибка отправки запроса', error.message);
         }
       }
     };
@@ -110,14 +109,16 @@ export default function PinningForm({
   return (
     <>
       <form className="movement-form" onSubmit={(e) => e.preventDefault()}>
-        <label>Дата перемещения:</label>
+        <label htmlFor="date">Дата перемещения:</label>
         <input
+          id="date"
           type="datetime-local"
           className="main__input"
           onChange={(e) => setDate(e.target.value)}
         />
-        <label>{title} для перемещения:</label>
+        <label htmlFor="selectComponent">{title} для перемещения:</label>
         <Select
+          inputId="selectComponent"
           classNamePrefix="pinning-select"
           options={options}
           maxMenuHeight={150}
@@ -133,16 +134,18 @@ export default function PinningForm({
           setState={setSelectedAudience}
           selectedAudience={selectedAudience}
         />
-        <label>Причина перемещения</label>
+        <label htmlFor="reason">Причина перемещения</label>
         <Select
+          inputId="reason"
           classNamePrefix="pinning-select"
           maxMenuHeight={110}
           options={reason}
           placeholder="Причина..."
           onChange={(e) => setSelectedReason(e.value)}
         />
-        <label>Откуда:</label>
+        <label htmlFor="currentPlace">Откуда:</label>
         <input
+          id="currentPlace"
           type="text"
           className="main__input"
           value={currentAudience}

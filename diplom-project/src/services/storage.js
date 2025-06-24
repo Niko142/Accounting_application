@@ -5,13 +5,14 @@ import { STORAGE_PATH, COMPUTER_PATH } from 'constants/path';
 // Запрос на получение истории замен комплектующих ПК
 export const fetchChangeDetailsHistory = async (signal) => {
   try {
-    const res = await instance.get(`${STORAGE_PATH}/history-change`, {
+    const res = await instance.get(`${STORAGE_PATH}/component-changes`, {
       signal,
     });
     return res.data;
   } catch (error) {
-    if (error.name !== 'AbortError') {
-      console.log('Ошибка при выполнении запроса', error);
+    if (error.name !== 'CanceledError') {
+      console.error('Ошибка при выполнении запроса', error);
+      throw new Error('Ошибка при выполнении запроса', error.message);
     }
     throw error;
   }
@@ -25,7 +26,10 @@ export const fetchComponentData = async ({ component, signal }) => {
     });
     return res.data;
   } catch (error) {
-    console.log('Ошибка при выполнении запроса: ', error);
+    if (error.name !== 'CanceledError') {
+      console.error('Ошибка при выполнении запроса', error);
+      throw new Error('Ошибка при выполнении запроса', error.message);
+    }
     throw error;
   }
 };
@@ -58,7 +62,10 @@ export const fetchObjectData = async ({ object, signal }) => {
     );
     return res.data;
   } catch (error) {
-    console.error('Ошибка при выполнении запроса: ', error);
+    if (error.name !== 'CanceledError') {
+      console.error('Ошибка при выполнении запроса: ', error);
+      throw new Error('Ошибка при выполнении запроса: ', error.name);
+    }
     throw error;
   }
 };
@@ -73,7 +80,7 @@ export const utilizeObject = async ({
   object,
 }) => {
   try {
-    await instance.post(`${STORAGE_PATH}/utilization`, {
+    await instance.post(`${STORAGE_PATH}/disposals`, {
       date,
       category,
       type,
@@ -109,7 +116,7 @@ export const repairObject = async ({
   object,
 }) => {
   try {
-    await instance.post(`${STORAGE_PATH}/repair`, {
+    await instance.post(`${STORAGE_PATH}/repair-orders`, {
       date,
       category,
       type,
@@ -150,13 +157,16 @@ export const replaceDetailsComputer = async ({
 }) => {
   try {
     // Формирование записи истории замены
-    const response = await instance.post(`${STORAGE_PATH}/replace`, {
-      name,
-      type,
-      old_part,
-      new_part,
-      date,
-    });
+    const response = await instance.post(
+      `${STORAGE_PATH}/component-replacements`,
+      {
+        name,
+        type,
+        old_part,
+        new_part,
+        date,
+      },
+    );
 
     // Обновление Id компонента в таблице с компьютерами
     await instance.put(`${COMPUTER_PATH}/${config.apiUpdate}/${computerId}`, {

@@ -8,7 +8,7 @@ export async function fetchData(controller) {
     });
     return res.data;
   } catch (err) {
-    if (err.name !== 'AbortError') {
+    if (err.name !== 'CanceledError') {
       throw new Error('Ошибка при загрузке данных', err);
     }
     throw err;
@@ -43,7 +43,7 @@ export const selectChancellery = async (id) => {
 
 export const deleteChancellery = async (id) => {
   try {
-    await instance.delete(`${CHANCELLERY_PATH}/delete/${id}`);
+    await instance.delete(`${CHANCELLERY_PATH}/${id}`);
   } catch (error) {
     throw new Error('Ошибка при удалении');
   }
@@ -51,7 +51,7 @@ export const deleteChancellery = async (id) => {
 
 export const addChancellery = async (req) => {
   try {
-    const response = await instance.post(`${CHANCELLERY_PATH}/add`, req);
+    const response = await instance.post(`${CHANCELLERY_PATH}/`, req);
     if (response.status === 201) {
       return {
         success: true,
@@ -65,7 +65,7 @@ export const addChancellery = async (req) => {
 
 export const editAmounts = async (req) => {
   try {
-    const response = await instance.patch(`${CHANCELLERY_PATH}/update`, req);
+    const response = await instance.patch(`${CHANCELLERY_PATH}/`, req);
     if (response.status === 200) {
       return {
         success: true,

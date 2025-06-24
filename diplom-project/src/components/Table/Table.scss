@@ -52,7 +52,7 @@
     box-sizing: border-box;
     border-radius: 3px;
     padding: 6px;
-    border: none;
+    border: 1px solid v.$gray;
     cursor: pointer;
     user-select: none; // Запретить выделять текст у кнопки
     background-color: v.$tiffany;

@@ -50,7 +50,9 @@ export default function PinningForAudience() {
   useEffect(() => {
     const controller = new AbortController();
     fetchAllStorageItems(setItems, controller).catch((err) => {
-      toast.error(err.message);
+      if (err.name !== 'CanceledError') {
+        toast.error(err.message);
+      }
     });
     return () => controller.abort();
   }, []);

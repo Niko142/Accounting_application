@@ -44,5 +44,5 @@
     outline: 2px solid green;
     outline-offset: 3px;
   }
-  &:disabled {cursor: not-allowed; }
+  &:disabled {cursor: not-allowed; color: v.$gray;}
 }

@@ -45,7 +45,7 @@ function MovementProvider({ children }) {
       setFilteredAudience(res.filter((cab) => cab?.description !== 'Склад')); // Фильтрация
       return { success: true, item: res };
     } catch (err) {
-      if (err.name !== 'AbortError') {
+      if (err.name !== 'CanceledError') {
         console.error('Ошибка при загрузке данных:', err);
         return {
           success: false,
@@ -80,7 +80,7 @@ function MovementProvider({ children }) {
       setHistoryMovement(res);
       return { success: true, item: res };
     } catch (err) {
-      if (err.name !== 'AbortError') {
+      if (err.name !== 'CanceledError') {
         console.error('Ошибка при загрузке данных:', err);
         return {
           success: false,
@@ -101,7 +101,7 @@ function MovementProvider({ children }) {
       setRepairData(data);
       return { success: true, item: data };
     } catch (err) {
-      if (err.name !== 'AbortError') {
+      if (err.name !== 'CanceledError') {
         console.error('Ошибка при загрузке данных:', err);
         return {
           success: false,
@@ -131,7 +131,7 @@ function MovementProvider({ children }) {
           `/api/${endpoints[type]}/${id}/return-to-storage`,
         );
         if (response.status === 200) {
-          await instance.delete(`${MOVEMENT_PATH}/delete-repair/${del}`);
+          await instance.delete(`${MOVEMENT_PATH}/${del}`);
           await updateRepairData();
 
           return {

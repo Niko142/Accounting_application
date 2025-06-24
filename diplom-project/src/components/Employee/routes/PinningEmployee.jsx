@@ -64,7 +64,9 @@ export default function PinningEmployee() {
   useEffect(() => {
     const controller = new AbortController();
     fetchAllItems(setItems, controller).catch((err) => {
-      toast.error(err.message);
+      if (err.name !== 'CanceledError') {
+        toast.error(err.message);
+      }
     });
     return () => controller.abort();
   }, []);

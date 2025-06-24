@@ -25,7 +25,7 @@ router.get("/audiences", async (_, res) => {
 });
 
 // Запрос на получение истории закрепления объектов за аудиториями
-router.get("/history-pinning", async (_, res) => {
+router.get("/pinning-history", async (_, res) => {
   try {
     const result = await db.query(
       "SELECT * FROM pinning_cabinet ORDER BY id_pinning ASC"
@@ -177,7 +177,7 @@ router.post("/pinning-audience", async (req, res) => {
 
 // Запрос на удаление записи объекта в ремонте 
 // (принцип - "объект возвращен на склад")
-router.delete("/delete-repair/:id", async (req, res) => {
+router.delete("/:id", async (req, res) => {
   try {
     const { id } = req.params;
 

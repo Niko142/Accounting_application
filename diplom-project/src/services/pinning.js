@@ -1,4 +1,3 @@
-import Axios from 'axios';
 import { instance } from './api';
 import { EMPLOYEE_PATH } from 'constants/path';
 
@@ -15,12 +14,11 @@ const fetchItems = async (endpoint, valueKey = 'model', idKey, controller) => {
       [idKey]: item[idKey], // Динамическое свойство
     }));
   } catch (error) {
-    if (Axios.isCancel(error)) {
-      console.log(`Запрос ${endpoint} отменен`);
-    } else {
+    if (error.name !== 'CanceledError') {
       console.error(`Ошибка при загрузке ${endpoint}:`, error.message);
       throw new Error(`Не удалось загрузить ${endpoint}`);
     }
+    throw error;
   }
 };
 

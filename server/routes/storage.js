@@ -7,7 +7,7 @@ const router = express.Router();
 router.use(verifyJwtToken);
 
 // Запрос на получение истории замены комплектующих у компьютера
-router.get("/history-change", async (_, res) => {
+router.get("/component-changes", async (_, res) => {
   try {
     const result = await db.query(
       "SELECT * FROM replacement ORDER BY date ASC"
@@ -25,7 +25,7 @@ router.get("/history-change", async (_, res) => {
 });
 
 // Запрос на составление записи об утилизированном объекте
-router.post("/utilization", async (req, res) => {
+router.post("/disposals", async (req, res) => {
   try {
     const { date, category, type, number, model, reason } = req.body;
 
@@ -44,7 +44,7 @@ router.post("/utilization", async (req, res) => {
 });
 
 // Запрос на организации отправки объекта в ремонт
-router.post("/repair", async (req, res) => {
+router.post("/repair-orders", async (req, res) => {
   try {
     const { date, category, type, model, number, end, description } = req.body;
 
@@ -64,8 +64,8 @@ router.post("/repair", async (req, res) => {
   }
 });
 
-// Запрос
-router.post("/replace", async (req, res) => {
+// Запрос на формирование записи о замене комплектующих
+router.post("/component-replacements", async (req, res) => {
   try {
     const { name, type, old_part, new_part, date } = req.body;
 

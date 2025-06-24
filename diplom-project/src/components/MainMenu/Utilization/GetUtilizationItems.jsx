@@ -19,7 +19,7 @@ export default function GetUtilizationItems() {
         const res = await fetchUtilization(abortController);
         setData(res);
       } catch (err) {
-        if (err.name !== 'AbortError') {
+        if (err.name !== 'CanceledError') {
           console.error('Ошибка при загрузке данных:', err);
         }
       } finally {

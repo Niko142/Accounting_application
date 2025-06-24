@@ -27,8 +27,14 @@ instance.interceptors.response.use(
     return response;
   },
   (error) => {
+    // Проверка, является ли запрос для авторизации
+    const isLoginRequest = error.config?.url?.includes('/login');
+
     // Если токен недействителен
-    if (error.response?.status === 401 || error.response?.status === 403) {
+    if (
+      (error.response?.status === 401 || error.response?.status === 403) &&
+      !isLoginRequest
+    ) {
       // Очищаем localStorage
       localStorage.removeItem('token');
       localStorage.removeItem('user');

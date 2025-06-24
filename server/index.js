@@ -3,10 +3,6 @@ require("module-alias/register");
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
-const db = require("@db/database");
-const verifyJwtToken = require("@utils/verifyToken");
-
-// Настроить подключение
 
 // Подключение основных маршрутов
 const authRoutes = require("@routes/auth");

@@ -48,7 +48,7 @@ function ChancelleryProvider({ children }) {
       const res = await fetchData(abortControllerRef.current);
       setProducts(Array.isArray(res) ? res : []);
     } catch (error) {
-      if (error.name !== 'AbortError') {
+      if (error.name !== 'CanceledError') {
         console.error('Ошибка при загрузке данных:', error);
       }
       setProducts([]);

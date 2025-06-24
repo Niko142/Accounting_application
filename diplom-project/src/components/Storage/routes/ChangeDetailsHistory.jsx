@@ -19,8 +19,9 @@ export default function ChangeDetailsHistory() {
         const res = await fetchChangeDetailsHistory(abortController.signal);
         setDetailsHistory(res);
       } catch (err) {
-        if (err.name !== 'AbortError') {
-          console.log('Запрос отменен:', err.name);
+        if (err.name !== 'CanceledError') {
+          console.error('Ошибка при выполнении запроса', err.name);
+          throw new Error('Ошибка при выполнении запроса:', err.name);
         }
       } finally {
         setIsLoading(false);
