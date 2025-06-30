@@ -94,6 +94,7 @@ textarea {
     padding: 5px;
     border-radius: 10px;
     border: 1px solid v.$arrow;
+    cursor: pointer;
 
     &::file-selector-button {
       cursor: pointer;

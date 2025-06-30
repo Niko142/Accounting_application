@@ -5,7 +5,7 @@
 -- Dumped from database version 16.9
 -- Dumped by pg_dump version 16.9
 
--- Started on 2025-06-06 23:48:26
+-- Started on 2025-06-30 15:54:20
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -590,8 +590,8 @@ ALTER TABLE public.screen_description ALTER COLUMN screen_id ADD GENERATED ALWAY
 
 CREATE TABLE public.users (
     user_id integer NOT NULL,
-    username character varying(25) NOT NULL,
-    password character varying(25) NOT NULL
+    username character varying(30) NOT NULL,
+    password character varying(80) NOT NULL
 );
 
 
@@ -736,8 +736,8 @@ COPY public.cabinet (cabinet_id, number, description) FROM stdin;
 COPY public.camera_description (camera_id, model, resolution, angle, bracing, price, location, employee, status) FROM stdin;
 2	Logitech BRIO 300	1920x1080	70	Присутствует	3799	Склад	5	В резерве
 1	A4Tech PK-910P	1280x720	68	Присутствует	2250	205	5	В эксплуатации
-3	A4Tech PK-940HA	1920x1080	75	Присутствует	4299	Склад	8	В резерве
-4	Logitech C922 Pro Stream	1920x1080	78	Присутствует	6000	Склад	\N	В резерве
+4	Logitech C922 Pro Stream	1920x1080	78	Присутствует	6000	Склад	21	В резерве
+3	A4Tech PK-940HA	1920x1080	75	Присутствует	4299	38	8	В эксплуатации
 \.
 
 
@@ -748,14 +748,15 @@ COPY public.camera_description (camera_id, model, resolution, angle, bracing, pr
 --
 
 COPY public.chancellery (id_chancellery, type, name, unit, price, amounts) FROM stdin;
-1	Письменные принадлежности	Карандаш механический	шт.	5.23	22
-2	Бумажно-беловые товары	Бумага для офисной техники, 500л.	пач.	300.00	16
-3	Письменные принадлежности	Ручка шариковая с черными чернилами	шт.	6.23	24
-5	Письменные принадлежности	Ручка шариковая, черная	шт.	67.00	16
-6	Принадлежности для офиса	Степлер офисный	шт.	250.00	6
 4	Предметы хранения	Футляр для хранения карандашей и ручек	шт.	360.00	12
 7	Предметы хранения	Ящик для хранения оставленных вещей	шт.	900.00	3
-8	Предметы хранения	Пенал, школьный	шт.	400.00	1
+8	Предметы хранения	Пенал, школьный	шт.	400.00	2
+10	Принадлежности для офиса	Набор универсальных ножниц	шт.	400.00	2
+12	Письменные принадлежности	Набор гелевых ручек, черная, 12 шт.	уп.	240.00	2
+6	Принадлежности для офиса	Степлер офисный	шт.	250.00	9
+1	Письменные принадлежности	Карандаш механический	шт.	5.23	28
+2	Бумажно-беловые товары	Бумага для офисной техники, 500л.	пач.	300.00	10
+5	Письменные принадлежности	Ручка шариковая, черная	шт.	67.00	12
 \.
 
 
@@ -766,11 +767,12 @@ COPY public.chancellery (id_chancellery, type, name, unit, price, amounts) FROM 
 --
 
 COPY public.computer (id_computer, name, videocard_id, processor_id, mothercard_id, memory_id, disk_id, location, employee, status) FROM stdin;
-8	ARDOR GAMING NEO M143	7	6	2	5	2	Склад	\N	В резерве
-7	iRU Game 510H6SEA	3	2	1	3	1	Склад	\N	В резерве
 6	MSI PRO DP21 13M-619RU	2	3	5	1	4	Склад	\N	В резерве
 3	ARDOR GAMING NEO M142	4	8	3	2	5	134	2	В эксплуатации
 4	OMEN GT21-0013ur	1	1	4	4	3	Склад	8	В резерве
+7	iRU Game 510H6SEA	6	2	1	3	1	Склад	\N	В резерве
+10	BLOODY BD-PC CH61C1	10	10	6	8	9	Склад	\N	В резерве
+11	MSI Pro DP21 13M-631XRU	9	4	8	7	8	Склад	\N	В резерве
 \.
 
 
@@ -781,12 +783,13 @@ COPY public.computer (id_computer, name, videocard_id, processor_id, mothercard_
 --
 
 COPY public.disk (id_disk, model, volume, price, location) FROM stdin;
-6	WD Red Plus WD40EFPX	4 Тб	10990	Склад
 4	Seagate SkyHawk	6 Тб	13799	MSI PRO DP21 13M-619RU
 3	Toshiba DT02	4 Тб	9199	OMEN GT21-0013ur
-2	Toshiba DT01-V Series	1 Тб	6299	ARDOR GAMING NEO M143
 1	WD Purple	2 Тб	8799	iRU Game 510H6SEA
 5	Seagate BarraCuda	2 Тб	6499	ARDOR GAMING NEO M142
+10	Seagate Skyhawk ST4000VX016	4 Тб	8490	Склад
+9	WD Caviar Blue WD10EZEX	1 Тб	5590	BLOODY BD-PC CH61C1
+8	WD Purple WD43PURZ	4 Тб	8290	MSI Pro DP21 13M-631XRU
 \.
 
 
@@ -807,6 +810,7 @@ COPY public.employee (employee_id, name, surname, patronymic, email, phone) FROM
 14	Федор	Федоров	Федорович	gergreg@wfe.rw	89232323454
 15	Михаил	Михайлов	Михайлович	erwgrege@we.tu	+79432453425
 16	Екатерина	Екатериновна	Михайловна	greger@fw.ru	+79435242532
+21	Игорь	Игорев	Игоревич	ergergre@gerg.ru	+79434343456
 \.
 
 
@@ -817,8 +821,11 @@ COPY public.employee (employee_id, name, surname, patronymic, email, phone) FROM
 --
 
 COPY public.furniture_description (furniture_id, name, model, price, location, employee, status) FROM stdin;
-2	Стол	Офисный	3000	Склад	\N	В резерве
-1	Стул	Офисный	900	-	\N	В ремонте
+3	Кресло	Тайм	1500	134	\N	В эксплуатации
+1	Стул	Офисный	900	-	3	В ремонте
+2	Стол	Офисный	3000	134	\N	В эксплуатации
+5	Стул	Тайм	1200	Склад	\N	В резерве
+7	Стол Игровой	Carry-3	11740	Склад	5	В резерве
 \.
 
 
@@ -829,11 +836,12 @@ COPY public.furniture_description (furniture_id, name, model, price, location, e
 --
 
 COPY public.laptop_description (laptop_id, model, systems, videocard, processor, memory, volume, price, location, employee, status) FROM stdin;
-5	ASUS Vivobook Go 15 E1504FA-BQ1163	Windows 11	AMD Radeon 610M	AMD Ryzen 5 7520U	8	512 Гб	37999	Склад	\N	В резерве
 4	Tecno Megabook K16S	Windows 11	Intel UHD Graphics	Intel Core i5-13420H	16	512 Гб	49999	121	\N	В эксплуатации
-3	ASUS ExpertBook B1402CBA-EB0604W	Windows 11	Intel UHD Graphics	Intel Core i3-1215U	8	256 Гб	44499	101	\N	В эксплуатации
 2	ASUS VivoBook 16 X1605ZA-MB453W	Windows 11	Intel UHD Graphics	Intel Core i3-1215U	8	512 Гб	49999	134	14	В эксплуатации
-1	Acer Aspire 5 A514-56M-37NQ	Windows 11	Встроенная	Intel Core i3	8	512 Гб	44499	Склад	10	В резерве
+1	Acer Aspire 5 A514-56M-37NQ	Windows 11	Встроенная	Intel Core i3	8	512 Гб	44499	Склад	2	В резерве
+6	Xiaomi RedmiBook Pro 14	Windows 10	Intel UHD Graphics	R-5 5500U	16	512 Гб	61000	Склад	\N	В резерве
+5	ASUS Vivobook Go 15 E1504FA-BQ1163	Windows 11	AMD Radeon 610M	AMD Ryzen 5 7520U	8	512 Гб	37999	202	15	В эксплуатации
+3	ASUS ExpertBook B1402CBA-EB0604W	Windows 11	Intel UHD Graphics	Intel Core i3-1215U	8	256 Гб	44499	38	\N	В эксплуатации
 \.
 
 
@@ -848,8 +856,11 @@ COPY public.memory (id_memory, model, type, volume, price, location) FROM stdin;
 4	Patriot Signature Line	DDR4	32 Гб	6699	OMEN GT21-0013ur
 3	ADATA XPG SPECTRIX D35G RGB	DDR4	8 Гб	2699	iRU Game 510H6SEA
 1	Kingston FURY Beast Black RGB	DDR4	8 Гб	3200	MSI PRO DP21 13M-619RU
-6	Kingston Fury Beast KF556C40BB-16	DDR5	16 Гб	4690	Склад
 2	Patriot Viper Elite II	DDR4	16 Гб	4099	ARDOR GAMING NEO M142
+9	Kingston Fury Impact KF432S20IBK2	DDR4	16	3390	Склад
+6	Kingston Fury Beast KF556C40BB-16	DDR5	16 Гб	4690	Склад
+8	Kingston Fury Beast Black KF432C16BBK2	DDR4	16	3690	BLOODY BD-PC CH61C1
+7	KINGSPEC KS3200D4P13508G	DDR4	8	1090	MSI Pro DP21 13M-631XRU
 \.
 
 
@@ -860,12 +871,14 @@ COPY public.memory (id_memory, model, type, volume, price, location) FROM stdin;
 --
 
 COPY public.mothercard (id_mothercard, model, type, rate, price, location) FROM stdin;
-6	MSI MPG B550 GAMING PLUS	DDR4	3200	10860	Склад
 4	MSI H310M PRO-VDH	DDR4	2666	6299	OMEN GT21-0013ur
 2	GIGABYTE A520M H	DDR4	3200	7899	ARDOR GAMING NEO M143
 1	ASUS PRIME A520M-E	DDR4	3200	8599	iRU Game 510H6SEA
 5	GIGABYTE A620M H	DDR5	5200	8499	MSI PRO DP21 13M-619RU
 3	GIGABYTE H510M K V2	DDR4	3200	5999	ARDOR GAMING NEO M142
+7	ASUS PRIME B450-PLUS	DDR4	2666	7500	Склад
+6	MSI MPG B550 GAMING PLUS	DDR4	3200	10860	BLOODY BD-PC CH61C1
+8	MSI PRO B760-P	DDR4	3200	11000	MSI Pro DP21 13M-631XRU
 \.
 
 
@@ -879,6 +892,17 @@ COPY public.pinning_cabinet (id_pinning, date, category, type, reason, unit, sta
 2	2025-04-10T23:09	Оргтехника	Ноутбук	Введение в эксплуатацию	Tecno Megabook K16S	Склад	5
 1	2025-04-10T16:42	Оргтехника	Камера	Смена рабочего пространства	A4Tech PK-910P	121	205
 3	2025-06-06T22:00	Система вентиляции	-	Введение в эксплуатацию	Ballu BSAGI-07HN8	Склад	54
+4	2025-06-11T17:41	Оргтехника	Ноутбук	Смена рабочего пространства	ASUS ExpertBook B1402CBA-EB0604W	101	134
+5	2025-06-12T01:57	Мебель	-	Введение в эксплуатацию	Кресло	Склад	134
+6	2025-06-12T01:57	Оргтехника	Монитор	Смена рабочего пространства	MSI Modern MD241P	54	101
+7	2025-06-12T02:03	Оргтехника	МФУ	Введение в эксплуатацию	HP LaserJet Tank MFP 1005	Склад	202
+8	2025-06-12T02:04	Оргтехника	МФУ	Смена рабочего пространства	HP LaserJet Tank MFP 1005	202	202
+9	2025-06-12T02:18	Мебель	-	Введение в эксплуатацию	Стол	Склад	134
+10	2025-06-24T01:56	Оргтехника	Камера	Введение в эксплуатацию	A4Tech PK-940HA	Склад	38
+11	2025-06-14T01:42	Система вентиляции	-	Введение в эксплуатацию	Aceline AC-KGHA9INV	Склад	54
+12	2025-06-24T16:13	Оргтехника	Ноутбук	Введение в эксплуатацию	ASUS Vivobook Go 15 E1504FA-BQ1163	Склад	38
+13	2025-06-24T16:18	Оргтехника	Ноутбук	Смена рабочего пространства	ASUS Vivobook Go 15 E1504FA-BQ1163	38	202
+14	2025-06-24T18:29	Оргтехника	Ноутбук	Смена рабочего пространства	ASUS ExpertBook B1402CBA-EB0604W	134	38
 \.
 
 
@@ -892,6 +916,19 @@ COPY public.pinning_employee (id_pinning, date, category, type, unit, employee) 
 2	2024-04-12T20:24	Оргтехника	Камера	Logitech BRIO 300	3
 1	2024-04-16T01:13	Мебель	-	Кресло Игровое	2
 4	2025-06-06T21:41	Система вентиляции	-	Tesla TA36FFML-12410A	3
+5	2025-06-11T19:43	Оргтехника	Ноутбук	ASUS Vivobook Go 15 E1504FA-BQ1163	4
+7	2025-06-11T21:41	Система вентиляции	-	TCL ELI 24 INV/R1	14
+8	2025-06-12T02:01	Мебель	-	Стул	3
+9	2025-06-12T02:02	Оргтехника	Монитор	Acer Nitro XF253QXbmiiprx	5
+11	2025-06-11T06:07	Система вентиляции	-	Tesla TA36FFML-12410A	14
+12	2025-06-12T02:06	Оргтехника	Ноутбук	ASUS ExpertBook B1402CBA-EB0604W	3
+13	2025-06-11T02:10	Оргтехника	Ноутбук	Acer Aspire 5 A514-56M-37NQ	2
+14	2025-06-15T19:53	Оргтехника	Ноутбук	ASUS Vivobook Go 15 E1504FA-BQ1163	15
+15	2025-06-15T20:55	Система вентиляции	-	TCL BREEZEIN 09 INV	10
+16	2025-06-17T01:07	Оргтехника	Камера	Logitech C922 Pro Stream	21
+17	2025-06-24T01:53	Мебель	-	Стол Игровой	5
+18	2025-06-24T02:09	Система вентиляции	-	Ballu BSAGI-07HN8	16
+19	2025-07-01T02:10	Система вентиляции	-	Ballu BSAGI-07HN8	15
 \.
 
 
@@ -906,10 +943,10 @@ COPY public.processor (id_processor, model, rate, price, location) FROM stdin;
 6	Intel Core i7-10700F OEM	2.9	20799	ARDOR GAMING NEO M143
 3	AMD Ryzen 9 5900X OEM	3.7	32499	MSI PRO DP21 13M-619RU
 2	AMD Ryzen 7 5700X	3.4	17799	iRU Game 510H6SEA
-9	AMD Ryzen5 5600 AM4 OEM	3.5	6999	Склад
 8	AMD Ryzen 7 5700X3D	3.0	26299	ARDOR GAMING NEO M142
-4	AMD Ryzen 7 5700X3D	3.0	26499	Склад
 1	Intel Core i5-10400F	2.9	10999	OMEN GT21-0013ur
+10	Intel Core i5 14600KF	3.5	18490	BLOODY BD-PC CH61C1
+4	AMD Ryzen 7 5700X3D	3.0	26499	MSI Pro DP21 13M-631XRU
 \.
 
 
@@ -934,6 +971,8 @@ COPY public.repair (id_repair, date, category, type, model, number, end_date, de
 COPY public.replacement (id_replace, name, type, old_part, new_part, date) FROM stdin;
 1	OMEN GT21-0013ur	Видеокарта	MSI GeForce RTX 4060 VENTUS 2X BLACK OC	Palit GeForce RTX 4060 Dual OC	2024-05-18T01:22
 5	OMEN GT21-0013ur	Процессор	AMD Ryzen 7 5700X3D	Intel Core i5-10400F	2025-06-13T23:13
+7	iRU Game 510H6SEA	Видеокарта	Palit GeForce RTX 4060 Dual OC	 MSI GeForce RTX 4070 Ti SUPER GAMING X SLIM WHITE	2025-06-09T23:58
+8	BLOODY BD-PC CH61C1	Оперативная память	Kingston Fury Beast KF556C40BB-16	Kingston Fury Beast Black KF432C16BBK2	2025-06-21T18:44
 \.
 
 
@@ -945,10 +984,10 @@ COPY public.replacement (id_replace, name, type, old_part, new_part, date) FROM 
 
 COPY public.scanner_description (scanner_id, nam, color, speed, price, location, employee, status) FROM stdin;
 5	Pantum CM1100DW	Цветная	18	48999	Склад	\N	В резерве
-4	HP LaserJet Tank MFP 1005	Черно-белая	22	20699	Склад	2	В резерве
 3	HP Laser MFP 135w	Черно-белая	20	22199	Склад	3	В резерве
 2	Pantum M45	Черно-белая	22	14449	Склад	\N	В резерве
 6	Brother DCP-L5510DN	Черно-белая	48	27999	205	\N	В эксплуатации
+4	HP LaserJet Tank MFP 1005	Черно-белая	22	20699	202	2	В эксплуатации
 \.
 
 
@@ -960,9 +999,9 @@ COPY public.scanner_description (scanner_id, nam, color, speed, price, location,
 
 COPY public.screen_description (screen_id, model, diagonal, rate, type, price, location, employee, status) FROM stdin;
 6	LG UltraGear 27GN600-B	27.00	144	IPS	19230	Склад	\N	В резерве
-5	Acer Nitro XF253QXbmiiprx	24.50	240	IPS	24999	Склад	\N	В резерве
 2	Philips 27M1C5200W EVNIA 3000	27.00	240	VA	21999	Склад	\N	В резерве
 1	MSI Modern MD241P	23.80	75	IPS	12999	54	4	В эксплуатации
+5	Acer Nitro XF253QXbmiiprx	24.50	240	IPS	24999	Склад	\N	В резерве
 3	LG UltraGear 27GN600-B	27.00	144	IPS	19230	Склад	\N	В резерве
 \.
 
@@ -974,9 +1013,9 @@ COPY public.screen_description (screen_id, model, diagonal, rate, type, price, l
 --
 
 COPY public.users (user_id, username, password) FROM stdin;
-1	nick	123
-2	Niko	142
-3	qwe	qwe
+1	nick	$2b$10$yOxYcuizMmPOStJrsO3cO.mizK1KrUYFtlYoGNKCZXVLe74V8LTca
+2	Niko	$2b$10$ynrGCN5ECz1Jm2n2c/WzkOSlVVVcWbIIWRD3ytAHuwi9pnW8u2RGO
+3	qwe	$2b$10$KSF/g2YqhPsJG68Xi5IHnuqPBcGD4dCOWTh1rLCXymcsmz7TNowzG
 \.
 
 
@@ -988,6 +1027,10 @@ COPY public.users (user_id, username, password) FROM stdin;
 
 COPY public.utilization (id_utilization, date, category, type, number, model, reason) FROM stdin;
 1	2024-05-02T22:53	Система вентиляции	-	1	Кондиционер Hyundai HAC-09i/S-PRO	Наличие дефекта/ов
+2	2025-06-10T20:08	Мебель	Мебель	4	Стол Люкс	Выход из строя
+5	2025-06-14T23:34	Мебель	Мебель	6	hthr rttrhhrt	Естественный износ
+6	2025-06-23T21:59	Оргтехника	Монитор	7	Samsung Odyssey G3 S24DG300EIXCI	Наличие дефекта/ов
+7	2025-06-24T17:44	Система вентиляции	Система вентиляции	8	тнтен	Наличие дефекта/ов
 \.
 
 
@@ -1000,10 +1043,11 @@ COPY public.utilization (id_utilization, date, category, type, number, model, re
 COPY public.ventilation_description (ventilation_id, model, filter, warm, price, location, employee, status) FROM stdin;
 1	Dahatsu DA-07H	Угольный	Да	19999	134	4	В эксплуатации
 3	Dantex RK-07SAT/RK-07SATE	Базовый	Да	26799	134	9	В эксплуатации
-4	TCL BREEZEIN 09 INV	С ионами серебра	Да	35999	38	4	В эксплуатации
-5	TCL ELI 24 INV/R1	С ионами серебра	Да	56999	-	\N	В ремонте
-2	Tesla TA36FFML-12410A	Плазменный	Да	30299	-	3	В ремонте
-6	Ballu BSAGI-07HN8	Плазменный	Да	27500	54	\N	В эксплуатации
+5	TCL ELI 24 INV/R1	С ионами серебра	Да	56999	-	14	В ремонте
+2	Tesla TA36FFML-12410A	Плазменный	Да	30299	-	14	В ремонте
+4	TCL BREEZEIN 09 INV	С ионами серебра	Да	35999	38	10	В эксплуатации
+7	Aceline AC-KGHA9INV	Базовый	Да	19799	54	\N	В эксплуатации
+6	Ballu BSAGI-07HN8	Плазменный	Да	27500	54	15	В эксплуатации
 \.
 
 
@@ -1014,14 +1058,15 @@ COPY public.ventilation_description (ventilation_id, model, filter, warm, price,
 --
 
 COPY public.videocard (id_videocard, model, price, location) FROM stdin;
-6	 MSI GeForce RTX 4070 Ti SUPER GAMING X SLIM WHITE	119999	Склад
-3	Palit GeForce RTX 4060 Dual OC	34499	iRU Game 510H6SEA
 2	Palit  GeForce RTX 3050	22999	MSI PRO DP21 13M-619RU
 1	MSI RTX 3060 Gaming	34990	OMEN GT21-0013ur
-10	Gigabyte NVIDIA GeForce RTX 4060 GV-N4060WF2OC-8GD	33300	Склад
-9	PowerColor AMD Radeon RX 6600 Fighter	22999	Склад
 7	RTX 3050	34535	ARDOR GAMING NEO M143
 4	MSI GeForce RTX 4060 VENTUS 2X BLACK OC	35999	ARDOR GAMING NEO M142
+11	Palit NVIDIA GeForce RTX 4060 PA-RTX4060	32000	Склад
+10	Gigabyte NVIDIA GeForce RTX 4060 GV-N4060WF2OC-8GD	33300	BLOODY BD-PC CH61C1
+3	Palit GeForce RTX 4060 Dual OC	34499	Склад
+6	 MSI GeForce RTX 4070 Ti SUPER GAMING X SLIM WHITE	119999	iRU Game 510H6SEA
+9	PowerColor AMD Radeon RX 6600 Fighter	22999	MSI Pro DP21 13M-631XRU
 \.
 
 
@@ -1049,7 +1094,7 @@ SELECT pg_catalog.setval('public.camera_description_camera_id_seq', 4, true);
 -- Name: chancellery_id_chancellery_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.chancellery_id_chancellery_seq', 9, true);
+SELECT pg_catalog.setval('public.chancellery_id_chancellery_seq', 12, true);
 
 
 --
@@ -1058,7 +1103,7 @@ SELECT pg_catalog.setval('public.chancellery_id_chancellery_seq', 9, true);
 -- Name: computer_id_computer_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.computer_id_computer_seq', 9, false);
+SELECT pg_catalog.setval('public.computer_id_computer_seq', 11, true);
 
 
 --
@@ -1067,7 +1112,7 @@ SELECT pg_catalog.setval('public.computer_id_computer_seq', 9, false);
 -- Name: disk_id_disk_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.disk_id_disk_seq', 6, true);
+SELECT pg_catalog.setval('public.disk_id_disk_seq', 10, true);
 
 
 --
@@ -1076,7 +1121,7 @@ SELECT pg_catalog.setval('public.disk_id_disk_seq', 6, true);
 -- Name: employee_employee_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.employee_employee_id_seq', 16, true);
+SELECT pg_catalog.setval('public.employee_employee_id_seq', 21, true);
 
 
 --
@@ -1085,7 +1130,7 @@ SELECT pg_catalog.setval('public.employee_employee_id_seq', 16, true);
 -- Name: furniture_description_furniture_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.furniture_description_furniture_id_seq', 2, true);
+SELECT pg_catalog.setval('public.furniture_description_furniture_id_seq', 7, true);
 
 
 --
@@ -1094,7 +1139,7 @@ SELECT pg_catalog.setval('public.furniture_description_furniture_id_seq', 2, tru
 -- Name: laptop_description_laptop_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.laptop_description_laptop_id_seq', 5, true);
+SELECT pg_catalog.setval('public.laptop_description_laptop_id_seq', 6, true);
 
 
 --
@@ -1103,7 +1148,7 @@ SELECT pg_catalog.setval('public.laptop_description_laptop_id_seq', 5, true);
 -- Name: memory_id_memory_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.memory_id_memory_seq', 6, true);
+SELECT pg_catalog.setval('public.memory_id_memory_seq', 9, true);
 
 
 --
@@ -1112,7 +1157,7 @@ SELECT pg_catalog.setval('public.memory_id_memory_seq', 6, true);
 -- Name: mothercard_id_mothercard_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.mothercard_id_mothercard_seq', 6, true);
+SELECT pg_catalog.setval('public.mothercard_id_mothercard_seq', 8, true);
 
 
 --
@@ -1121,7 +1166,7 @@ SELECT pg_catalog.setval('public.mothercard_id_mothercard_seq', 6, true);
 -- Name: pinning_cabinet_id_pinning_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.pinning_cabinet_id_pinning_seq', 3, true);
+SELECT pg_catalog.setval('public.pinning_cabinet_id_pinning_seq', 14, true);
 
 
 --
@@ -1130,7 +1175,7 @@ SELECT pg_catalog.setval('public.pinning_cabinet_id_pinning_seq', 3, true);
 -- Name: pinning_employee_id_pinning_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.pinning_employee_id_pinning_seq', 4, true);
+SELECT pg_catalog.setval('public.pinning_employee_id_pinning_seq', 19, true);
 
 
 --
@@ -1139,7 +1184,7 @@ SELECT pg_catalog.setval('public.pinning_employee_id_pinning_seq', 4, true);
 -- Name: processor_id_processor_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.processor_id_processor_seq', 9, true);
+SELECT pg_catalog.setval('public.processor_id_processor_seq', 10, true);
 
 
 --
@@ -1148,7 +1193,7 @@ SELECT pg_catalog.setval('public.processor_id_processor_seq', 9, true);
 -- Name: repair_id_repair_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.repair_id_repair_seq', 2, true);
+SELECT pg_catalog.setval('public.repair_id_repair_seq', 11, true);
 
 
 --
@@ -1157,7 +1202,7 @@ SELECT pg_catalog.setval('public.repair_id_repair_seq', 2, true);
 -- Name: replacement_id_replace_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.replacement_id_replace_seq', 5, true);
+SELECT pg_catalog.setval('public.replacement_id_replace_seq', 8, true);
 
 
 --
@@ -1175,7 +1220,7 @@ SELECT pg_catalog.setval('public.scanner_description_scanner_id_seq', 7, false);
 -- Name: screen_description_screen_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.screen_description_screen_id_seq', 6, true);
+SELECT pg_catalog.setval('public.screen_description_screen_id_seq', 7, true);
 
 
 --
@@ -1193,7 +1238,7 @@ SELECT pg_catalog.setval('public.users_user_id_seq', 3, true);
 -- Name: utilization_id_utilization_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.utilization_id_utilization_seq', 1, true);
+SELECT pg_catalog.setval('public.utilization_id_utilization_seq', 7, true);
 
 
 --
@@ -1202,7 +1247,7 @@ SELECT pg_catalog.setval('public.utilization_id_utilization_seq', 1, true);
 -- Name: ventilation_description_ventilation_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.ventilation_description_ventilation_id_seq', 6, true);
+SELECT pg_catalog.setval('public.ventilation_description_ventilation_id_seq', 8, true);
 
 
 --
@@ -1211,7 +1256,7 @@ SELECT pg_catalog.setval('public.ventilation_description_ventilation_id_seq', 6,
 -- Name: videocard_id_videocard_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.videocard_id_videocard_seq', 10, true);
+SELECT pg_catalog.setval('public.videocard_id_videocard_seq', 11, true);
 
 
 --
@@ -1624,7 +1669,7 @@ ALTER TABLE ONLY public.computer
     ADD CONSTRAINT videocard FOREIGN KEY (videocard_id) REFERENCES public.videocard(id_videocard) ON UPDATE CASCADE ON DELETE CASCADE NOT VALID;
 
 
--- Completed on 2025-06-06 23:48:26
+-- Completed on 2025-06-30 15:54:20
 
 --
 -- PostgreSQL database dump complete

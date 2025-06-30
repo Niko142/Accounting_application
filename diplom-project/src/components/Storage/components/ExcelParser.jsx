@@ -1,16 +1,28 @@
+import Button from 'components/Button/Button';
 import { categories } from 'data/data';
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import instance from 'services/api';
 import { read, utils } from 'xlsx';
 
 const ExcelParser = () => {
-  const [status, setStatus] = useState('');
-  const [error, setError] = useState('');
-  const [objData, setObjData] = useState([]);
-  const [category, setCategory] = useState(null);
+  const [status, setStatus] = useState(null); // Статус загрузки файла
+  const [error, setError] = useState(null); // Сообщения об ошибках
+  const [objData, setObjData] = useState([]); // Загруженные записи из файла
+  const [category, setCategory] = useState(''); // Выбранная категория
+  const [isUploading, setIsUploading] = useState(false);
 
-  // Шаблоны для разных категорий объектов
+  const fileRef = useRef(null);
+
+  // Шаблоны заголовков для разных категорий объектов
   const templates = {
-    computer: [''], // Вот тут подумать (пока не готов)
+    computer: [
+      'name',
+      'videocard',
+      'processor',
+      'mothercard',
+      'memory',
+      'disk',
+    ],
     laptop: [
       'model',
       'systems',
@@ -27,58 +39,144 @@ const ExcelParser = () => {
     ventilation: ['model', 'filter', 'warm', 'price'],
   };
 
+  // Функция для сброса состояний
+  const resetStates = () => {
+    setStatus(null);
+    setError(null);
+    setObjData([]);
+  };
+
+  // Очистка файла для повторного добавления
+  const resetFileData = () => {
+    if (fileRef.current) {
+      fileRef.current.value = '';
+    }
+  };
+
+  // Сброс данных при обновлении категории
+  useEffect(() => {
+    resetStates();
+    resetFileData();
+  }, [category]);
+
   const handleFileUpload = (e) => {
-    if (category) {
-      const file = e.target.files[0];
-      const reader = new FileReader();
+    const file = e.target.files[0];
+    resetStates();
 
-      setStatus('Загрузка ...');
+    // Если файл не выбран
+    if (!file) {
+      return;
+    }
 
-      reader.onload = (e) => {
-        try {
-          const workbook = read(e.target.result, { type: 'buffer' });
-          const sheetName = workbook.SheetNames[0];
-          const worksheet = workbook.Sheets[sheetName];
-          const jsonData = utils.sheet_to_json(worksheet);
-
-          const headers = Object.keys(jsonData[0] || {}); // Заголовки
-          const requiredHeaders = templates[category] || []; // Заголовки согласно шаблону
-
-          const missing = requiredHeaders.filter((h) => !headers.includes(h));
-          if (missing.length > 0) {
-            setStatus('');
-            setError('Ошибка: формат не соответствует выбранной категории');
-            return;
-          }
-
-          setStatus(`Обнаружено записей: ${jsonData.length}`);
-          setObjData(jsonData);
-        } catch (err) {
-          setError('Ошибка при чтении данных из выбранного файла');
-          console.error('Ошибка при чтении файла', err);
-        }
-      };
-
-      reader.onerror = () => {
-        setStatus('Неудачное считывание данных ...');
-        console.log(reader.error);
-      };
-
-      reader.readAsArrayBuffer(file);
-    } else {
+    // Если категория не была выбрана
+    if (!category) {
       setError('Категория не выбрана');
+      return;
+    }
+
+    const reader = new FileReader(); // Формируем экземпляр для чтения файла
+    setStatus('Загрузка ...');
+
+    // При загрузке файла
+    reader.onload = (e) => {
+      try {
+        const workbook = read(e.target.result, { type: 'buffer' });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const jsonData = utils.sheet_to_json(worksheet);
+        const headers = Object.keys(jsonData[0] || {}).map((header) =>
+          header.toLowerCase(),
+        ); // Заголовки загруженного файла
+
+        const requiredHeaders = templates[category] || []; // Заголовки шаблона
+        const missing = requiredHeaders.filter((h) => !headers.includes(h));
+
+        if (jsonData.length === 0) {
+          setError('Загруженный файл является пустым!!!');
+          return;
+        }
+
+        if (missing.length > 0) {
+          setStatus(null);
+          setError('Ошибка: формат не соответствует выбранной категории');
+          return;
+        }
+        setStatus(`Обнаружено записей: ${jsonData.length}`);
+
+        // Добавление записей в state с приведением заголовка в нижний регистр
+        setObjData(
+          jsonData.map((item) =>
+            Object.fromEntries(
+              Object.entries(item).map(([key, value]) => [
+                key.toLowerCase(),
+                value,
+              ]),
+            ),
+          ),
+        );
+      } catch (err) {
+        setStatus(null);
+        setError('Ошибка при чтении данных из выбранного файла');
+        console.error('Ошибка при чтении файла', err);
+      }
+    };
+
+    // При отмене запроса
+    reader.onabort = () => {
+      setStatus(null);
+      setError('Операция чтения файла была прервана');
+    };
+
+    // При возникновении ошибки
+    reader.onerror = () => {
+      setStatus(null);
+      setError('Возникла ошибка при чтении файла');
+      console.log('Ошибка: ', reader.error);
+    };
+
+    reader.readAsArrayBuffer(file);
+  };
+
+  const handleSubmit = async () => {
+    setIsUploading(true);
+    try {
+      // Набор отправляемых данных
+      const payload = {
+        category: category,
+        data: objData,
+      };
+
+      const response = await instance.post('/excel-import', payload);
+
+      setStatus(
+        `Успешно отправлено ${response.data.length || objData.length} записей`,
+      );
+
+      // Очистка данных формы с некоторой задержкой
+      setTimeout(() => {
+        resetStates();
+        resetFileData();
+        setCategory(null);
+      }, 200);
+    } catch (err) {
+      setError('Ошибка при отправке данных');
+      console.error('Ошибка отправки:', err);
+    } finally {
+      setIsUploading(false);
     }
   };
 
   return (
     <div className="excel-import">
-      <h3>Импорт Excel</h3>
+      <h3>Импорт записей из накладной</h3>
       <select
         className="main__input"
+        name="category-obj"
         onChange={(e) => setCategory(e.target.value)}
+        defaultValue=""
       >
         <option value="" disabled>
-          Выберите категорию
+          Выберите категорию...
         </option>
         {categories.map((item, ind) => (
           <option key={ind} value={item.value}>
@@ -86,24 +184,37 @@ const ExcelParser = () => {
           </option>
         ))}
       </select>
-
       <input
         type="file"
         className="input-file"
         accept=".xlsx,.xls"
+        ref={fileRef}
         onChange={handleFileUpload}
       />
-
       {/* Валидация статусов и ошибок */}
       {status && <div className="validation success">{status}</div>}
       {error && <div className="validation error">{error}</div>}
 
-      {/* Вывод названий моделей */}
-      <ul>
-        {objData.map((item, ind) => (
-          <li key={ind}>{item.model}</li>
-        ))}
-      </ul>
+      {objData.length > 0 && (
+        <div className="">
+          {/* Вывод части записей из загруженного файла*/}
+          <ul>
+            <h4>Информация о первых 5 записях:</h4>
+            {objData.slice(0, 5).map((item, ind) => (
+              <li key={ind}>{item.model || item.name}</li>
+            ))}
+          </ul>
+
+          <Button
+            onClick={handleSubmit}
+            disabled={isUploading}
+            isActive={!isUploading}
+            className="btn btn-primary"
+          >
+            {isUploading ? 'Отправка...' : 'Отправить данные на сервер'}
+          </Button>
+        </div>
+      )}
     </div>
   );
 };
