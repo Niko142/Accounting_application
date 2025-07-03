@@ -91,12 +91,15 @@ textarea {
     box-sizing: border-box;
     width: 400px;
     max-width: 100%;
+    font-size: 1rem;
     padding: 5px;
     border-radius: 10px;
     border: 1px solid v.$arrow;
     cursor: pointer;
 
     &::file-selector-button {
+      font-family: 'Montserrat';
+      font-weight: 600;
       cursor: pointer;
       background-color: v.$blue;
       color: v.$white;
@@ -118,6 +121,18 @@ textarea {
 
     &.error {
       color: v.$error;
+    }
+  }
+
+  & .success-actions {
+    & ul, & ol {
+      display: flex;
+      padding-inline: 20px;
+      flex-direction: column;
+      row-gap: 5px;
+    }
+    & button {
+      margin-top: 20px;
     }
   }
 }

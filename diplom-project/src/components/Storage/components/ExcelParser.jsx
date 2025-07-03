@@ -1,20 +1,23 @@
-import Button from 'components/Button/Button';
-import { categories } from 'data/data';
 import React, { useEffect, useRef, useState } from 'react';
 import instance from 'services/api';
+import { FILE_PATH } from 'constants/path';
+import { categories } from 'data/data';
 import { read, utils } from 'xlsx';
+import Button from 'components/Button/Button';
+import { toast, ToastContainer } from 'react-toastify';
 
 const ExcelParser = () => {
-  const [status, setStatus] = useState(null); // Статус загрузки файла
+  const [status, setStatus] = useState(null); // Статус текущих ситуаций
   const [error, setError] = useState(null); // Сообщения об ошибках
   const [objData, setObjData] = useState([]); // Загруженные записи из файла
   const [category, setCategory] = useState(''); // Выбранная категория
-  const [isUploading, setIsUploading] = useState(false);
+  const [isUploading, setIsUploading] = useState(false); // Статус загрузки данных на сервер
 
   const fileRef = useRef(null);
 
   // Шаблоны заголовков для разных категорий объектов
   const templates = {
+    // С компьютером пока не решил как поступить
     computer: [
       'name',
       'videocard',
@@ -146,11 +149,16 @@ const ExcelParser = () => {
         data: objData,
       };
 
-      const response = await instance.post('/excel-import', payload);
+      const response = await instance.post(
+        `${FILE_PATH}/excel-import`,
+        payload,
+      );
 
       setStatus(
         `Успешно отправлено ${response.data.length || objData.length} записей`,
       );
+
+      toast.success('Успешное добавление записей из файла');
 
       // Очистка данных формы с некоторой задержкой
       setTimeout(() => {
@@ -159,7 +167,7 @@ const ExcelParser = () => {
         setCategory(null);
       }, 200);
     } catch (err) {
-      setError('Ошибка при отправке данных');
+      toast.error('Ошибка при отправке данных на сервер');
       console.error('Ошибка отправки:', err);
     } finally {
       setIsUploading(false);
@@ -196,14 +204,14 @@ const ExcelParser = () => {
       {error && <div className="validation error">{error}</div>}
 
       {objData.length > 0 && (
-        <div className="">
+        <div className="success-actions">
           {/* Вывод части записей из загруженного файла*/}
-          <ul>
+          <ol>
             <h4>Информация о первых 5 записях:</h4>
             {objData.slice(0, 5).map((item, ind) => (
               <li key={ind}>{item.model || item.name}</li>
             ))}
-          </ul>
+          </ol>
 
           <Button
             onClick={handleSubmit}
@@ -215,6 +223,7 @@ const ExcelParser = () => {
           </Button>
         </div>
       )}
+      <ToastContainer />
     </div>
   );
 };

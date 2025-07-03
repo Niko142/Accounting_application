@@ -11,6 +11,7 @@ const employeeRoutes = require("@routes/employee");
 const mainRoutes = require("@routes/mainMenu");
 const movementRoutes = require("@routes/movement");
 const storageRoutes = require("@routes/storage");
+const excelRoutes = require('@routes/excel');
 
 // Подключение маршрутов основных категорий объектов
 const computerRoutes = require("@routes/computers/computers");
@@ -43,6 +44,7 @@ app.use("/api/employee", employeeRoutes); // Запросы, связанные 
 app.use("/api/main", mainRoutes); // Запросы блока "Учет" - главный раздел
 app.use("/api/movement", movementRoutes); // Запросы, связанные с перемещением объектов
 app.use("/api/storage", storageRoutes); // Запросы, связанные со складом
+app.use("/api/files", excelRoutes); // Запросы, связанные с импортом файлов для формирования новых записей
 
 // Применение запросов к основными категориям объектов
 app.use("/api/computers", computerRoutes); // Запросы, связанные с компьютерами
@@ -59,30 +61,6 @@ app.use("/api/computers/processors", processorRoutes); // Запросы, свя
 app.use("/api/computers/mothercards", mothercardRoutes); // Запросы, связанные с материнской платой
 app.use("/api/computers/memories", memoryRoutes); // Запросы, связанные с ОЗУ
 app.use("/api/computers/disks", diskRoutes); // Запросы, связанные с диском
-
-// Запрос на отправку данных из файла
-app.post("/excel-import", async (req, res) => {
-  try {
-    const { category, data } = req.body;
-
-    if (!category) {
-      return res.status(400).json({
-        message: "Категория не указана",
-      });
-    }
-
-    return res.status(200).json({
-      message: 'Тестовая отправка данных прошла успешно',
-      responseData: data
-    })
-
-  } catch (err) {
-    console.error('Ошибка сервера при отправке данных', err);
-    return res.status(500).json({
-      message: "Внутренняя ошибка сервера при обновлении данных",
-    });
-  }
-});
 
 app.use("*", (_, res) => {
   res.status(404).json({ error: "Маршрут не найден" });
