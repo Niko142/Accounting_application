@@ -1,4 +1,4 @@
-FROM node:20.11-alpine as build
+FROM node:20.11-alpine AS build
 
 WORKDIR /app
 
@@ -13,7 +13,11 @@ RUN npm run build
 # Статический сервер
 FROM nginx:alpine
 
+# Копирование билда React-app
 COPY --from=build /app/build /usr/share/nginx/html
+
+# 👇 Копирование собственного конфига
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
 

@@ -8,11 +8,14 @@ services:
     env_file:
       - ./diplom-project/.env
   backend:
+    restart: always   
     build: 
       context: ./server
       dockerfile: Dockerfile
+    environment:
+      - DOCKER_ENV=true
     ports:
-      - "${BACKEND_PORT}:${BACKEND_PORT}"
+      - "${BACKEND_PORT}:3001"
     env_file:
       - ./server/.env
     depends_on:
