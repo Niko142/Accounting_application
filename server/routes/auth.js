@@ -10,6 +10,7 @@ router.post("/login", async (req, res) => {
   try {
     const { username, password } = req.body;
 
+    // Проверка на наличие пользователя
     const result = await new Promise((resolve, reject) => {
       db.query(
         "SELECT * FROM users WHERE username = $1",
@@ -24,7 +25,7 @@ router.post("/login", async (req, res) => {
     if (result.rows.length === 0) {
       return res
         .status(401)
-        .json({ message: "Пользователь с таким никнеймом не найден!!!" });
+        .json({ message: "Пользователь с таким логином не найден!!!" });
     }
 
     const user = result.rows[0];
@@ -59,6 +60,51 @@ router.post("/login", async (req, res) => {
     return res
       .status(500)
       .json({ message: err.message || "Ошибка сервера при попытке входа" });
+  }
+});
+
+router.post("/register", async (req, res) => {
+  try {
+    const { username, password } = req.body;
+
+    // Проверка на наличие пользователя
+    const foundUser = await new Promise((resolve, reject) => {
+      db.query(
+        "SELECT * FROM users WHERE username = $1",
+        [username],
+        (err, result) => {
+          if (err) return reject(err);
+          resolve(result);
+        }
+      );
+    });
+
+    if (foundUser.rows.length > 0) {
+      return res
+        .status(400)
+        .json({ message: "Пользователь с таким логином уже существует!" });
+    }
+
+    // Хеширование пароля
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    // Создаем нового пользователя
+    const result = await db.query(
+      "INSERT INTO users (username, password) VALUES ($1, $2) RETURNING username",
+      [username, hashedPassword]
+    );
+
+    return res.status(201).json({
+      message: "Пользователь успешно зарегистрирован в системе",
+      user: result.rows[0].username,
+    });
+  } catch (err) {
+    console.error("Ошибка сервера при регистрации", err);
+    return res.status(500).json({
+      message:
+        err.message || "Ошибка сервера при формировании нового пользователя",
+    });
   }
 });
 

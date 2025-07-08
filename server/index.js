@@ -62,6 +62,10 @@ app.use("/api/computers/mothercards", mothercardRoutes); // Запросы, св
 app.use("/api/computers/memories", memoryRoutes); // Запросы, связанные с ОЗУ
 app.use("/api/computers/disks", diskRoutes); // Запросы, связанные с диском
 
+app.use('/', (_, res) => {
+  res.status(200).json({message: 'Сервер успешно запущен'})
+})
+
 app.use("*", (_, res) => {
   res.status(404).json({ error: "Маршрут не найден" });
 });

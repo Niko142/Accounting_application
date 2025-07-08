@@ -1,10 +1,11 @@
 import { React } from 'react';
 import 'App.scss';
 import 'react-toastify/dist/ReactToastify.css';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
 // Основные страницы
-import FormAuthorization from 'components/FormAuthorization/FormAuthorization';
+import FormAuthorization from 'components/Auth/FormAuthorization';
+import FormRegistration from 'components/Auth/FormRegistration';
 import MainMenu from 'components/MainMenu/MainMenu';
 import Storage from 'components/Storage/Storage';
 import Employee from 'components/Employee/Employee';
@@ -28,13 +29,20 @@ import MovementLayout from 'layouts/MovementLayout';
 import ChancelleryProvider from 'context/ChancelleryContext';
 import StorageLayout from 'layouts/StorageLayout';
 import ExcelImportBlock from 'components/Storage/routes/ExcelImportBlock';
+import AuthLayout from 'layouts/AuthLayout';
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Форма авторизации */}
-        <Route path="/" element={<FormAuthorization />} />
+        {/* Автоматическое перенаправление на форму авторизации */}
+        <Route path="/" element={<Navigate to="/auth" replace />} />
+
+        {/* Форма авторизации и регистрации */}
+        <Route path="/auth" element={<AuthLayout />}>
+          <Route index element={<FormAuthorization />} />
+          <Route path="registration" element={<FormRegistration />} />
+        </Route>
 
         {/* Основной блок */}
         <Route path="/main_menu" element={<MainMenu />} />

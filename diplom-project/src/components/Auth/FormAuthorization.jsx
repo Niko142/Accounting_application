@@ -1,7 +1,8 @@
 import { React, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { useAuth } from 'context/FormAuthorization';
+import { useAuth } from 'context/AuthContext';
+import { ToastContainer } from 'react-toastify';
 
 const FormAuthorization = () => {
   const { login } = useAuth();
@@ -36,7 +37,8 @@ const FormAuthorization = () => {
           type="text"
           className="form__input input-username"
           name="username"
-          placeholder="Login"
+          autoComplete="on"
+          placeholder="Логин"
           {...register('username', {
             required: 'Поле не должно быть пустым',
             minLength: {
@@ -55,7 +57,7 @@ const FormAuthorization = () => {
         <input
           type="password"
           className="form__input input-password"
-          placeholder="Password"
+          placeholder="Пароль"
           {...register('password', {
             required: 'Поле не должно быть пустым',
             maxLength: { value: 45, message: 'Пароль слишком длинный' },
@@ -64,11 +66,16 @@ const FormAuthorization = () => {
         {errors.password?.message && (
           <span className="form__error">{errors.password?.message}</span>
         )}
-        <button className="form__submit">Авторизоваться</button>
         <span className="form__error error-request">{loginStatus}</span>
+        <button className="form__submit">Авторизоваться</button>
+
+        <Link to={'/auth/registration'} className="form__link">
+          Регистрация
+        </Link>
       </form>
       <div className="main__box box-up"></div>
       <div className="main__box box-down"></div>
+      <ToastContainer />
     </main>
   );
 };

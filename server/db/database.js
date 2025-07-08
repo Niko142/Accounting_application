@@ -7,7 +7,6 @@ dotenv.config();
 const host = process.env.DOCKER_ENV === 'true' ? 'db' : 'localhost';
 
 const db = new Pool({
-  // host: process.env.HOST,
   host: host,
   user: process.env.USER_NAME,
   password: process.env.DB_PASSWORD,

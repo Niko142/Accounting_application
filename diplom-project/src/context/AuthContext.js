@@ -1,3 +1,4 @@
+import { AUTH_PATH } from 'constants/path';
 import {
   React,
   createContext,
@@ -36,7 +37,7 @@ function AuthProvider({ children }) {
 
   const login = async (username, password) => {
     try {
-      const response = await instance.post('/api/auth/login', {
+      const response = await instance.post(`${AUTH_PATH}/login`, {
         username: username.trim(),
         password: password.trim(),
       });
@@ -49,12 +50,30 @@ function AuthProvider({ children }) {
       setUser(userData);
       setToken(response.data.token);
 
-      return { success: true, message: response.data.message };
+      return { success: true, message: response.data?.message };
     } catch (error) {
       let message = 'Ошибка подключения к сети';
 
       if (error.response) {
         message = error.response.data?.message || 'Ошибка при авторизации';
+      }
+      return { success: false, message };
+    }
+  };
+
+  const register = async (username, password) => {
+    try {
+      const response = await instance.post(`${AUTH_PATH}/register`, {
+        username: username.trim(),
+        password: password.trim(),
+      });
+
+      return { success: true, message: response.data?.message };
+    } catch (err) {
+      let message = 'Ошибка подключения к сети';
+
+      if (err.response) {
+        message = err.response.data?.message || 'Ошибка при регистрации';
       }
       return { success: false, message };
     }
@@ -72,6 +91,7 @@ function AuthProvider({ children }) {
     () => ({
       user,
       login,
+      register,
       logout,
     }),
     [user],

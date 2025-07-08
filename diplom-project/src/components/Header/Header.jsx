@@ -1,6 +1,6 @@
 import { React } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from 'context/FormAuthorization';
+import { useAuth } from 'context/AuthContext';
 
 export const Header = () => {
   const { user, logout } = useAuth();
