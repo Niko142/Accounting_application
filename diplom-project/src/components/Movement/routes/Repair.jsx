@@ -7,7 +7,7 @@ import { enumCategories } from 'data/data';
 import ReturnButton from 'components/UI/ReturnButton';
 
 export default function Repair() {
-  const { repairData, isLoading, updateRepairData } = useMovement();
+  const { repairData, updateRepairData } = useMovement();
   const [type, setType] = useState('Все');
 
   useEffect(() => {
@@ -27,8 +27,6 @@ export default function Repair() {
 
     return () => abortController.abort();
   }, [updateRepairData]);
-
-  if (isLoading) return <div>Загрузка данных...</div>;
 
   return (
     <section className="repair-block">

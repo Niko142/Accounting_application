@@ -6,7 +6,9 @@ const router = express.Router();
 
 router.use(verifyJwtToken);
 
-// Запросы блока "Учет"
+/*
+ * Запросы для блока "Учет"
+ */
 
 router.get("/computers", async (_, res) => {
   try {
@@ -132,7 +134,7 @@ router.get("/cameras", async (_, res) => {
   }
 });
 
-router.get("/furnitures", async (_, res) => {
+router.get("/furniture", async (_, res) => {
   try {
     const result = await db.query(
       `SELECT furniture_id, furniture_description.name AS name, model, price, furniture_description.location, status, 

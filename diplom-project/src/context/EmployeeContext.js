@@ -23,6 +23,8 @@ function EmployeeProvider({ children }) {
   const [employees, setEmployees] = useState([]); // Список сотрудников
   const [pinning, setPinning] = useState([]); // Данные о закрепленном объекте за сотрудниками
 
+  const [isLoading, setIsLoading] = useState(false);
+
   // Получение списка материально-ответственных лиц и истории закрепления
   const updateEmployees = useCallback(async () => {
     if (abortControllerRef.current) {
@@ -31,8 +33,11 @@ function EmployeeProvider({ children }) {
     abortControllerRef.current = new AbortController();
     const { signal } = abortControllerRef.current;
 
+    setIsLoading(true);
     try {
       // Для параллельной загрузки
+      // await new Promise((resolve) => setTimeout(resolve, 1000));
+
       const [employeesData, pinningHistory] = await Promise.all([
         fetchEmployee({ signal }),
         getPinningEmployee({ signal }),
@@ -46,6 +51,8 @@ function EmployeeProvider({ children }) {
         console.error('Ошибка при загрузке данных:', error);
         return { success: false, message: error.message };
       }
+    } finally {
+      setIsLoading(false);
     }
   }, []);
 
@@ -97,8 +104,16 @@ function EmployeeProvider({ children }) {
       updateEmployees,
       addNewEmployee,
       deleteSelectEmployee,
+      isLoading,
     }),
-    [employees, pinning, updateEmployees, addNewEmployee, deleteSelectEmployee],
+    [
+      employees,
+      pinning,
+      updateEmployees,
+      addNewEmployee,
+      deleteSelectEmployee,
+      isLoading,
+    ],
   );
 
   return (

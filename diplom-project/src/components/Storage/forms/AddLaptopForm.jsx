@@ -1,6 +1,6 @@
 import { React } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import { instance } from 'services/api';
 import Button from 'components/Button/Button';
 import { memoryOptions, systemOptions } from 'data/data';
@@ -187,8 +187,6 @@ export default function AddLaptopForm() {
       <Button isActive type="submit">
         Добавить
       </Button>
-
-      <ToastContainer />
     </form>
   );
 }

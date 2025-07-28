@@ -1,7 +1,7 @@
 import { React, useEffect, useState } from 'react';
 import { instance } from 'services/api';
 import { useForm } from 'react-hook-form';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import { componentCategories, ddrOptions, memoryOptions } from 'data/data';
 import { COMPUTER_PATH } from 'constants/path';
 import { componentMap } from '../config/config';
@@ -457,7 +457,6 @@ export default function AddComponents() {
               </form>
             </>
           )}
-          <ToastContainer />
         </div>
       </TableContainer>
     </>

@@ -1,4 +1,13 @@
 import {
+  cameraColumns,
+  computerColumns,
+  furnitureColumns,
+  laptopColumns,
+  scannerColumns,
+  screenColumns,
+  ventilationColumns,
+} from 'data/columns';
+import {
   videocardColumns,
   processorColumns,
   mothercardColumns,
@@ -70,7 +79,61 @@ export const COMPUTER_COMPONENTS_CONFIG = {
   },
 };
 
-// Для составления правильных ключей к колонкам таблицым
+// Конфиг для главного раздела
+export const CATEGORY_MAIN_CONFIG = [
+  {
+    value: 'Компьютер',
+    type: 'technic',
+    column: computerColumns,
+    dataKey: 'computers',
+  },
+  {
+    value: 'Ноутбук',
+    type: 'technic',
+    column: laptopColumns,
+    dataKey: 'laptops',
+  },
+  {
+    value: 'Монитор',
+    type: 'technic',
+    column: screenColumns,
+    dataKey: 'screens',
+  },
+  {
+    value: 'МФУ',
+    type: 'technic',
+    column: scannerColumns,
+    dataKey: 'scanners',
+  },
+  {
+    value: 'Камера',
+    type: 'technic',
+    column: cameraColumns,
+    dataKey: 'cameras',
+  },
+  {
+    value: 'Мебель',
+    type: 'furniture',
+    column: furnitureColumns,
+    dataKey: 'furniture',
+  },
+  {
+    value: 'Вентиляция',
+    type: 'ventilation',
+    column: ventilationColumns,
+    dataKey: 'ventilations',
+  },
+];
+
+export const headerMap = [
+  { name: 'Учет', link: '/main_menu' },
+  { name: 'Материально-ответственные лица', link: '/employee' },
+  { name: 'Склад', link: '/storage' },
+  { name: 'Перемещение', link: '/movement' },
+  { name: 'Канцелярия', link: '/office' },
+];
+
+// Для составления правильных ключей к колонкам таблицы
 export const componentMap = {
   videocard: 'videocards',
   processor: 'processors',

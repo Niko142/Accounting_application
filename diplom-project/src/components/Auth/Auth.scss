@@ -2,7 +2,6 @@
 
 .main {
   background-color: v.$background;
-  width: 100%;
   min-height: 100%;
   overflow: hidden;
   position: relative;
@@ -43,12 +42,24 @@ button.form__submit {
   }
   align-self: center;
   margin-top: 21px;
-  line-height: 130%;
+  line-height: 1.25;
   padding: 15px 20px;
   border-radius: 15px;
 
   &:hover {
     background-color: v.$green-hover;
+  }
+
+  @media (max-width: 768px) {
+    font-size: 20px;
+    padding: 13px 18px;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 18px;
+    padding: 12px 16px;
+    margin-top: 18px;
+    border-radius: 12px;
   }
 }
 
@@ -58,7 +69,7 @@ button.form__cancel {
   border: 0;
   align-self: flex-end;
   font-size: 1.2rem;
-  background-color: #f6fbf9;
+  background-color: v.$auth-bg;
   &:where(:hover, :focus-visible) {
     color: v.$error;
   }
@@ -68,23 +79,38 @@ a.form__link {
   text-align: center;
   font-size: 1.2rem;
   font-weight: 600;
-  padding: 15px 0;
+  padding-block: 15px;
   outline: 0;
   color: v.$blue;
   &:where(:hover, :focus-visible) {
     color: v.$black;
   }
+  @media (max-width: 480px) {
+    font-size: 1rem;
+    padding-block: 10px;
+  }
 }
 
 .form {
+  max-width: 455px;
   display: flex;
   flex-direction: column;
-  max-width: 455px;
   border-radius: 32px;
-  background-color: #f6fbf9;
+  background-color: v.$auth-bg;
   box-sizing: border-box;
-  z-index: 100;
   padding: 44px;
+  z-index: 100;
+
+  @media (max-width: 768px) {
+    padding: 36px;
+    border-radius: 28px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 24px;
+    border-radius: 24px;
+    margin-inline: 15px;
+  }
 
   & :where(.form__title, .form p) {
     text-align: center;
@@ -92,25 +118,38 @@ a.form__link {
 
   &__title {
     font-size: 2.25rem;
-    line-height: 130%;
+    line-height: 1.25;
     color: v.$black;
     margin-bottom: 4px;
+
+    @media (max-width: 768px) {
+      font-size: 2rem;
+    }
+
+    @media (max-width: 480px) {
+      font-size: 1.75rem;
+    }
   }
 
   & p {
     font-size: 1rem;
     margin-bottom: 32px;
+    text-wrap: balance;
   }
 
   &__input {
-    width: 100%;
     box-sizing: border-box;
+    width: 100%;
     padding: 18px 22px;
+    border: 1px solid v.$gray;
     border-radius: 10px;
     outline: 0;
-    border: 1px solid v.$gray;
     font-size: 1rem;
-    line-height: 120%;
+    line-height: 1.2;
+
+    @media (max-width: 480px) {
+      padding: 14px 18px;
+    }
 
     &.input-password {
       margin-top: 15px;
@@ -124,7 +163,7 @@ a.form__link {
   &__error {
     font-size: 1rem;
     font-weight: 600;
-    line-height: 120%;
+    line-height: 1.2;
     color: v.$error;
 
     &.error-request {
@@ -134,7 +173,7 @@ a.form__link {
     }
   }
 
-  & button[type="submit"] {
+  & button[type='submit'] {
     margin-top: 15px;
   }
 }

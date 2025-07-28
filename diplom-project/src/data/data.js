@@ -9,15 +9,6 @@ export const categories = [
   { value: 'camera', label: 'Камера' },
 ];
 
-export const components = [
-  { value: '', label: 'Выберите нужную категорию...' },
-  { value: 'Видеокарта', label: 'Видеокарта' },
-  { value: 'Процессор', label: 'Процессор' },
-  { value: 'Материнка', label: 'Материнская плата' },
-  { value: 'ОЗУ', label: 'Оперативная память' },
-  { value: 'Диск', label: 'Жесткий диск' },
-];
-
 export const componentCategories = [
   { value: 'videocard', label: 'Видеокарта' },
   { value: 'processor', label: 'Процессор' },
@@ -63,16 +54,6 @@ export const reason = [
   },
   { value: 'Возвращение на склад', label: 'Возвращение на склад' },
   { value: 'Утилизация', label: 'Утилизация' },
-];
-
-export const repairCategories = [
-  'computer',
-  'laptop',
-  'screen',
-  'scanner',
-  'camera',
-  'furniture',
-  'ventilation',
 ];
 
 export const enumCategories = [

@@ -28,6 +28,8 @@ function ChancelleryProvider({ children }) {
     amounts: '',
   }); // Выбранный объект из имеющегося кол-ва записей о канцелярии
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const selectCategory = useCallback(async (id) => {
     try {
       const selectedItem = await selectChancellery(id);
@@ -44,7 +46,10 @@ function ChancelleryProvider({ children }) {
       abortControllerRef.current.abort();
     }
     abortControllerRef.current = new AbortController();
+    setIsLoading(true);
     try {
+      // await new Promise((resolve) => setTimeout(resolve, 1000));
+
       const res = await fetchData(abortControllerRef.current);
       setProducts(Array.isArray(res) ? res : []);
     } catch (error) {
@@ -52,6 +57,8 @@ function ChancelleryProvider({ children }) {
         console.error('Ошибка при загрузке данных:', error);
       }
       setProducts([]);
+    } finally {
+      setIsLoading(false);
     }
   }, []);
 
@@ -107,7 +114,7 @@ function ChancelleryProvider({ children }) {
     };
   }, [updateProducts]);
 
-  // Передача мемоизированных значений
+  // Передача кэшированных значений
   const contextValue = useMemo(
     () => ({
       products,
@@ -118,6 +125,7 @@ function ChancelleryProvider({ children }) {
       addGroup,
       amountChange,
       deleteProducts,
+      isLoading,
     }),
     [
       products,
@@ -127,6 +135,7 @@ function ChancelleryProvider({ children }) {
       addGroup,
       amountChange,
       deleteProducts,
+      isLoading,
     ],
   );
 

@@ -1,21 +1,24 @@
 import { React, useEffect, useState } from 'react';
-import Header from 'components/Header/Header';
 import { utilizationColumns } from 'data/columns';
+import { fetchUtilization } from 'services/mainMenu';
+import Header from 'components/Header/Header';
 import TableContainer from 'components/UI/TableContainer';
 import DataTable from 'components/Table/Table';
-import { fetchUtilization } from 'services/mainMenu';
 import ReturnButton from 'components/UI/ReturnButton';
 
 export default function GetUtilizationItems() {
-  // Можно потом вернуть фильтрацию
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const abortController = new AbortController();
-    setLoading(true);
+
     const fetchData = async () => {
+      setLoading(true);
+
       try {
+        // await new Promise((resolve) => setTimeout(resolve, 1000));
+
         const res = await fetchUtilization(abortController);
         setData(res);
       } catch (err) {
@@ -37,14 +40,12 @@ export default function GetUtilizationItems() {
     <>
       <Header />
       <TableContainer>
-        {loading ? (
-          <p>Загрузка ...</p>
-        ) : (
-          <>
-            <ReturnButton />
-            <DataTable head={utilizationColumns} mockData={data} />
-          </>
-        )}
+        <ReturnButton />
+        <DataTable
+          head={utilizationColumns}
+          mockData={data}
+          isLoading={loading}
+        />
       </TableContainer>
     </>
   );

@@ -1,15 +1,15 @@
+import React, { useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useEmployee } from 'context/EmployeeContext';
+import { employeeColumns } from 'data/columns';
 import Header from 'components/Header/Header';
-import { React, useMemo, useCallback } from 'react';
 import TableContainer from 'components/UI/TableContainer';
 import DataTable from 'components/Table/Table';
-import { employeeColumns } from 'data/columns';
-import { useEmployee } from 'context/EmployeeContext';
-import { toast, ToastContainer } from 'react-toastify';
 import ReturnButton from 'components/UI/ReturnButton';
+import { toast } from 'react-toastify';
 
 export default function SelectEmployee() {
-  const { employees, deleteSelectEmployee } = useEmployee();
+  const { employees, deleteSelectEmployee, isLoading } = useEmployee();
   const navigate = useNavigate();
 
   // Обработчик перехода в блок с закреплением объекта
@@ -50,9 +50,12 @@ export default function SelectEmployee() {
         <h2 className="employee__header header-center">
           Информация о сотрудниках:
         </h2>
-        <DataTable head={memoizedColumns} mockData={memoizedData} />
+        <DataTable
+          head={memoizedColumns}
+          mockData={memoizedData}
+          isLoading={isLoading}
+        />
       </TableContainer>
-      <ToastContainer />
     </>
   );
 }

@@ -1,6 +1,6 @@
 import { React, useEffect, useState } from 'react';
 import Select from 'react-select';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import Button from 'components/Button/Button';
 import { reason } from 'data/data';
 import { instance } from 'services/api';
@@ -154,7 +154,6 @@ export default function PinningForm({
         <Button disabled={!isValid} isActive={isValid} onClick={handleSubmit}>
           Оформить
         </Button>
-        <ToastContainer />
       </form>
     </>
   );

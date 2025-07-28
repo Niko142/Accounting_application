@@ -1,6 +1,6 @@
 services:
   frontend:
-    build: 
+    build:
       context: ./diplom-project
       dockerfile: Dockerfile
     ports:
@@ -8,8 +8,8 @@ services:
     env_file:
       - ./diplom-project/.env
   backend:
-    restart: always   
-    build: 
+    restart: always
+    build:
       context: ./server
       dockerfile: Dockerfile
     environment:
@@ -36,5 +36,3 @@ services:
       - "5433:5432"
 volumes:
   postgres_data:
-
-  

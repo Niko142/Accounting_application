@@ -40,6 +40,8 @@ function MovementProvider({ children }) {
   const viewCabinetInfo = useCallback(async (signal) => {
     setIsLoading(true);
     try {
+      // await new Promise((resolve) => setTimeout(resolve, 1000));
+
       const res = await fetchCabinetInfo({ signal });
       setAudience(res);
       setFilteredAudience(res.filter((cab) => cab?.description !== 'Склад')); // Фильтрация
@@ -76,6 +78,8 @@ function MovementProvider({ children }) {
   const updateHistoryMovement = useCallback(async (signal) => {
     setIsLoading(true);
     try {
+      // await new Promise((resolve) => setTimeout(resolve, 1000));
+
       const res = await fetchHistoryMovement({ signal });
       setHistoryMovement(res);
       return { success: true, item: res };
@@ -97,6 +101,8 @@ function MovementProvider({ children }) {
   const updateRepairData = useCallback(async (signal) => {
     setIsLoading(true);
     try {
+      // await new Promise((resolve) => setTimeout(resolve, 1000));
+
       const data = await fetchRepairData({ signal });
       setRepairData(data);
       return { success: true, item: data };

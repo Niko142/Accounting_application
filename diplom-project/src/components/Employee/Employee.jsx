@@ -1,20 +1,20 @@
+import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useEmployee } from 'context/EmployeeContext';
+import { pinningEmployeeColumns } from 'data/columns';
 import Button from 'components/Button/Button';
 import Header from 'components/Header/Header';
-import { faUser } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { React, useMemo, useState } from 'react';
 import ButtonContainer from 'components/UI/ButtonContainer';
 import TableContainer from 'components/UI/TableContainer';
 import DataTable from 'components/Table/Table';
-import { pinningEmployeeColumns } from 'data/columns';
-import { useEmployee } from 'context/EmployeeContext';
 import CustomModal from 'components/Modal/Modal';
 import AddEmployeeForm from './UI/AddEmployeeForm';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUser } from '@fortawesome/free-solid-svg-icons';
 
 export default function Employee() {
-  const { pinning, addNewEmployee } = useEmployee();
+  const { pinning, addNewEmployee, isLoading } = useEmployee();
   const [openModal, setOpenModal] = useState(false);
   const navigate = useNavigate();
 
@@ -64,9 +64,12 @@ export default function Employee() {
         <h2 className="employee__header">
           История закрепления материальных средств за сотрудниками:
         </h2>
-        <DataTable head={memoizedColumns} mockData={memoizedData} />
+        <DataTable
+          head={memoizedColumns}
+          mockData={memoizedData}
+          isLoading={isLoading}
+        />
       </TableContainer>
-      <ToastContainer />
     </>
   );
 }

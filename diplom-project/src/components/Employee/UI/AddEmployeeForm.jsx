@@ -9,13 +9,16 @@ export default function AddEmployeeForm({ onSubmit }) {
     formState: { errors },
   } = useForm({ mode: 'onChange' });
 
-  const hadleDataSubmit = (data) => {
+  const handleDataSubmit = (data) => {
     onSubmit(data);
     console.log(data);
   };
 
   return (
-    <form className="section_employee" onSubmit={handleSubmit(hadleDataSubmit)}>
+    <form
+      className="section_employee"
+      onSubmit={handleSubmit(handleDataSubmit)}
+    >
       <label htmlFor="name">Имя:</label>
       <input
         type="text"

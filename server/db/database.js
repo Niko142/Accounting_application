@@ -7,16 +7,15 @@ dotenv.config();
 let dbConfig;
 
 if (process.env.DATABASE_URL) {
-  // Для продакшена на Render
+  // Для production на Render
   dbConfig = {
     connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: false }
+    ssl: { rejectUnauthorized: false },
   };
 } else {
   // Для локальной разработки или Docker
-
   // Автоматическое определение host в зависимости от варианта сборки
-  const host = process.env.DOCKER_ENV === 'true' ? 'db' : 'localhost';
+  const host = process.env.DOCKER_ENV === "true" ? "db" : "localhost";
 
   dbConfig = {
     host: host,
@@ -24,23 +23,11 @@ if (process.env.DATABASE_URL) {
     password: process.env.DB_PASSWORD,
     database: process.env.DATABASE,
     port: process.env.DB_PORT || 5432,
-    ssl: false
+    ssl: false,
   };
 }
 
 const db = new Pool(dbConfig);
-
-// Автоматическое определение host в зависимости от вариант сборки проекта
-// const host = process.env.DOCKER_ENV === 'true' ? 'db' : 'localhost';
-
-// const db = new Pool({
-//   host: host,
-//   user: process.env.USER_NAME,
-//   password: process.env.DB_PASSWORD,
-//   database: process.env.DATABASE,
-//   port: process.env.DB_PORT || 5432,
-//   ssl: false,
-// });
 
 // Подключение к БД
 db.connect((err) => {

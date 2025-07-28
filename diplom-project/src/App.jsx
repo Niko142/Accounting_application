@@ -1,7 +1,8 @@
 import { React } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import 'App.scss';
 import 'react-toastify/dist/ReactToastify.css';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
 
 // Основные страницы
 import FormAuthorization from 'components/Auth/FormAuthorization';
@@ -89,6 +90,7 @@ function App() {
         {/* Отчеты */}
         <Route path="/report" element={<DocumentReport />} />
       </Routes>
+      <ToastContainer />
     </BrowserRouter>
   );
 }

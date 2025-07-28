@@ -36,11 +36,11 @@ export default function HistoryMovement() {
           <h2>История перемещения объектов:</h2>
           <ReturnButton />
         </div>
-        {isLoading ? (
-          <p>Загрузка...</p>
-        ) : (
-          <DataTable head={historyColumns} mockData={memoizedData} />
-        )}
+        <DataTable
+          head={historyColumns}
+          mockData={memoizedData}
+          isLoading={isLoading}
+        />
       </TableContainer>
     </>
   );

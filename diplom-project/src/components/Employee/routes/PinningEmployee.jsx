@@ -3,7 +3,7 @@ import Select from 'react-select';
 import { category, type } from 'data/data';
 import { React, useEffect, useState } from 'react';
 import Button from 'components/Button/Button';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import TableContainer from 'components/UI/TableContainer';
 import EmployeeSelect from '../UI/EmployeeSelect';
 import ObjectSelect from '../../UI/ObjectSelect';
@@ -187,7 +187,6 @@ export default function PinningEmployee() {
               />
             )}
           </div>
-          <ToastContainer />
         </form>
       </TableContainer>
     </>

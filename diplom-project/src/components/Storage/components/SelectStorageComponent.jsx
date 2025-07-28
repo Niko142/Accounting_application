@@ -1,33 +1,37 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
-import DataTable from 'components/Table/Table';
+import {
+  categoryMap,
+  componentMap,
+  COMPUTER_COMPONENTS_CONFIG,
+} from '../config/config';
 import {
   fetchObjectData,
   repairObject,
   replaceDetailsComputer,
   utilizeObject,
 } from 'services/storage';
+import { getObjCategory, getObjName } from '../utils/storageComponentUtils';
+import DataTable from 'components/Table/Table';
 import CustomModal from 'components/Modal/Modal';
 import RepairForm from '../forms/RepairForm';
 import UtilizationForm from '../forms/UtilizationForm';
-import { toast, ToastContainer } from 'react-toastify';
 import ChangeDetailsForm from '../forms/ChangeDetailsForm';
-import {
-  categoryMap,
-  componentMap,
-  COMPUTER_COMPONENTS_CONFIG,
-} from '../config/config';
-import { getObjCategory, getObjName } from '../utils/storageComponentUtils';
+import { toast } from 'react-toastify';
 
 const SelectStorageComponent = ({ objectType, columns, idField }) => {
   const [objectData, setObjectData] = useState([]); // данные об объектах на складе
-  const [modalType, setModalType] = useState(null); // разделение логики модалок в зависимости от задачи
+  const [modalType, setModalType] = useState(null); // разделение логики модальных окон в зависимости от задачи
   const [selectedObject, setSelectedObject] = useState(null); // выбранный объект
   const objectMapType = categoryMap[objectType] ?? 'Неизвестно'; // Корректная конвертация
+
+  const [isLoading, setIsLoading] = useState(false);
 
   // Получение и обновление данных об объектах на складе
   const updateObjectData = useCallback(
     async (signal) => {
+      setIsLoading(true);
       try {
+        // await new Promise((resolve) => setTimeout(resolve, 1000));
         const res = await fetchObjectData({
           object: objectType,
           signal,
@@ -37,6 +41,8 @@ const SelectStorageComponent = ({ objectType, columns, idField }) => {
         if (err.name === 'AbortError') {
           console.log('Запрос отменен');
         }
+      } finally {
+        setIsLoading(false);
       }
     },
     [objectType],
@@ -95,7 +101,7 @@ const SelectStorageComponent = ({ objectType, columns, idField }) => {
   const objectName = getObjName(objectType, selectedObject); // Имя выбранного объекта
   const objectCategory = getObjCategory(objectType); // Категория выбранного объекта
 
-  // Мемоизация колонок и данных
+  // Кэширование колонок и данных
   const memoizedColumns = useMemo(
     () =>
       columns({
@@ -209,8 +215,11 @@ const SelectStorageComponent = ({ objectType, columns, idField }) => {
         />
       </CustomModal>
 
-      <DataTable head={memoizedColumns} mockData={memoizedData} />
-      <ToastContainer />
+      <DataTable
+        head={memoizedColumns}
+        mockData={memoizedData}
+        isLoading={isLoading}
+      />
     </>
   );
 };

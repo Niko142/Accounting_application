@@ -15,12 +15,12 @@ const AddProductForm = ({ onSubmit }) => {
     mode: 'onSubmit',
   });
 
-  const hadleDataSubmit = (data) => {
+  const handleDataSubmit = (data) => {
     onSubmit(data);
   };
 
   return (
-    <form onSubmit={handleSubmit(hadleDataSubmit)}>
+    <form onSubmit={handleSubmit(handleDataSubmit)}>
       <label htmlFor="type">Товарная группа:</label>
       <select
         className="main__input"

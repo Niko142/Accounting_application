@@ -1,6 +1,6 @@
 import { React, useEffect, useState } from 'react';
 import Button from 'components/Button/Button';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import { useForm } from 'react-hook-form';
 import { instance } from 'services/api';
 import { COMPUTER_PATH } from 'constants/path';
@@ -272,7 +272,6 @@ export default function AddComputerForm() {
       <Button isActive type="submit">
         Добавить
       </Button>
-      <ToastContainer />
     </form>
   );
 }

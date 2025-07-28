@@ -17,7 +17,7 @@ import AddComputerForm from '../forms/AddComputerForm';
 import { Outlet, useNavigate } from 'react-router-dom';
 
 export default function AddToStorage() {
-  const navivate = useNavigate();
+  const navigate = useNavigate();
   const [type, setType] = useState('');
   const [category, setCategory] = useState('');
 
@@ -34,7 +34,7 @@ export default function AddToStorage() {
       <TableContainer Lg headerSizes={'75px 1fr'}>
         <div className="change__header">
           {/* Логика импорта excel-файла для добавления файлов */}
-          <Button isMove onClick={() => navivate('/storage/import-file')}>
+          <Button isMove onClick={() => navigate('/storage/import-file')}>
             Импорт <FontAwesomeIcon icon={faFileExcel} size="lg" />
           </Button>
           <ReturnButton />

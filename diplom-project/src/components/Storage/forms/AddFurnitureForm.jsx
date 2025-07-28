@@ -1,6 +1,6 @@
 import { React } from 'react';
 import { useForm } from 'react-hook-form';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import { instance } from 'services/api';
 import Button from 'components/Button/Button';
 
@@ -82,8 +82,6 @@ export default function AddFurnitureForm() {
       <Button isActive type="submit">
         Добавить
       </Button>
-
-      <ToastContainer />
     </form>
   );
 }

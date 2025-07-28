@@ -3,15 +3,19 @@
 .btn {
   box-sizing: border-box;
   padding: 0.8rem 1rem;
-  background-color: v.$btn-no-active;
-  color: v.$black;
+  font-size: 1.1rem;
+  font-weight: 700;
   border: 1px solid transparent;
   border-radius: 10px;
   outline: 0;
   cursor: pointer;
-  transition: all 0.3s;
-  font-size: 1.1rem;
-  font-weight: 700;
+  background-color: v.$btn-no-active;
+  color: v.$black;
+  transition: color 0.3s;
+
+  @media (max-width: 768px) {
+    font-size: 1rem;
+  }
 
   &.btn-active {
     background: v.$green-hover;
@@ -44,5 +48,8 @@
     outline: 2px solid green;
     outline-offset: 3px;
   }
-  &:disabled {cursor: not-allowed; color: v.$gray;}
+  &:disabled {
+    cursor: not-allowed;
+    color: v.$gray;
+  }
 }

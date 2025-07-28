@@ -1,11 +1,11 @@
 import { React, useCallback, useEffect, useMemo } from 'react';
-import DataTable from 'components/Table/Table';
-import { ToastContainer, toast } from 'react-toastify';
 import { deleteComponentFromStorage } from 'services/storage';
 import { useStorage } from 'context/StorageContext';
+import DataTable from 'components/Table/Table';
+import { toast } from 'react-toastify';
 
 export default function SelectComponent({ componentType, columns }) {
-  const { components, loadComponents } = useStorage();
+  const { components, loadComponents, isLoading } = useStorage();
 
   // Получение данных о комплектующих
   useEffect(() => {
@@ -51,8 +51,11 @@ export default function SelectComponent({ componentType, columns }) {
 
   return (
     <>
-      <DataTable head={memoizedColumns} mockData={memoizedData} />
-      <ToastContainer />
+      <DataTable
+        head={memoizedColumns}
+        mockData={memoizedData}
+        isLoading={isLoading}
+      />
     </>
   );
 }

@@ -4,7 +4,7 @@ import { FILE_PATH } from 'constants/path';
 import { categories } from 'data/data';
 import { read, utils } from 'xlsx';
 import Button from 'components/Button/Button';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 
 const ExcelParser = () => {
   const [status, setStatus] = useState(null); // Статус текущих ситуаций
@@ -223,7 +223,6 @@ const ExcelParser = () => {
           </Button>
         </div>
       )}
-      <ToastContainer />
     </div>
   );
 };

@@ -13,7 +13,7 @@ RUN npm run build
 # Статический сервер
 FROM nginx:alpine
 
-# Копирование билда React-app
+# Копирование build-a React-app
 COPY --from=build /app/build /usr/share/nginx/html
 
 # 👇 Копирование собственного конфига

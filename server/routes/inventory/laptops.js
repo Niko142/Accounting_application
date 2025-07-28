@@ -172,7 +172,7 @@ router.patch("/location/:id", async (req, res) => {
   }
 });
 
-// Запрос на возврта ноутбука обратно на склад
+// Запрос на возврат ноутбука обратно на склад
 router.patch("/:id/return-to-storage", async (req, res) => {
   try {
     const { id } = req.params;

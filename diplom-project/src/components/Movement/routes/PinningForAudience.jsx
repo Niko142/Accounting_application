@@ -3,7 +3,7 @@ import Button from 'components/Button/Button';
 import Header from 'components/Header/Header';
 import Select from 'react-select';
 import { category, type } from 'data/data';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import TableContainer from 'components/UI/TableContainer';
 import {
   fetchAllStorageItems,
@@ -42,7 +42,7 @@ export default function PinningForAudience() {
   const [date, setDate] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedType, setSelectedType] = useState('-');
-  const [selectedAudience, setSelectedAudiece] = useState(null); // Выбранная аудитория для перемещения
+  const [selectedAudience, setSelectedAudience] = useState(null); // Выбранная аудитория для перемещения
 
   const isValid = date !== null && items !== null && selectedAudience !== null;
 
@@ -78,7 +78,7 @@ export default function PinningForAudience() {
     }
   };
 
-  // Хук на распреление объектов по типам
+  // Хук на распределение объектов по типам
   const { equipmentTypes, selectedTypes } = usePinningTypes(
     items,
     setId,
@@ -176,7 +176,7 @@ export default function PinningForAudience() {
                 pinningFunction={equipmentTypes[selectedType].pinningFunction}
                 isValid={isValid}
                 audienceOptions={filteredAudience}
-                setAudience={setSelectedAudiece}
+                setAudience={setSelectedAudience}
                 selectedKey={id?.[equipmentTypes[selectedType].id]}
                 selectedAudience={selectedAudience}
               />
@@ -191,14 +191,13 @@ export default function PinningForAudience() {
                 }
                 isValid={isValid}
                 audienceOptions={filteredAudience}
-                setAudience={setSelectedAudiece}
+                setAudience={setSelectedAudience}
                 selectedKey={id?.[selectedTypes[selectedCategory].id]}
                 selectedAudience={selectedAudience}
               />
             )}
           </div>
         </form>
-        <ToastContainer />
       </TableContainer>
     </>
   );

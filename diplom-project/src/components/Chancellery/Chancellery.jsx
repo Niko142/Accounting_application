@@ -1,13 +1,13 @@
 import { React, useState, useMemo, useCallback } from 'react';
+import { useChancellery } from 'context/ChancelleryContext';
+import { chancelleryColumns } from 'data/columns';
 import Header from 'components/Header/Header';
 import Button from 'components/Button/Button';
-import { toast, ToastContainer } from 'react-toastify';
-import { chancelleryColumns } from 'data/columns';
 import DataTable from 'components/Table/Table';
 import CustomModal from 'components/Modal/Modal';
 import AddProductForm from './UI/AddProductForm';
 import EditProductForm from './UI/EditProductForm';
-import { useChancellery } from 'context/ChancelleryContext';
+import { toast } from 'react-toastify';
 
 export default function Chancellery() {
   const {
@@ -17,6 +17,7 @@ export default function Chancellery() {
     amountChange,
     deleteProducts,
     addGroup,
+    isLoading,
   } = useChancellery();
 
   // Управление открытием/закрытием модальных окон
@@ -110,9 +111,12 @@ export default function Chancellery() {
               Добавить категорию
             </Button>
           </div>
-          <DataTable head={memoizedColumns} mockData={memoizedData} />
+          <DataTable
+            head={memoizedColumns}
+            mockData={memoizedData}
+            isLoading={isLoading}
+          />
         </div>
-        <ToastContainer />
       </section>
     </>
   );

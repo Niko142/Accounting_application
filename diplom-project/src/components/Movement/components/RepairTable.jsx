@@ -1,11 +1,11 @@
 import { React, useCallback, useMemo } from 'react';
-import DataTable from 'components/Table/Table';
-import { repairColumns } from 'data/columns';
 import { useMovement } from 'context/MovementContext';
-import { toast, ToastContainer } from 'react-toastify';
+import { repairColumns } from 'data/columns';
+import DataTable from 'components/Table/Table';
+import { toast } from 'react-toastify';
 
 export default function RepairTable({ repair }) {
-  const { ReturnRepairedObject } = useMovement();
+  const { ReturnRepairedObject, isLoading } = useMovement();
 
   const handleReturn = useCallback(
     async (id, del, type) => {
@@ -29,8 +29,11 @@ export default function RepairTable({ repair }) {
 
   return (
     <>
-      <DataTable head={memoizedColumns} mockData={memoizedData} />
-      <ToastContainer />
+      <DataTable
+        head={memoizedColumns}
+        mockData={memoizedData}
+        isLoading={isLoading}
+      />
     </>
   );
 }

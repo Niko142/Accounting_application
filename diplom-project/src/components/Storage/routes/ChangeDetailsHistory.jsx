@@ -1,21 +1,23 @@
 import { React, useEffect, useState } from 'react';
+import { fetchChangeDetailsHistory } from 'services/storage';
+import { changeDetailsColumns } from 'data/columns';
 import Header from 'components/Header/Header';
 import DataTable from 'components/Table/Table';
-import { changeDetailsColumns } from 'data/columns';
 import TableContainer from 'components/UI/TableContainer';
-import { fetchChangeDetailsHistory } from 'services/storage';
 import ReturnButton from 'components/UI/ReturnButton';
 
 export default function ChangeDetailsHistory() {
   const [detailsHistory, setDetailsHistory] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Обработчик получения даты
+  // Обработчик получения данных
   useEffect(() => {
     const abortController = new AbortController();
     const loadData = async () => {
       setIsLoading(true);
       try {
+        // await new Promise((resolve) => setTimeout(resolve, 1000));
+
         const res = await fetchChangeDetailsHistory(abortController.signal);
         setDetailsHistory(res);
       } catch (err) {
@@ -34,16 +36,16 @@ export default function ChangeDetailsHistory() {
   return (
     <>
       <Header></Header>
-      <TableContainer>
+      <TableContainer Xl>
         <div className="change__header">
           <h2>История замен:</h2>
           <ReturnButton />
         </div>
-        {isLoading ? (
-          <p>Загрузка ...</p>
-        ) : (
-          <DataTable head={changeDetailsColumns} mockData={detailsHistory} />
-        )}
+        <DataTable
+          head={changeDetailsColumns}
+          mockData={detailsHistory}
+          isLoading={isLoading}
+        />
       </TableContainer>
     </>
   );

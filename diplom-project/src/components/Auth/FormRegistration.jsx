@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useAuth } from 'context/AuthContext';
 import { useForm, useWatch } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Button from 'components/Button/Button';
@@ -144,7 +144,6 @@ const FormRegistration = () => {
       </form>
       <div className="main__box box-up"></div>
       <div className="main__box box-down"></div>
-      <ToastContainer />
     </main>
   );
 };

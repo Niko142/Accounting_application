@@ -1,8 +1,16 @@
 import React, { useMemo } from 'react';
-// useSortBy приводил к ошибке max depth в некоторых случаях
 import { useTable, usePagination } from 'react-table';
+import Skeleton from 'react-loading-skeleton';
 
-const DataTable = ({ head, mockData, size, disabledPagination = false }) => {
+// useSortBy приводил к ошибке max depth в некоторых случаях
+
+const DataTable = ({
+  head,
+  mockData,
+  size = 5,
+  disabledPagination = false,
+  isLoading = false,
+}) => {
   const columns = useMemo(() => head, [head]);
   const data = useMemo(() => mockData, [mockData]);
 
@@ -28,6 +36,19 @@ const DataTable = ({ head, mockData, size, disabledPagination = false }) => {
     usePagination,
   );
 
+  // Рендер скелетон-строк
+  const renderSkeletonRows = () => {
+    return Array.from({ length: size }).map((_, rowIndex) => (
+      <tr key={`skeleton-row-${rowIndex}`}>
+        {head.map((column, colIndex) => (
+          <td key={`skeleton-cell-${rowIndex}-${column.id || colIndex}`}>
+            <Skeleton height={20} />
+          </td>
+        ))}
+      </tr>
+    ));
+  };
+
   return (
     <>
       <table {...getTableProps()} className="table">
@@ -43,13 +64,18 @@ const DataTable = ({ head, mockData, size, disabledPagination = false }) => {
           ))}
         </thead>
         <tbody {...getTableBodyProps()}>
-          {page.length > 0 ? (
+          {isLoading ? (
+            renderSkeletonRows()
+          ) : page.length > 0 ? (
             page.map((row) => {
               prepareRow(row);
               return (
                 <tr key={row.id} {...row.getRowProps()}>
                   {row.cells.map((cell) => (
-                    <td key={cell.column.id} {...cell.getCellProps()}>
+                    <td
+                      key={`${cell.row.id}-${cell.column.id}`}
+                      {...cell.getCellProps()}
+                    >
                       {cell.render('Cell')}
                     </td>
                   ))}
@@ -63,7 +89,8 @@ const DataTable = ({ head, mockData, size, disabledPagination = false }) => {
           )}
         </tbody>
       </table>
-      {!disabledPagination && (
+
+      {!disabledPagination && !isLoading && page.length > 0 && (
         <div className="pagination">
           <button
             className="pagination__btn"

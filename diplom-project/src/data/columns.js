@@ -108,14 +108,6 @@ export const furnitureColumns = [
   { Header: 'Статус', accessor: 'status' },
 ];
 
-export const categoryOptions = (data) => [
-  { value: 'Компьютер', column: computerColumns, data: data.computer },
-  { value: 'Ноутбук', column: laptopColumns, data: data.laptop },
-  { value: 'Монитор', column: screenColumns, data: data.screen },
-  { value: 'МФУ', column: scannerColumns, data: data.scanner },
-  { value: 'Камера', column: cameraColumns, data: data.camera },
-];
-
 export const computerColumns = [
   {
     Header: 'ID',

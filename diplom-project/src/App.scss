@@ -125,7 +125,8 @@ textarea {
   }
 
   & .success-actions {
-    & ul, & ol {
+    & ul,
+    & ol {
       display: flex;
       padding-inline: 20px;
       flex-direction: column;

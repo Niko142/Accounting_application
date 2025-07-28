@@ -119,7 +119,7 @@ router.patch("/", async (req, res) => {
       });
     }
     return res.status(200).json({
-      message: "Количество объектов канцеляции обновлено!!!",
+      message: "Количество объектов канцелярии обновлено!!!",
       updateItem: result.rows[0],
     });
   } catch (err) {

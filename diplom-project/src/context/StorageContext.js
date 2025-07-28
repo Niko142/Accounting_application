@@ -12,11 +12,14 @@ const StorageContext = createContext();
 export const useStorage = () => useContext(StorageContext);
 
 function StorageProvider({ children }) {
-  const [components, setComponents] = useState({});
+  const [components, setComponents] = useState({}); // Данные о компонентах
+  const [isLoading, setIsLoading] = useState(false);
 
   // Получение данных
   const loadComponents = useCallback(async (componentType, signal) => {
+    setIsLoading(true);
     try {
+      // await new Promise((resolve) => setTimeout(resolve, 1000));
       const data = await fetchComponentData({
         component: componentType,
         signal,
@@ -26,6 +29,8 @@ function StorageProvider({ children }) {
       if (error.name !== 'CanceledError') {
         console.error('Ошибка при загрузке данных', error);
       }
+    } finally {
+      setIsLoading(false);
     }
   }, []);
 
@@ -33,8 +38,9 @@ function StorageProvider({ children }) {
     () => ({
       components,
       loadComponents,
+      isLoading,
     }),
-    [components, loadComponents],
+    [components, loadComponents, isLoading],
   );
 
   return (

@@ -129,7 +129,8 @@
       font-weight: 700;
       color: v.$white;
       cursor: pointer;
-      &:hover, &.active {
+      &:hover,
+      &.active {
         background-color: v.$white;
         color: v.$black;
       }

@@ -11,7 +11,7 @@ const employeeRoutes = require("@routes/employee");
 const mainRoutes = require("@routes/mainMenu");
 const movementRoutes = require("@routes/movement");
 const storageRoutes = require("@routes/storage");
-const excelRoutes = require('@routes/excel');
+const excelRoutes = require("@routes/excel");
 
 // Подключение маршрутов основных категорий объектов
 const computerRoutes = require("@routes/computers/computers");
@@ -62,9 +62,9 @@ app.use("/api/computers/mothercards", mothercardRoutes); // Запросы, св
 app.use("/api/computers/memories", memoryRoutes); // Запросы, связанные с ОЗУ
 app.use("/api/computers/disks", diskRoutes); // Запросы, связанные с диском
 
-app.use('/', (_, res) => {
-  res.status(200).json({message: 'Сервер успешно запущен'})
-})
+app.use("/", (_, res) => {
+  res.status(200).json({ message: "Сервер успешно запущен" });
+});
 
 app.use("*", (_, res) => {
   res.status(404).json({ error: "Маршрут не найден" });

@@ -2,7 +2,6 @@ import { React, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useAuth } from 'context/AuthContext';
-import { ToastContainer } from 'react-toastify';
 
 const FormAuthorization = () => {
   const { login } = useAuth();
@@ -32,7 +31,7 @@ const FormAuthorization = () => {
     <main className="main">
       <form className="form" onSubmit={handleSubmit(onSubmit)}>
         <h2 className="form__title">Авторизация</h2>
-        <p>Для того, чтобы вести учет, необходимо авторизироваться в системе</p>
+        <p>Для того, чтобы вести учет, необходимо авторизоваться в системе</p>
         <input
           type="text"
           className="form__input input-username"
@@ -75,7 +74,6 @@ const FormAuthorization = () => {
       </form>
       <div className="main__box box-up"></div>
       <div className="main__box box-down"></div>
-      <ToastContainer />
     </main>
   );
 };

@@ -4,7 +4,7 @@ import DataTable from 'components/Table/Table';
 import { audienceColumns } from 'data/columns';
 
 const AudienceForm = () => {
-  const { audience } = useMovement();
+  const { audience, isLoading } = useMovement();
 
   const memoizedData = useMemo(() => audience || [], [audience]);
 
@@ -14,6 +14,7 @@ const AudienceForm = () => {
       mockData={memoizedData}
       size={8}
       disabledPagination
+      isLoading={isLoading}
     />
   );
 };
